@@ -1,1 +1,193 @@
-/* Evely: grade semanal/diária e cards */
+.csa-conteiner {
+    display: flex;
+    justify-content: space-between;
+    padding: 12px 27px;
+    align-items: center;
+    background-color: var(--csa-fundo-nav);
+}
+
+.csa-img-logo {
+    width: 317px;
+}
+
+.csa-header-usuario {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.csa-perfil {
+    width: 42;
+    height: 42;
+    border-radius: 50%;
+    background-color: var(--csa-vermelho);
+    padding: 10px;
+    color: #FFF;
+}
+
+.csa-header-usuario i {
+    cursor: pointer;
+}
+
+.csa-header-title {
+    font-weight: 400;
+    font-size: 16px;
+}
+
+.csa-header-subtitle {
+    font-size: 14px;
+}
+
+.csa-barra {
+    display: flex;
+}
+
+.csa-layout {
+    display: flex;
+    min-height: 100vh;
+}
+
+.csa-sidebar {
+  width: 185px;
+  flex-shrink: 0;
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 28px 0 0;
+  background-color: var(--csa-fundo-nav);
+}
+
+.csa-button-sidebar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 28px;
+  padding: 14px 16px;
+  border-radius: 5px;
+  background-color: var(--csa-vermelho);
+  color: #FFF;
+  font-size: 14px;
+  text-decoration: none;
+}
+
+.csa-button-sidebar i {
+  margin-right: 7px;
+}
+
+.csa-sidebar-image {
+  display: block;
+  width: 100%;
+}
+
+.csa-agenda {
+    padding: 29px 42px;
+}
+
+.csa-titulo {
+    font-weight: 700;
+    font-size: 40px;
+    margin-bottom: 18px;
+}
+
+.csa-barra-controle {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 21px;
+}
+
+.csa-alternador {
+    display: flex;
+}
+
+.csa-alternador button {
+    margin: 0;
+}
+
+.csa-btn-diaria {
+    padding: 14px;
+    background-color: #D9D9D999;
+    font-size: 14px;
+    border-radius: 5px;
+    border: none;
+    cursor: pointer;
+}
+
+.csa-btn-semanal {
+    padding: 14px;
+    background-color: var(--csa-vermelho);
+    color: #FFF;
+    font-size: 14px;
+    border-radius: 5px;
+    border: none;
+    cursor: pointer;
+}
+
+.csa-navegacao {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+}
+
+.csa-data-seta {
+    padding: 14px 7px;
+    background-color: #FFF;
+    border-radius: 5px;
+    border: 1px solid var(--csa-cinza-texto);
+    cursor: pointer;
+}
+
+.csa-data {
+    padding: 12px 7px;
+    border-radius: 5px;
+    border: 1px solid var(--csa-cinza-texto);
+}
+
+.csa-filtro-status {
+    padding: 14px 5px;
+    font-size: 14px;
+    border-radius: 5px;
+    border: 1px solid var(--csa-cinza-texto);
+}
+
+.csa-btn-pdf {
+    border: 1px solid var(--csa-vermelho);
+    border-radius: 5px;
+    color: var(--csa-vermelho);
+    padding: 14px 4px;
+    background-color: #FFF;
+    cursor: pointer;
+}
+
+.csa-legenda {
+    display: flex;
+    list-style: none;
+    gap: 24px;
+    align-items: center;
+}
+
+.csa-legenda li {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 16px;
+}
+
+.csa-item {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+}
+
+.csa-item--aceito {
+    background: #16963a;
+}
+
+.csa-item--pendente {
+    background: #ff7a0f;
+}
+
+.csa-item--disponivel {
+    background: #aeaec2;
+}
