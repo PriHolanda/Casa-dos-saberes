@@ -1,0 +1,88 @@
+/* Botão: <button class="csa-botao csa-botao--verde"> */
+.csa-botao {
+  padding: 18px 16px;
+  border-radius: 5px;
+  border: 0;
+  color: #fff;
+  font-size: 14px;
+  width: 150px;
+  cursor: pointer;
+}
+
+.csa-botao--verde {
+  background: var(--csa-verde);
+}
+
+.csa-botao--vermelho {
+  background: var(--csa-vermelho);
+}
+
+.csa-botao--azul {
+  background: var(--csa-azul);
+}
+
+/* Badge de status*/
+.csa-badge {
+  padding: 8px 20px 8px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  text-align: center;
+}
+
+.csa-badge i {
+  margin-right: 8px;
+}
+
+.csa-badge--aceito {
+  color: var(--csa-verde);
+  background: #9BB19599;
+}
+
+.csa-badge--pendente {
+  color: var(--csa-laranja);
+  background: #DA973F66;
+}
+
+/* Campo de formulário (editável e somente leitura) */
+.csa-rotulo {
+  font-weight: 600;
+  font-size: 14px;
+  letter-spacing: 0.5px;
+  font-family: var(--csa-fonte);
+}
+
+.csa-campo {
+  padding: 9px 9px;
+  font-size: 14px;
+  color: #747474;
+  border: 1px solid var(--csa-cinza-borda);
+  border-radius: 5px;
+  background: #D9D9D980;
+  font-family: var(--csa-fonte);
+}
+
+.csa-campo:focus {
+  outline: none;
+  box-shadow: none;
+}
+
+/* Item de arquivo anexado */
+.csa-arquivo {
+  font-size: 14px;
+  padding: 9px 9px;
+  font-size: 14px;
+  color: #747474;
+  border: 1px solid var(--csa-cinza-borda);
+  border-radius: 5px;
+  background: #D9D9D980;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-family: var(--csa-fonte);
+}
+
+.csa-arquivo i{
+  cursor: pointer;
+}
+
+/* Container do painel lateral: escondido até receber a classe --aberto (js/paineis.js) */

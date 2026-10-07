@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Agenda Administrativa | Casa dos Saberes</title>
+
+  <!-- Fonte provisória: trocar pela do design -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap">
+
+  <!-- Ordem importa: variáveis primeiro, depois base, layout, componentes, agenda e painéis -->
+  <link rel="stylesheet" href="../css/variaveis.css">
+  <link rel="stylesheet" href="../css/base.css">
+  <link rel="stylesheet" href="../css/layout.css">
+  <link rel="stylesheet" href="../css/componentes.css">
+  <link rel="stylesheet" href="../css/agenda.css">
+  <link rel="stylesheet" href="../css/paineis.css">
+</head>
+<body>
+
+  <header class="csa-header">
+    <!-- TODO: trocar pelos logos reais em assets/ -->
+    <span class="csa-header__logo">CSA | Governo do Ceará</span>
+    <div class="csa-header__usuario">Admin · Casa dos Saberes</div>
+  </header>
+  <div class="csa-faixa"></div>
+
+  <div class="csa-corpo">
+    <nav class="csa-sidebar">
+      <a class="csa-sidebar__item csa-sidebar__item--ativo" href="#">Agenda</a>
+    </nav>
+
+    <main class="csa-principal">
+      <h1 class="csa-titulo">Agenda Administrativa</h1>
+
+      <div class="csa-barra-controle">
+        <div class="csa-alternador">
+          <button class="csa-alternador__botao" data-visao="diaria">Diária</button>
+          <button class="csa-alternador__botao csa-alternador__botao--ativo" data-visao="semanal">Semanal</button>
+        </div>
+        <div class="csa-navegador-data">
+          <button class="csa-navegador-data__seta" data-direcao="-1" aria-label="Anterior">&lt;</button>
+          <span class="csa-navegador-data__rotulo" id="csa-rotulo-data"></span>
+          <button class="csa-navegador-data__seta" data-direcao="1" aria-label="Próximo">&gt;</button>
+        </div>
+        <select class="csa-campo csa-filtro-status" id="csa-filtro-status">
+          <option value="todos">Status: Todos</option>
+          <option value="aceito">Status: Aceito</option>
+          <option value="pendente">Status: Pendente</option>
+        </select>
+      </div>
+
+      <ul class="csa-legenda">
+        <li><span class="csa-legenda__bolinha csa-legenda__bolinha--aceito"></span>Aceito</li>
+        <li><span class="csa-legenda__bolinha csa-legenda__bolinha--pendente"></span>Pendente</li>
+        <li><span class="csa-legenda__bolinha csa-legenda__bolinha--disponivel"></span>Disponível</li>
+      </ul>
+
+      <div id="csa-agenda"></div>   <!-- T2 preenche aqui -->
+    </main>
+
+    <aside id="csa-painel" class="csa-painel"></aside>   <!-- T3 preenche aqui -->
+  </div>
+
+  <!-- Ordem importa: utilitários e dados primeiro -->
+  <script src="../js/utilitarios.js"></script>
+  <script src="../js/dados-exemplo.js"></script>
+  <script src="../js/barra-controle.js"></script>
+  <script src="../js/agenda.js"></script>
+  <script src="../js/paineis.js"></script>
+</body>
+</html>
