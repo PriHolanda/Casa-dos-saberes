@@ -1,97 +1,65 @@
-# Contrato de dados da agenda
+# Dados e componentes da agenda
 
-A agenda continua em JavaScript puro. `agenda-modelo.js` centraliza datas,
-status e validação. `dados-exemplo.js` oferece a fonte local e o ponto de troca
-por um adaptador. `agenda.js` controla a interface e renderiza componentes
-que recebem os dados por parâmetros. Não há integração HTTP nesta etapa.
+A implementação usa HTML, CSS e JavaScript puro, com consulta síncrona aos
+mocks. Não há API, persistência, estados de requisição ou confirmação de reservas.
 
-## Configuração provisória
+## Organização
 
-- Fuso da instituição: `America/Fortaleza`, configurado em
-  `csaAgendaModelo.configuracao`. Não depende do fuso do navegador.
-- Turnos: manhã 00:00–12:00, tarde 12:00–18:00 e noite 18:00–24:00.
-  Os limites precisam ser confirmados pela equipe.
-- Semana visível: segunda a sábado, mantendo o desenho aprovado.
-- Datas civis usam `YYYY-MM-DD`. Horários aceitam ISO com `Z`, offset ou sem
-  offset; neste último caso, são interpretados no fuso da instituição.
-- Internamente os eventos usam instantes UTC, e a apresentação usa o fuso
-  da instituição. Intervalos usam início inclusivo e término exclusivo.
+- `js/dados-exemplo.js`: espaços, turnos, sete eventos de exemplo e
+  `csaDadosAgenda.consultarPeriodo(inicio, fim)`, com datas inclusivas.
+- `js/agenda-modelo.js`: auxiliares pequenos de calendário, validação básica
+  dos eventos e mapeamento de status.
+- `js/agenda.js`: estado da visualização, controles e funções `AgendaGrid`,
+  `AgendaCell`, `EventCard` e `AvailabilityCard`.
 
-## Fonte de dados
+Eventos possuem `{ id, nome, espacoId, inicio, termino, status }`. Espaços possuem
+`{ id, nome, visual }`. A consulta ignora eventos inválidos ou duplicados e devolve
+`{ espacos, turnos, eventos }`, incluindo eventos que atravessam o período.
+Os objetos de eventos retornados são independentes dos registros originais.
 
-`csaDadosAgenda.consultarPeriodo(inicio, fim)` retorna uma Promise de um
-snapshot normalizado. As datas do período são inclusivas. Alterar o resultado
-não altera a fonte. São retornados `espacos`, `eventos`, `disponibilidade`,
-`turnos` e `avisos`.
+## Datas e status
 
-Para integrar a API, registrar um objeto com
-`csaDadosAgenda.definirFonte(adaptador)`. O adaptador deve oferecer:
+Os mocks usam datas civis `YYYY-MM-DD` e horários `YYYY-MM-DDTHH:mm[:ss]`, sem
+`Z` ou offset. Os valores representam o dia e horário escritos, sem conversão
+de fuso. UTC é usado somente como calendário interno para impedir que o fuso
+do navegador mude o dia exibido. Valores com offset precisam ser adaptados na
+futura fonte de dados; não são aceitos silenciosamente nesta versão.
 
-| Método | Argumento | Resposta |
-|---|---|---|
-| `consultarPeriodo` | `{ inicio, fim, fusoHorario }` | `{ espacos, eventos, disponibilidade }` ou Promise desse objeto |
-| `atualizarEvento` | Evento completo | Evento salvo ou Promise do evento |
-| `removerEvento` | ID como string | Resultado da remoção ou Promise |
+Turnos: manhã 00:00–12:00, tarde 12:00–18:00 e noite 18:00–24:00. Eventos podem
+aparecer em mais de um turno quando atravessam seus limites. A semana mostra
+segunda a sábado; a visão diária também permite navegar para domingo.
 
-Os métodos de escrita são opcionais para fontes somente leitura. Se ausentes,
-o serviço rejeita a operação explicitamente. A fonte local faz inclusão ou
-substituição pelo ID em `atualizarEvento`; o adaptador futuro define o fluxo
-de persistência. Não foram criados endpoints.
+Aceito e pendente mantêm seus estilos. Status não mapeados recebem identificação
+neutra, nunca o rótulo pendente. Textos dinâmicos são escapados antes de entrar
+no HTML. Campos obrigatórios, datas, intervalos e referência ao espaço são validados.
 
-Os três arrays da consulta são obrigatórios, inclusive quando vazios.
-Eventos fora do período são removidos após normalização. Eventos que começam
-antes do período e terminam dentro dele também são incluídos.
+## Disponibilidade visual provisória
 
-## Registros
+Todo turno sem eventos mostra o card cinza com o nome do turno, “Disponível”
+e “Adicionar Evento”. Nas células com eventos, a opção aparece na variante
+compacta. Filtrar um evento não altera a variante da célula.
 
-- Espaço: `{ id, nome, visual }`. `visual` identifica a variante CSS existente.
-  Um novo espaço pode reutilizar uma variante ou receber uma nova regra de cor,
-  sem duplicar o HTML dos cards.
-- Evento: `{ id, nome, espacoId, inicio, termino, status }`. IDs são normalizados
-  para strings. Campos obrigatórios, datas, intervalos e referência ao espaço
-  são validados. Registros inválidos ou duplicados são ignorados com avisos;
-  não interrompem os outros eventos. Atualizações inválidas são rejeitadas.
-- Status: o mapa `csaAgendaModelo.status` mantém aceito e pendente. Um status
-  não registrado recebe rótulo neutro, nunca o rótulo pendente. Não há novos filtros.
-- Disponibilidade: `{ data, turno, espacoIds, situacao? }`. Situações aceitas:
-  `disponivel`, `indisponivel`, `nao_informada`. Sem `situacao`, uma lista
-  não vazia confirma os espaços disponíveis; uma lista vazia indica indisponibilidade.
+**Isso é somente apresentação do frontend com mocks. Não confirma disponibilidade
+real de qualquer espaço para reserva.** Não há cálculo de conflitos, união de
+registros de disponibilidade ou consulta a regras de reserva.
 
-Registros disponíveis do mesmo dia/turno são unidos e IDs são deduplicados.
-Estados contraditórios resultam em informação não confirmada e aviso. Registro
-ausente não significa disponível. Somente disponibilidade confirmada mostra
-“Adicionar Evento”, que continua sem ação de clique.
+“Adicionar Evento” e os cards continuam sem ação de clique. Cadastro e detalhes
+permanecem sob responsabilidade dos painéis.
 
-Disponibilidade é independente dos eventos. O mock não recalcula esses registros
-após uma escrita; a fonte futura deve retornar disponibilidade autoritativa
-atualizada conforme as regras de reserva definidas pela equipe.
+## Integração futura
 
-## Integração com os painéis
+Os componentes recebem dados por parâmetros e não consultam os mocks. O ponto
+de substituição da fonte é `consultarPeriodo`; a futura comunicação assíncrona
+precisará ser implementada no controlador, sem reconstruir o HTML dos cards.
+Não há métodos antecipados de atualização, remoção ou troca de adaptador.
 
-Os arquivos de painéis não foram alterados. Após uma escrita bem-sucedida:
-
-```js
-const salvo = await csaDadosAgenda.atualizarEvento(evento);
-document.dispatchEvent(new CustomEvent('csa:evento-atualizado', {
-  detail: { id: salvo.id }
-}));
-```
-
-O evento solicita uma nova consulta; não precisa alterar referências internas.
-Depois de remover um evento, o mesmo aviso pode ser emitido com o ID removido.
-Cards preservam `data-evento-id`, `data-data` e `data-turno` para integração futura.
-
-A interface informa carregamento, falha e disponibilidade ausente. Respostas
-antigas são descartadas se a visualização mudou durante a consulta. Os controles
-permitem tentar novamente; `csaAgenda.recarregar()` também retorna uma Promise.
+Continuam ativos `csa:mudar-visao`, `csa:mudar-data`, `csa:mudar-filtro` e
+`csa:evento-atualizado`; o último solicita uma nova renderização. Os atributos
+`data-evento-id`, `data-data` e `data-turno` preservam os pontos de integração
+futuros. `csaAgenda.recarregar()` também redesenha a visualização atual.
 
 ## Verificação
 
-```powershell
-node tests/agenda.test.cjs
-```
-
-Os testes não exigem dependências. Verificam navegação, filtros, componentes,
-validação, fuso, disponibilidade, atualização, snapshots, carregamento, falhas
-e respostas assíncronas fora de ordem. A validação visual deve usar Live Server
-em `pages/agenda.html`.
+Execute `node tests/agenda.test.cjs` e abra `pages/agenda.html` com Live Server.
+Os testes cobrem navegação, filtros, cards, vários eventos, validações básicas,
+textos dinâmicos e recursos locais, sem dependências adicionais.

@@ -308,7 +308,6 @@
 .csa-disponibilidade__adicionar > span { display: block; width: 20px; height: 20px; margin: 0 auto 5px; border-radius: 50%; background: var(--csa-disponibilidade-icone); color: var(--csa-fundo-pagina); font-size: 16px; line-height: 20px; }
 .csa-disponibilidade__adicionar p { font-size: 11px; line-height: 1.2; letter-spacing: .6px; }
 .csa-disponibilidade--compacta { padding: 0; background: transparent; }
-.csa-grid__vazio { color: var(--csa-cinza-texto); font-size: 11px; padding: 8px 2px; }
 
 .csa-grid__caption {
     position: absolute;
