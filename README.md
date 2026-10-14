@@ -11,49 +11,70 @@ Nesta tela o administrador:
 
 > Escopo atual: apenas a tela do administrador na versão **desktop**. A versão mobile é uma etapa futura.
 
----
-
 ## Sumário
 
 1. [Tecnologias](#tecnologias)
-2. [Estrutura de pastas](#estrutura-de-pastas)
+2. [Estrutura de arquivos](#estrutura-de-arquivos)
 3. [Como começar](#como-começar)
-4. [Padrões do projeto](#padrões-do-projeto)
-5. [Fluxo de trabalho com Git](#fluxo-de-trabalho-com-git)
-6. [Divisão do trabalho](#divisão-do-trabalho)
-7. [Integração com o WordPress](#integração-com-o-wordpress)
-8. [Pendências e pontos em aberto](#pendências-e-pontos-em-aberto)
+4. [Como as partes se conectam](#como-as-partes-se-conectam)
+5. [Padrões do projeto](#padrões-do-projeto)
+6. [Fluxo de trabalho com Git](#fluxo-de-trabalho-com-git)
+7. [Divisão do trabalho e cronograma](#divisão-do-trabalho-e-cronograma)
+8. [Integração com o WordPress](#integração-com-o-wordpress)
+9. [Pendências e pontos em aberto](#pendências-e-pontos-em-aberto)
 
 ---
 
 ## Tecnologias
 
-- **HTML, CSS e JavaScript puro** (sem frameworks)
-- **VS Code** como editor
+- **HTML, CSS e JavaScript puro** (sem frameworks e sem etapa de build)
+- **VS Code** como editor, com a extensão **Live Server**
 - **Git/GitHub** para versionamento
-- **Live Server** (extensão do VS Code) para visualizar as páginas
 
 O site do projeto é feito em **WordPress** (tema Kadence + Elementor). O código puro foi escolhido por facilitar a integração depois.
 
 ---
 
-## Estrutura de pastas
+## Estrutura de arquivos
+
+Cada arquivo tem um dono (T1, T2 ou T3). **Cada pessoa edita só os seus arquivos**, o que evita conflitos no Git.
 
 ```
 agenda-casa-saberes/
-├── css/
-│   ├── variaveis.css      # cores, fontes e espaçamentos (única fonte de estilo global)
-│   ├── base.css           # reset e estilos gerais
-│   └── componentes.css    # estilos dos componentes reutilizáveis
-├── js/
-│   └── dados-exemplo.js   # dados de exemplo (mock) até a API do back existir
 ├── pages/
-│   ├── componentes.html   # vitrine de todos os componentes (documentação e teste)
-│   └── agenda.html        # tela da Agenda Administrativa
-├── assets/                # logos, ícones e ilustrações
+│   └── agenda.html          T1   página única: moldura + espaços vazios + linhas que carregam os arquivos
+├── css/
+│   ├── variaveis.css        T1   cores, fontes, espaçamentos (valores provisórios: trocar pelos do design)
+│   ├── base.css             T1   reset e estilos gerais
+│   ├── layout.css           T1   header, faixa, sidebar, barra de controle e legenda
+│   ├── componentes.css      T1   botão, badge, campo, arquivo anexado, container do painel
+│   ├── agenda.css           T2   grade semanal/diária e cards
+│   └── paineis.css          T3   conteúdo dos painéis laterais
+├── js/
+│   ├── utilitarios.js       T1   funções e tabelas de apoio (datas, nomes de espaços, proteção de HTML)
+│   ├── dados-exemplo.js     todos  lista de eventos de exemplo (mock)
+│   ├── barra-controle.js    T1   Diária/Semanal, setas de data e filtro de status
+│   ├── agenda.js            T2   desenha a grade e os cards
+│   └── paineis.js           T3   abre/fecha os painéis e monta o conteúdo
+├── assets/                  logos, ícones e ilustrações exportados pelo design
+├── .gitignore
 └── README.md
 ```
 
+### Imagens e ícones que o design precisa exportar (assets/)
+
+| Onde aparece | Arquivo |
+|---|---|
+| Header | logo CSA e logo do Governo do Ceará |
+| Faixa decorativa abaixo do header | padrão em imagem (repetido na horizontal) |
+| Rodapé da sidebar | ilustração do músico com violão |
+| Botão Agenda e seletor de data | ícone de calendário |
+| Setas da data | seta esquerda e seta direita |
+| Filtro "Status" e menu Admin | seta para baixo |
+| Cards "Adicionar Evento" | ícone de mais |
+| Cards de turno disponível | ícone de calendário pequeno |
+| Badge do painel | ícone de check (Aceito) e de relógio (Pendente) |
+| Arquivo anexado | ícone de download |
 ---
 
 ## Como começar
@@ -78,46 +99,66 @@ agenda-casa-saberes/
    ```
 
 2. Abra a pasta no VS Code.
-3. Abra `pages/agenda.html` (ou `pages/componentes.html`), clique com o botão direito e escolha **Open with Live Server**.
-4. Crie sua branch antes de começar a trabalhar (veja [Fluxo de trabalho com Git](#fluxo-de-trabalho-com-git)).
+3. Abra `pages/agenda.html`, clique com o botão direito e escolha **Open with Live Server**.
+4. Você já deve ver a agenda com os eventos de exemplo. Clique em um card para abrir o painel lateral.
+5. Crie sua branch antes de começar a trabalhar (veja [Fluxo de trabalho com Git](#fluxo-de-trabalho-com-git)).
 
-Não é preciso instalar o WordPress para desenvolver. Ele só entra na hora de testar dentro do site (veja [Integração com o WordPress](#integração-com-o-wordpress)).
+Não é preciso instalar o WordPress para desenvolver.
+
+---
+
+## Como as partes se conectam
+
+Não há rotas nem `import`. O `agenda.html` é o "palco": ele carrega todos os arquivos com `<link>` e `<script>`, e todos os scripts rodam na **mesma página**, enxergando as mesmas funções e a mesma lista `eventos`. **Só a T1 edita o `agenda.html`.**
+
+```
+┌──────────────────────────────────────────────────────────────┐
+│ HEADER (T1)                                                  │
+├────────┬─────────────────────────────────────┬───────────────┤
+│        │ BARRA DE CONTROLE (T1)              │               │
+│SIDEBAR │ Diária/Semanal | data | filtro      │  PAINEL       │
+│ (T1)   ├─────────────────────────────────────┤  LATERAL      │
+│        │ #csa-agenda (T2)                    │  #csa-painel  │
+│        │ grade com os cards                  │  (T3)         │
+└────────┴─────────────────────────────────────┴───────────────┘
+```
+
+As partes se comunicam por **eventos do navegador**: uma parte avisa, a outra escuta.
+
+| Evento | Quem dispara | Quem escuta | Dados (`detail`) |
+|---|---|---|---|
+| `csa:mudar-visao` | barra-controle.js (T1) | agenda.js (T2) | `{ visao: "diaria" \| "semanal" }` |
+| `csa:mudar-data` | barra-controle.js (T1) | agenda.js (T2) | `{ direcao: -1 \| 1 }` |
+| `csa:mudar-filtro` | barra-controle.js (T1) | agenda.js (T2) | `{ status: "todos" \| "aceito" \| "pendente" }` |
+| `csa:abrir-detalhes` | agenda.js (T2) | paineis.js (T3) | `{ id }` |
+| `csa:abrir-cadastro` | agenda.js (T2) | paineis.js (T3) | `{ data, turno }` |
+| `csa:evento-atualizado` | paineis.js (T3) | agenda.js (T2) | `{ id }` |
+
+Exemplo do fluxo ao aprovar uma solicitação:
+
+1. O admin clica no card → a T2 dispara `csa:abrir-detalhes`.
+2. A T3 escuta, busca o evento em `eventos` e abre o painel.
+3. O admin clica em **Aprovar** → a T3 muda o status e dispara `csa:evento-atualizado`.
+4. A T2 escuta e redesenha a grade: o card passa de pendente para aceito.
+
+Os scripts compartilham o mesmo espaço, então **dê nomes específicos às suas funções** (`agendaDesenhar`, `painelAbrir`, `barra...`) para não sobrescrever as do colega.
 
 ---
 
 ## Padrões do projeto
 
-Todo o time segue estas regras:
-
-1. **Prefixo `csa-` em todas as classes CSS** (ex.: `csa-botao`, `csa-card`). Isso evita conflito com o tema Kadence e com o Elementor do site.
+1. **Prefixo `csa-` em todas as classes CSS** (ex.: `csa-botao`, `csa-card`), para evitar conflito com o tema Kadence e o Elementor do site.
 2. **Nada de cor, fonte ou espaçamento escrito direto nos componentes.** Tudo vem das variáveis de `css/variaveis.css`:
 
    ```css
    .csa-botao--verde { background: var(--csa-verde); }
    ```
 
-3. **Componentes reutilizáveis e isolados.** Cada componente recebe seus dados por parâmetro, sem textos ou valores fixos dentro:
-
-   ```js
-   function criarCardEvento(evento, compacto) { /* devolve o HTML do card */ }
-   ```
-
+3. **Componentes reutilizáveis.** Funções que recebem os dados por parâmetro e devolvem o HTML, sem textos fixos dentro.
 4. **Dados de exemplo (mock).** Enquanto o back não definir a API, os dados vêm de `js/dados-exemplo.js`. Quando a API existir, o mock é trocado sem mexer nos componentes.
-5. **Conteúdo separado do container nos painéis.** No desktop, Cadastrar Evento, Detalhes do Evento e Detalhes da Solicitação aparecem num **painel lateral**; no mobile viram **pop-ups**. Por isso o conteúdo de cada painel é uma função independente do container que o exibe.
-6. **Seguir o design fielmente.** Se algo estiver inconsistente ou faltando, anote na tarefa e pergunte ao design, sem inventar.
-
-### Comunicação entre a agenda e os painéis
-
-A agenda dispara eventos do navegador e os painéis os escutam:
-
-| Evento | Quando dispara | Dados (`detail`) |
-|---|---|---|
-| `csa:abrir-detalhes` | Clique em um card de evento | `{ id }` |
-| `csa:abrir-cadastro` | Clique em "Adicionar Evento" | `{ data, turno }` |
-
-```js
-document.dispatchEvent(new CustomEvent("csa:abrir-detalhes", { detail: { id: 1 } }));
-```
+5. **Escapar textos vindos de dados.** Use `csaEscapar()` ao colocar qualquer texto dentro de `innerHTML`.
+6. **Conteúdo separado do container nos painéis.** No desktop, os painéis são laterais; no mobile viram pop-ups. Por isso o conteúdo é montado por funções (`painelConteudo...`) independentes do container (`#csa-painel`).
+7. **Seguir o design fielmente.** Se algo estiver inconsistente, anote na tarefa e pergunte ao design, sem inventar.
 
 ---
 
@@ -131,13 +172,8 @@ document.dispatchEvent(new CustomEvent("csa:abrir-detalhes", { detail: { id: 1 }
   | 2. Agenda | `front/agenda` |
   | 3. Painéis laterais | `front/paineis` |
 
-- Criar a branch:
-
-  ```bash
-  git checkout -b front/agenda
-  ```
-
-- Salvar e enviar o trabalho:
+- Criar a branch: `git checkout -b front/agenda`
+- Salvar e enviar:
 
   ```bash
   git add .
@@ -151,21 +187,21 @@ document.dispatchEvent(new CustomEvent("csa:abrir-detalhes", { detail: { id: 1 }
 
 ---
 
-## Divisão do trabalho
+## Divisão do trabalho e cronograma
 
-| # | Tarefa | O que inclui | Depende de |
+| # | Tarefa | Arquivos | O que inclui |
 |---|---|---|---|
-| 1 | **Fundação** | Guia de estilos (variáveis CSS), componentes base (botão, badge de status, campo, item de arquivo anexado, container do painel), layout base (header e sidebar) e barra de controle (Diária/Semanal, navegação de data, filtro de status, legenda) | — |
-| 2 | **Agenda** | Grade semanal, grade diária, card de evento (variantes por espaço, versões compacta e grande), card de turno disponível, toggle Diária/Semanal | Badge e cores da Tarefa 1 |
-| 3 | **Painéis laterais** | Cadastrar Evento, Detalhes do Evento (Aceito) e Detalhes da Solicitação (Pendente), com Detalhes como componente único | Botão, campos, badge, anexo e container da Tarefa 1 |
+| 1 | **Fundação** | `agenda.html`, `variaveis.css`, `base.css`, `layout.css`, `componentes.css`, `utilitarios.js`, `barra-controle.js` | Guia de estilos, componentes base, layout (header, sidebar), barra de controle e legenda |
+| 2 | **Agenda** | `agenda.css`, `agenda.js` | Grade semanal, grade diária, card de evento (variantes por espaço, compacto e grande), card de turno disponível |
+| 3 | **Painéis laterais** | `paineis.css`, `paineis.js` | Cadastrar Evento, Detalhes do Evento (Aceito) e Detalhes da Solicitação (Pendente) |
 
-A Tarefa 1 é a base das outras duas, por isso entrega primeiro. Enquanto ela não termina, as tarefas 2 e 3 usam estilos provisórios e trocam depois.
+O repositório já contém um **esqueleto funcional** de todas as partes. A tarefa de cada pessoa é refinar a sua parte até ficar igual ao design.
 
-### Cronograma (entrega final: 13/10/2026)
+**Entrega final: 13/10/2026** (12/10 é feriado, então a meta é fechar tudo até 11/10).
 
 | Tarefa | Meta |
 |---|---|
-| 1. Fundação | 10/10 (componentes base até 08/10) |
+| 1. Fundação | componentes base até 08/10; completa até 10/10 |
 | 2. Agenda | 11/10 |
 | 3. Painéis laterais | 11/10 |
 | Fechamento: revisão cruzada, merge e teste do fluxo completo | 11/10 a 13/10 |
@@ -178,8 +214,8 @@ A Tarefa 1 é a base das outras duas, por isso entrega primeiro. Enquanto ela n�
 
 O site é de outro desenvolvedor, hospedado na Hostinger, e o plano é gratuito (sem ambiente de teste). A proposta é **não mexer no site publicado** durante o desenvolvimento:
 
-1. **Desenvolver** no VS Code, em HTML/CSS/JS puro, neste repositório.
-2. **Testar dentro do WordPress** com o [LocalWP](https://localwp.com), instalado no computador. Uma cópia do site é exportada com o plugin *All-in-One WP Migration* (já instalado no site) e importada no LocalWP. Exige autorização do responsável pelo site. O arquivo exportado contém o banco de dados completo, então **não deve ser compartilhado em grupos públicos nem enviado ao Git**.
+1. **Desenvolver** no VS Code, neste repositório.
+2. **Testar dentro do WordPress** com o [LocalWP](https://localwp.com), instalado no computador. Uma cópia do site é exportada com o plugin *All-in-One WP Migration* (já instalado no site) e importada no LocalWP. Exige autorização do responsável pelo site. O arquivo exportado contém o banco de dados completo, então **não deve ser compartilhado em grupos públicos nem enviado ao Git** (o `.gitignore` já ignora `*.wpress`).
 3. **Entregar** como um **plugin do WordPress com shortcode** (ex.: `[agenda_admin]`), que o responsável pelo site coloca numa página.
 
 ---
@@ -189,8 +225,10 @@ O site é de outro desenvolvedor, hospedado na Hostinger, e o plano é gratuito 
 - [ ] Confirmar com o tech lead o fluxo de integração (LocalWP + plugin com shortcode).
 - [ ] Definir **onde o back em Python vai rodar** e como será a API (hospedagem compartilhada costuma não suportar Python).
 - [ ] Definir o **login do administrador**: usuário do WordPress ou sistema próprio do back.
-- [ ] Design: ajustar inconsistências entre as telas (ex.: Cadastrar Evento não tem celular, classificação indicativa nem anexo, e usa "Responsável" onde os detalhes usam "Solicitante"; alguns cards têm horários incoerentes).
+- [ ] Design: exportar logos, ícones, ilustração e faixa decorativa; informar as fontes e os valores exatos de cor.
+- [ ] Design: corrigir inconsistências entre as telas. Cadastrar Evento não tem celular, classificação indicativa nem anexo e usa "Responsável" onde os detalhes usam "Solicitante"; alguns cards têm horários incoerentes; as datas da semana no mockup (Sex e Sáb) repetem 24/09 e 25/09; o título da semana diz "21 a 27" mas não há coluna de domingo.
 - [ ] Combinar com o responsável pelo site o aviso sobre o plugin *PRO Elements* (não é o Elementor Pro oficial).
+- [ ] Ligar o botão Confirmar do cadastro, Editar Evento e Cancelar Evento à API do back (hoje só registram no console ou mudam o status no mock).
 
 ---
 

@@ -1,0 +1,333 @@
+.csa-conteiner {
+    display: flex;
+    justify-content: space-between;
+    padding: 12px 27px;
+    align-items: center;
+    background-color: var(--csa-fundo-nav);
+}
+
+.csa-img-logo {
+    width: 317px;
+}
+
+.csa-header-usuario {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.csa-perfil {
+    width: 42;
+    height: 42;
+    border-radius: 50%;
+    background-color: var(--csa-vermelho);
+    padding: 10px;
+    color: #FFF;
+}
+
+.csa-header-usuario i {
+    cursor: pointer;
+}
+
+.csa-header-title {
+    font-weight: 400;
+    font-size: 16px;
+}
+
+.csa-header-subtitle {
+    font-size: 14px;
+}
+
+.csa-barra {
+    display: flex;
+}
+
+.csa-layout {
+    display: flex;
+    min-height: 100vh;
+}
+
+.csa-sidebar {
+  width: 185px;
+  flex-shrink: 0;
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 28px 0 0;
+  background-color: var(--csa-fundo-nav);
+}
+
+.csa-button-sidebar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 28px;
+  padding: 14px 16px;
+  border-radius: 5px;
+  background-color: var(--csa-vermelho);
+  color: #FFF;
+  font-size: 14px;
+  text-decoration: none;
+}
+
+.csa-button-sidebar i {
+  margin-right: 7px;
+}
+
+.csa-sidebar-image {
+  display: block;
+  width: 100%;
+}
+
+.csa-agenda {
+    padding: 29px 42px;
+}
+
+.csa-titulo {
+    font-weight: 700;
+    font-size: 40px;
+    margin-bottom: 18px;
+}
+
+.csa-barra-controle {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 21px;
+}
+
+.csa-alternador {
+    display: flex;
+}
+
+.csa-alternador button {
+    margin: 0;
+}
+
+.csa-btn-diaria {
+    padding: 14px;
+    background-color: #D9D9D999;
+    font-size: 14px;
+    border-radius: 5px;
+    border: none;
+    cursor: pointer;
+}
+
+.csa-btn-semanal {
+    padding: 14px;
+    background-color: var(--csa-vermelho);
+    color: #FFF;
+    font-size: 14px;
+    border-radius: 5px;
+    border: none;
+    cursor: pointer;
+}
+
+.csa-navegacao {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+}
+
+.csa-data-seta {
+    padding: 14px 7px;
+    background-color: #FFF;
+    border-radius: 5px;
+    border: 1px solid var(--csa-cinza-texto);
+    cursor: pointer;
+}
+
+.csa-data {
+    padding: 12px 7px;
+    border-radius: 5px;
+    border: 1px solid var(--csa-cinza-texto);
+}
+
+.csa-filtro-status {
+    padding: 14px 5px;
+    font-size: 14px;
+    border-radius: 5px;
+    border: 1px solid var(--csa-cinza-texto);
+}
+
+.csa-btn-pdf {
+    border: 1px solid var(--csa-vermelho);
+    border-radius: 5px;
+    color: var(--csa-vermelho);
+    padding: 14px 4px;
+    background-color: #FFF;
+    cursor: pointer;
+}
+
+.csa-legenda {
+    display: flex;
+    list-style: none;
+    gap: 24px;
+    align-items: center;
+}
+
+.csa-legenda li {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 16px;
+}
+
+.csa-item {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+}
+
+.csa-item--aceito {
+    background: #16963a;
+}
+
+.csa-item--pendente {
+    background: #ff7a0f;
+}
+
+.csa-item--disponivel {
+    background: #aeaec2;
+}
+
+/* Agenda (T2): estilos adicionais; fundação acima preservada. */
+.csa-agenda {
+    min-width: 0;
+    max-width: 100%;
+}
+
+.csa-alternador [data-visao] {
+    background: #D9D9D999;
+    color: var(--csa-texto);
+}
+
+.csa-alternador .csa-alternador__botao--ativo {
+    background: var(--csa-vermelho);
+    color: var(--csa-fundo-pagina);
+}
+
+#csa-agenda {
+    --csa-grade-largura: 784px;
+    --csa-grade-turno: 99px;
+    --csa-grade-altura-turno: 274px;
+    --csa-card-raio: 9px;
+    --csa-card-padding: 6px;
+    --csa-card-gap: 4px;
+    --csa-disponibilidade-fundo: #e3e3e3;
+    --csa-disponibilidade-borda: #c6c6c6;
+    --csa-disponibilidade-icone: #bfbfbf;
+    width: var(--csa-grade-largura);
+    max-width: 100%;
+    margin-top: 10px;
+    overflow-x: auto;
+    border: 1px solid var(--csa-cinza-borda);
+    border-radius: 5px;
+}
+
+.csa-grid {
+    width: 100%;
+    min-width: calc(var(--csa-grade-largura) - 2px);
+    table-layout: fixed;
+    border-collapse: collapse;
+    color: var(--csa-texto);
+}
+
+.csa-grid th,
+.csa-grid td {
+    border-right: 1px solid var(--csa-cinza-borda);
+    border-bottom: 1px solid var(--csa-cinza-borda);
+}
+
+.csa-grid tr > :last-child { border-right: 0; }
+.csa-grid tbody tr:last-child > * { border-bottom: 0; }
+.csa-grid tr > :first-child { width: var(--csa-grade-turno); }
+
+.csa-grid thead th {
+    height: 75px;
+    font-size: 16px;
+    text-align: center;
+}
+
+.csa-grid thead strong,
+.csa-grid thead span { display: block; }
+.csa-grid thead span { margin-top: 2px; font-weight: 400; }
+.csa-grid tbody th { font-size: 18px; text-align: center; }
+
+.csa-grid__celula {
+    height: var(--csa-grade-altura-turno);
+    padding: 5px 6px;
+    vertical-align: top;
+}
+
+.csa-grid__conteudo {
+    display: flex;
+    flex-direction: column;
+    gap: var(--csa-card-gap);
+}
+
+.csa-event-card {
+    padding: var(--csa-card-padding);
+    border-radius: var(--csa-card-raio);
+    min-height: 78px;
+    overflow-wrap: anywhere;
+}
+
+.csa-event-card--auditorio { background: var(--csa-cor-auditorio); }
+.csa-event-card--quintal { background: var(--csa-cor-quintal); }
+.csa-event-card--salas { background: var(--csa-cor-salas); }
+.csa-event-card--varanda { background: var(--csa-cor-varanda); }
+.csa-event-card--auditorio .csa-event-card__espaco { color: var(--csa-texto-auditorio); }
+.csa-event-card--quintal .csa-event-card__espaco { color: var(--csa-texto-quintal); }
+.csa-event-card--salas .csa-event-card__espaco { color: var(--csa-texto-salas); }
+.csa-event-card--varanda .csa-event-card__espaco { color: #856000; }
+
+.csa-event-card__espaco { font-size: 12px; line-height: 1.2; font-weight: 600; letter-spacing: .5px; margin: 2px 0; }
+.csa-event-card__nome { font-size: 11px; line-height: 1.2; font-weight: 600; }
+.csa-event-card__horario { font-size: 9px; line-height: 1.4; }
+.csa-event-card__status { display: flex; align-items: center; gap: 3px; margin-top: 5px; font-size: 9px; }
+.csa-event-card__status span { width: 10px; height: 10px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
+/* Contraste do texto ajustado; indicadores e fundos originais preservados. */
+.csa-event-card__status--aceito { color: #004b19; }
+.csa-event-card__status--pendente { color: #963c00; }
+.csa-event-card__status--aceito span { background: var(--csa-verde); }
+.csa-event-card__status--pendente span { background: var(--csa-laranja); }
+.csa-event-card__status--desconhecido { color: var(--csa-texto); }
+
+.csa-disponibilidade {
+    background: var(--csa-disponibilidade-fundo);
+    padding: 8px 5px 13px;
+    border-radius: var(--csa-card-raio);
+    text-align: center;
+}
+
+.csa-disponibilidade__titulo { font-size: 12px; font-weight: 500; line-height: 1.2; letter-spacing: .3px; }
+.csa-disponibilidade__icone { display: block; width: 22px; height: 22px; color: var(--csa-cinza-texto); margin: 12px auto 20px; }
+.csa-disponibilidade__adicionar { background: var(--csa-fundo-pagina); border: 1px dashed var(--csa-disponibilidade-borda); border-radius: 4px; min-height: 62px; padding: 7px 3px; color: var(--csa-cinza-texto); }
+.csa-disponibilidade__adicionar > span { display: block; width: 20px; height: 20px; margin: 0 auto 5px; border-radius: 50%; background: var(--csa-disponibilidade-icone); color: var(--csa-fundo-pagina); font-size: 16px; line-height: 20px; }
+.csa-disponibilidade__adicionar p { font-size: 11px; line-height: 1.2; letter-spacing: .6px; }
+.csa-disponibilidade--compacta { padding: 0; background: transparent; }
+
+.csa-grid__caption {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+}
+
+.csa-grid--diaria { min-width: 360px; }
+.csa-grid--diaria .csa-event-card { max-width: 240px; }
+.csa-grid--diaria .csa-disponibilidade { max-width: 240px; }
+.csa-grid--diaria .csa-event-card__nome { font-size: 12px; }
+.csa-grid--diaria .csa-event-card__horario,
+.csa-grid--diaria .csa-event-card__status { font-size: 10px; }
+.csa-grid--diaria .csa-event-card__espaco { font-size: 13px; }
+
+@media (max-width: 1050px) {
+    .csa-agenda { flex: 1; padding: 29px 20px; }
+    .csa-barra-controle { flex-wrap: wrap; }
+}

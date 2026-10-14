@@ -1,0 +1,1 @@
+// Rafael: abre e fecha os painéis e monta o conteúdo
