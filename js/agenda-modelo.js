@@ -38,6 +38,11 @@ const csaAgendaModelo = (() => {
     return {
       id: String(evento.id), nome: evento.nome.trim(), espacoId: String(evento.espacoId),
       inicio: evento.inicio, termino: evento.termino, status: evento.status.trim(),
+      solicitante: typeof evento.solicitante === 'string' ? evento.solicitante.trim() : '',
+      celular: typeof evento.celular === 'string' ? evento.celular.trim() : '',
+      publico: typeof evento.publico === 'string' ? evento.publico.trim() : '',
+      classificacao: typeof evento.classificacao === 'string' ? evento.classificacao.trim() : '',
+      descricao: typeof evento.descricao === 'string' ? evento.descricao.trim() : '',
       inicioMs, terminoMs, horarioInicio: evento.inicio.slice(11, 16), horarioTermino: evento.termino.slice(11, 16)
     };
   }

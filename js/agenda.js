@@ -17,7 +17,7 @@ const csaAgenda = (() => {
     if (!validado) return '';
     evento = validado;
     const status = modelo.definirStatus(evento.status);
-    return `<article class="csa-event-card csa-event-card--${escapar(espaco.visual)}" data-evento-id="${escapar(evento.id)}">
+    return `<article class="csa-event-card csa-event-card--${escapar(espaco.visual)}" data-evento-id="${escapar(evento.id)}" role="button" tabindex="0" aria-label="Ver detalhes de ${escapar(evento.nome)}">
       <h3 class="csa-event-card__espaco">${escapar(espaco.nome)}</h3>
       <p class="csa-event-card__nome">${escapar(evento.nome)}</p>
       <p class="csa-event-card__horario">${escapar(evento.horarioInicio)} às ${escapar(evento.horarioTermino)}</p>
@@ -28,7 +28,7 @@ const csaAgenda = (() => {
   function AvailabilityCard(registro, turno, temEventos) {
     return `<div class="csa-disponibilidade${temEventos ? ' csa-disponibilidade--compacta' : ''}" data-data="${escapar(registro.data)}" data-turno="${escapar(turno.id)}" aria-label="${escapar(turno.nome)}: Disponível">
       ${temEventos ? '' : `<p class="csa-disponibilidade__titulo">${escapar(turno.nome)}<br>Disponível</p><svg class="csa-disponibilidade__icone" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="4" y="5" width="16" height="16" rx="2"/><path d="M4 10h16M8 2v6M16 2v6"/></svg>`}
-      <div class="csa-disponibilidade__adicionar" aria-disabled="true"><span aria-hidden="true">+</span><p>Adicionar<br>Evento</p></div>
+      <button type="button" class="csa-disponibilidade__adicionar" data-acao="adicionar-evento" aria-label="Adicionar evento em ${escapar(registro.data)}, turno ${escapar(turno.nome)}"><span aria-hidden="true">+</span><p>Adicionar<br>Evento</p></button>
     </div>`;
   }
   function AgendaCell(data, turno, dados, filtro = 'todos') {
@@ -82,6 +82,26 @@ const csaAgenda = (() => {
     desenhar();
   });
   document.addEventListener('csa:evento-atualizado', desenhar);
+  document.getElementById('csa-agenda').addEventListener('click', e => {
+    const evento = e.target.closest('[data-evento-id]');
+    if (evento) {
+      document.dispatchEvent(new CustomEvent('csa:abrir-detalhes', { detail: { id: evento.dataset.eventoId } }));
+      return;
+    }
+    const adicionar = e.target.closest('[data-acao="adicionar-evento"]');
+    if (adicionar) {
+      const disponibilidade = adicionar.closest('.csa-disponibilidade');
+      document.dispatchEvent(new CustomEvent('csa:abrir-cadastro', {
+        detail: { data: disponibilidade.dataset.data, turno: disponibilidade.dataset.turno }
+      }));
+    }
+  });
+  document.getElementById('csa-agenda').addEventListener('keydown', e => {
+    if ((e.key === 'Enter' || e.key === ' ') && e.target.matches('[data-evento-id]')) {
+      e.preventDefault();
+      e.target.click();
+    }
+  });
   desenhar();
   return { EventCard, AvailabilityCard, AgendaCell, AgendaGrid, recarregar: desenhar };
 })();

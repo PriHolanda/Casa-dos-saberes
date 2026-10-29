@@ -1,1 +1,184 @@
-/* Rafael: conteúdo dos painéis laterais */
+/* Painel lateral exibido somente após a ação em um card da agenda. */
+.csa-painel[hidden] {
+  display: none;
+}
+
+.csa-painel--aberto {
+  display: flex;
+  flex: 0 0 clamp(220px, 26vw, 320px);
+  flex-direction: column;
+  gap: 16px;
+  align-self: flex-start;
+  width: clamp(220px, 26vw, 320px);
+  min-width: 0;
+  max-height: calc(100vh - 140px);
+  margin: 29px 16px 0 0;
+  overflow-y: auto;
+  padding: 20px;
+  border: 1px solid var(--csa-cinza-borda);
+  background: var(--csa-fundo-pagina);
+  box-shadow: 0 2px 8px #0002;
+  animation: csa-painel-entrar .2s ease-out;
+}
+
+@keyframes csa-painel-entrar {
+  from { opacity: 0; transform: translateX(12px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+.csa-painel__cabecalho {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  border-bottom: 1px solid var(--csa-cinza-borda);
+  padding-bottom: 12px;
+}
+
+.csa-painel__cabecalho h2 {
+  font-size: 20px;
+}
+
+.csa-painel__data-turno {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px;
+  border-radius: 5px;
+  background: #e7e7e7;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.csa-painel__cabecalho button {
+  border: 0;
+  background: transparent;
+  font-size: 26px;
+  cursor: pointer;
+}
+
+.csa-painel__status {
+  align-self: flex-start;
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.csa-painel__status--aceito {
+  color: #075d27;
+  background: #d7eddd;
+}
+
+.csa-painel__status--pendente {
+  color: #a64e00;
+  background: #ffead5;
+}
+
+.csa-painel__status--desconhecido {
+  color: var(--csa-texto);
+  background: #eee;
+}
+
+.csa-painel__dados,
+.csa-painel__formulario {
+  display: grid;
+  gap: 12px;
+}
+
+.csa-painel__campo,
+.csa-painel__formulario label {
+  display: grid;
+  gap: 5px;
+  min-width: 0;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.csa-painel__campo p {
+  min-height: 36px;
+  padding: 9px;
+  overflow-wrap: anywhere;
+  border: 1px solid var(--csa-cinza-borda);
+  border-radius: 5px;
+  background: #f3f3f3;
+  color: var(--csa-cinza-texto);
+  font-weight: 400;
+}
+
+.csa-painel__formulario input,
+.csa-painel__formulario select,
+.csa-painel__formulario textarea {
+  width: 100%;
+  min-height: 38px;
+  padding: 8px;
+  border: 1px solid var(--csa-cinza-borda);
+  border-radius: 5px;
+  background: #f7f7f7;
+  color: var(--csa-texto);
+  font: inherit;
+}
+
+.csa-painel__formulario textarea {
+  resize: vertical;
+}
+
+.csa-painel__linha {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.csa-painel__faixa-horario {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: center;
+  gap: 4px;
+}
+
+.csa-painel__faixa-horario span {
+  font-weight: 400;
+}
+
+.csa-painel__acoes {
+  display: flex;
+  gap: 8px;
+}
+
+.csa-painel__botao {
+  min-height: 42px;
+  padding: 10px 14px;
+  border: 0;
+  border-radius: 4px;
+  color: #fff;
+  font: inherit;
+  cursor: pointer;
+}
+
+.csa-painel__formulario > .csa-painel__botao {
+  width: 100%;
+}
+
+.csa-painel__botao--aprovar {
+  flex: 1;
+  background: var(--csa-verde);
+}
+
+.csa-painel__botao--negar {
+  flex: 1;
+  background: var(--csa-vermelho);
+}
+
+.csa-painel__erro {
+  color: var(--csa-vermelho);
+  font-size: 13px;
+}
+
+@media (max-width: 600px) {
+  .csa-painel--aberto {
+    flex-basis: min(320px, 42vw);
+    width: min(320px, 42vw);
+    margin-right: 8px;
+    padding: 14px;
+  }
+}

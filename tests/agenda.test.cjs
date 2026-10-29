@@ -123,6 +123,13 @@ const antes = html();
 document.dispatchEvent({ type: 'csa:evento-atualizado', detail: { id: evento.id } });
 assert.equal(html(), antes);
 const pagina = fs.readFileSync(path.join(raiz, 'pages/agenda.html'), 'utf8');
+assert.match(pagina, /<main class="csa-agenda">[\s\S]*<aside id="csa-painel" class="csa-painel" hidden><\/aside>/);
+const cssAgenda = fs.readFileSync(path.join(raiz, 'css/agenda.css'), 'utf8');
+const cssPaineis = fs.readFileSync(path.join(raiz, 'css/paineis.css'), 'utf8');
+assert.match(cssAgenda, /#csa-agenda\s*\{[^}]*width:\s*100%/);
+assert.match(cssAgenda, /\.csa-grid\s*\{[^}]*min-width:\s*100%/);
+assert.match(cssPaineis, /\.csa-painel--aberto\s*\{[^}]*flex:\s*0 0 clamp/);
+assert.match(cssPaineis, /\.csa-painel\[hidden\]\s*\{\s*display:\s*none/);
 for (const [, recurso] of pagina.matchAll(/(?:src|href)="(\.\.\/[^\"]+)"/g)) {
   assert.ok(fs.existsSync(path.resolve(raiz, 'pages', recurso)), `Recurso ausente: ${recurso}`);
 }

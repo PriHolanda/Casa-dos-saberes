@@ -43,8 +43,15 @@ compacta. Filtrar um evento não altera a variante da célula.
 real de qualquer espaço para reserva.** Não há cálculo de conflitos, união de
 registros de disponibilidade ou consulta a regras de reserva.
 
-“Adicionar Evento” e os cards continuam sem ação de clique. Cadastro e detalhes
-permanecem sob responsabilidade dos painéis.
+Ao clicar em um evento, o painel lateral exibe seus detalhes; solicitações
+pendentes podem ser aprovadas ou removidas. “Adicionar Evento” abre um formulário
+com data e turno preenchidos a partir do card selecionado. O envio cria um evento
+pendente nos mocks em memória e atualiza a grade; os dados não sobrevivem ao
+recarregamento da página. A persistência real depende da futura API.
+
+A grade ocupa toda a largura disponível enquanto o painel está fechado. Ao abrir
+detalhes ou o formulário, a agenda e o painel dividem a mesma linha do layout; o
+painel não cobre a grade.
 
 ## Integração futura
 

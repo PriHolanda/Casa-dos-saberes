@@ -81,6 +81,8 @@
 }
 
 .csa-agenda {
+    flex: 1 1 0;
+    min-width: 0;
     padding: 29px 42px;
 }
 
@@ -194,8 +196,14 @@
 
 /* Agenda (T2): estilos adicionais; fundação acima preservada. */
 .csa-agenda {
+    flex: 1 1 0;
     min-width: 0;
     max-width: 100%;
+}
+
+#csa-agenda {
+    --csa-grade-turno: clamp(64px, 10vw, 99px);
+    width: 100%;
 }
 
 .csa-alternador [data-visao] {
@@ -209,8 +217,6 @@
 }
 
 #csa-agenda {
-    --csa-grade-largura: 784px;
-    --csa-grade-turno: 99px;
     --csa-grade-altura-turno: 274px;
     --csa-card-raio: 9px;
     --csa-card-padding: 6px;
@@ -218,8 +224,8 @@
     --csa-disponibilidade-fundo: #e3e3e3;
     --csa-disponibilidade-borda: #c6c6c6;
     --csa-disponibilidade-icone: #bfbfbf;
-    width: var(--csa-grade-largura);
-    max-width: 100%;
+    width: 100%;
+    min-width: 0;
     margin-top: 10px;
     overflow-x: auto;
     border: 1px solid var(--csa-cinza-borda);
@@ -228,7 +234,7 @@
 
 .csa-grid {
     width: 100%;
-    min-width: calc(var(--csa-grade-largura) - 2px);
+    min-width: 100%;
     table-layout: fixed;
     border-collapse: collapse;
     color: var(--csa-texto);
@@ -304,7 +310,7 @@
 
 .csa-disponibilidade__titulo { font-size: 12px; font-weight: 500; line-height: 1.2; letter-spacing: .3px; }
 .csa-disponibilidade__icone { display: block; width: 22px; height: 22px; color: var(--csa-cinza-texto); margin: 12px auto 20px; }
-.csa-disponibilidade__adicionar { background: var(--csa-fundo-pagina); border: 1px dashed var(--csa-disponibilidade-borda); border-radius: 4px; min-height: 62px; padding: 7px 3px; color: var(--csa-cinza-texto); }
+.csa-disponibilidade__adicionar { width: 100%; background: var(--csa-fundo-pagina); border: 1px dashed var(--csa-disponibilidade-borda); border-radius: 4px; min-height: 62px; padding: 7px 3px; color: var(--csa-cinza-texto); font-family: inherit; cursor: pointer; }
 .csa-disponibilidade__adicionar > span { display: block; width: 20px; height: 20px; margin: 0 auto 5px; border-radius: 50%; background: var(--csa-disponibilidade-icone); color: var(--csa-fundo-pagina); font-size: 16px; line-height: 20px; }
 .csa-disponibilidade__adicionar p { font-size: 11px; line-height: 1.2; letter-spacing: .6px; }
 .csa-disponibilidade--compacta { padding: 0; background: transparent; }
