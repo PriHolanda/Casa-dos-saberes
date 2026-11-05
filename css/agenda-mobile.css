@@ -1,4 +1,4 @@
-/* Fora do media query: o botão não aparece no desktop */
+/* Fora do media query: elementos só do mobile (a lista é gerada por js/semanal-mobile.js) */
 .csa-menu-btn {
   display: none;
   background: none;
@@ -7,8 +7,12 @@
   cursor: pointer;
 }
 
+.csa-semanal-mobile {
+  display: none;
+}
+
 @media (max-width: 768px) {
-  /* Cabeçalho */
+  /* Cabeçalho e menu lateral */
   .csa-conteiner {
     padding: 10px 16px;
   }
@@ -24,8 +28,6 @@
   .csa-barra {
     overflow: hidden;
   }
-
-  /* Sidebar vira menu lateral */
   .csa-sidebar {
     position: fixed;
     top: 0;
@@ -39,15 +41,13 @@
     transform: none;
   }
 
-  /* Conteúdo */
+  /* Conteúdo e barra de controle */
   .csa-agenda {
     padding: 16px;
   }
   .csa-titulo {
     font-size: 24px;
   }
-
-  /* Barra de controle em grade de 2 colunas */
   .csa-barra-controle {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -72,11 +72,97 @@
     font-size: 14px;
   }
 
-  #csa-agenda:has(.csa-grid--diaria) {
+  /* Semanal: esconde a tabela e mostra a lista de dias */
+  #csa-agenda {
     border: 0;
     overflow: visible;
   }
+  .csa-grid:not(.csa-grid--diaria) {
+    display: none;
+  }
+  .csa-semanal-mobile {
+    display: block;
+    margin-top: 10px;
+  }
 
+  .csa-dia {
+    margin-bottom: 8px;
+    border: 1px solid var(--csa-cinza-borda);
+    border-radius: 5px;
+    background: var(--csa-fundo-pagina);
+  }
+  .csa-dia__cabecalho {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    padding: 14px 12px;
+    background: none;
+    border: 0;
+    text-align: left;
+    font: inherit;
+    color: var(--csa-texto);
+    cursor: pointer;
+  }
+  .csa-dia__titulo {
+    flex: 1;
+  }
+  .csa-dia__titulo strong {
+    display: block;
+    font-size: 16px;
+  }
+  .csa-dia__titulo span {
+    font-size: 13px;
+    color: var(--csa-cinza-texto);
+  }
+  .csa-dia__pendente {
+    padding: 2px 8px;
+    border-radius: 999px;
+    font-size: 12px;
+    background: color-mix(in srgb, var(--csa-laranja) 20%, var(--csa-fundo-pagina));
+    color: #963c00; /* mesmo tom do status pendente dos cards (agenda.css) */
+  }
+  .csa-dia__seta {
+    flex-shrink: 0;
+    width: 8px;
+    height: 8px;
+    margin: 0 4px;
+    border-right: 2px solid currentColor;
+    border-bottom: 2px solid currentColor;
+    transform: rotate(45deg);
+    transition: transform 0.2s;
+  }
+  .csa-dia__cabecalho[aria-expanded="true"] .csa-dia__seta {
+    transform: rotate(-135deg);
+  }
+  .csa-dia__corpo {
+    padding: 0 12px 12px;
+  }
+  .csa-dia__turno {
+    margin-bottom: 12px;
+  }
+  .csa-dia__turno-nome {
+    margin: 4px 0 8px;
+    font-weight: 600;
+  }
+
+  /* o design mostra só o botão "Adicionar Evento", sem título nem ícone */
+  .csa-semanal-mobile .csa-event-card {
+    max-width: none;
+  }
+  .csa-semanal-mobile .csa-disponibilidade {
+    background: transparent;
+    padding: 0;
+  }
+  .csa-semanal-mobile .csa-disponibilidade__titulo,
+  .csa-semanal-mobile .csa-disponibilidade__icone {
+    display: none;
+  }
+  .csa-semanal-mobile .csa-disponibilidade__adicionar {
+    min-height: 80px;
+  }
+
+  /* Diária: a tabela vira lista de seções */
   .csa-grid--diaria,
   .csa-grid--diaria tbody,
   .csa-grid--diaria tr,
@@ -85,7 +171,6 @@
     display: block;
     border: 0;
   }
-
   .csa-grid.csa-grid--diaria {
     min-width: 0;
   }
@@ -93,7 +178,7 @@
     width: auto;
   }
 
-  /* O dia já aparece na barra de data: esconde o thead só visualmente */
+  /* thead escondido só visualmente: o dia já aparece na barra de data */
   .csa-grid--diaria thead {
     position: absolute;
     width: 1px;
@@ -102,7 +187,6 @@
     clip-path: inset(50%);
   }
 
-  /* Título do turno com a seta */
   .csa-grid--diaria tbody th {
     display: flex;
     justify-content: space-between;
@@ -122,8 +206,6 @@
     transform: rotate(45deg);
     transition: transform 0.2s;
   }
-
-  /* Cards na largura toda */
   .csa-grid--diaria .csa-grid__celula {
     height: auto;
     padding: 0 0 16px;
@@ -144,7 +226,7 @@
     min-height: 80px;
   }
 
-  /* Turno recolhido: precisa vir DEPOIS das regras acima */
+  /* precisa vir depois das regras de display acima, senão não esconde */
   .csa-turno--fechado th::after {
     transform: rotate(-45deg);
   }
@@ -152,7 +234,7 @@
     display: none;
   }
 
-  /* Painel lateral vira tela cheia (pop-up) */
+  /* Painel vira folha inferior; --csa-painel-topo é definida pelo js/menu-mobile.js */
   #csa-painel:not([hidden]) {
     position: fixed;
     top: auto;
@@ -168,5 +250,20 @@
     z-index: 200;
     border-radius: 16px 16px 0 0;
     box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.15);
+  }
+
+  /* setas da data com a mesma altura da caixa (Diária e Semanal) */
+  .csa-navegacao {
+    align-items: stretch;
+  }
+  .csa-data {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    flex: 1;
+    padding: 8px 6px;
+    font-size: 14px;
+    text-align: center;
   }
 }
