@@ -6,7 +6,8 @@ botaoMenu.addEventListener("click", () => {
   botaoMenu.setAttribute("aria-expanded", aberta);
 });
 
-// IIFE para não colidir com variáveis dos outros scripts
+// Define --csa-painel-topo (usada no agenda-mobile.css) para o painel abrir
+// logo abaixo do cabeçalho. IIFE para não colidir com variáveis de outros scripts.
 (() => {
   const painel = document.getElementById("csa-painel");
   const cabecalho = document.querySelector(".csa-header");
@@ -14,7 +15,7 @@ botaoMenu.addEventListener("click", () => {
 
   function ajustarTopoDoPainel() {
     if (painel.hidden) return;
-    window.scrollTo(0, 0); // garante que o cabeçalho esteja visível
+    window.scrollTo(0, 0); // garante que o cabeçalho esteja visível ao medir
     const topo = Math.max(0, cabecalho.getBoundingClientRect().bottom);
     document.documentElement.style.setProperty(
       "--csa-painel-topo",
