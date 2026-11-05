@@ -1,0 +1,172 @@
+/* Fora do media query: o botão não aparece no desktop */
+.csa-menu-btn {
+  display: none;
+  background: none;
+  border: 0;
+  font-size: 28px;
+  cursor: pointer;
+}
+
+@media (max-width: 768px) {
+  /* Cabeçalho */
+  .csa-conteiner {
+    padding: 10px 16px;
+  }
+  .csa-img-logo {
+    width: 160px;
+  }
+  .csa-header-usuario {
+    display: none;
+  }
+  .csa-menu-btn {
+    display: block;
+  }
+  .csa-barra {
+    overflow: hidden;
+  }
+
+  /* Sidebar vira menu lateral */
+  .csa-sidebar {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 100;
+    transform: translateX(-100%);
+    transition: transform 0.25s;
+  }
+  .csa-sidebar--aberta {
+    transform: none;
+  }
+
+  /* Conteúdo */
+  .csa-agenda {
+    padding: 16px;
+  }
+  .csa-titulo {
+    font-size: 24px;
+  }
+
+  /* Barra de controle em grade de 2 colunas */
+  .csa-barra-controle {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+  .csa-alternador,
+  .csa-navegacao {
+    grid-column: span 2;
+  }
+  .csa-alternador button {
+    flex: 1;
+  }
+  .csa-data {
+    flex: 1;
+    text-align: center;
+  }
+  .csa-legenda {
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .csa-legenda li {
+    font-size: 14px;
+  }
+
+  #csa-agenda:has(.csa-grid--diaria) {
+    border: 0;
+    overflow: visible;
+  }
+
+  .csa-grid--diaria,
+  .csa-grid--diaria tbody,
+  .csa-grid--diaria tr,
+  .csa-grid--diaria th,
+  .csa-grid--diaria td {
+    display: block;
+    border: 0;
+  }
+
+  .csa-grid.csa-grid--diaria {
+    min-width: 0;
+  }
+  .csa-grid.csa-grid--diaria tr > :first-child {
+    width: auto;
+  }
+
+  /* O dia já aparece na barra de data: esconde o thead só visualmente */
+  .csa-grid--diaria thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+  }
+
+  /* Título do turno com a seta */
+  .csa-grid--diaria tbody th {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 4px;
+    text-align: left;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .csa-grid--diaria tbody th::after {
+    content: "";
+    width: 8px;
+    height: 8px;
+    border-right: 2px solid currentColor;
+    border-bottom: 2px solid currentColor;
+    transform: rotate(45deg);
+    transition: transform 0.2s;
+  }
+
+  /* Cards na largura toda */
+  .csa-grid--diaria .csa-grid__celula {
+    height: auto;
+    padding: 0 0 16px;
+  }
+  .csa-grid--diaria .csa-event-card {
+    max-width: none;
+  }
+  .csa-grid--diaria .csa-disponibilidade {
+    max-width: none;
+    background: transparent;
+    padding: 0;
+  }
+  .csa-grid--diaria .csa-disponibilidade__titulo,
+  .csa-grid--diaria .csa-disponibilidade__icone {
+    display: none;
+  }
+  .csa-grid--diaria .csa-disponibilidade__adicionar {
+    min-height: 80px;
+  }
+
+  /* Turno recolhido: precisa vir DEPOIS das regras acima */
+  .csa-turno--fechado th::after {
+    transform: rotate(-45deg);
+  }
+  .csa-turno--fechado td {
+    display: none;
+  }
+
+  /* Painel lateral vira tela cheia (pop-up) */
+  #csa-painel:not([hidden]) {
+    position: fixed;
+    top: auto;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: auto;
+    max-width: none;
+    max-height: calc(100dvh - var(--csa-painel-topo, 0px));
+    box-sizing: border-box;
+    overflow-y: auto;
+    z-index: 200;
+    border-radius: 16px 16px 0 0;
+    box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.15);
+  }
+}
