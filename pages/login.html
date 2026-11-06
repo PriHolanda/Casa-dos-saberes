@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Entrar | Casa dos Saberes</title>
+  <link rel="stylesheet" href="../css/base.css">
+  <link rel="stylesheet" href="../css/auth.css">
+  <script src="../js/api.js" defer></script>
+  <script src="../js/auth.js" defer></script>
+</head>
+<body class="csa-auth">
+  <aside class="csa-auth__marca">
+    <img src="../assets/csca-gov.svg" alt="Casa dos Saberes e Governo do Ceará">
+    <div><p class="csa-auth__etiqueta">CASA DOS SABERES CEGO ADERALDO</p><h1>Um espaço para encontros, cultura e conhecimento.</h1><p>Organize a programação e acompanhe os eventos da nossa Casa.</p></div>
+    <img class="csa-auth__assinatura" src="../assets/cego-aderaldo.svg" alt="Cego Aderaldo">
+  </aside>
+  <main class="csa-auth__conteudo">
+    <div class="csa-auth__cartao">
+      <p class="csa-auth__etiqueta">AGENDA CASA DOS SABERES</p>
+      <h2 id="csa-auth-titulo">Bem-vindo de volta</h2>
+      <p id="csa-auth-descricao">Entre na sua conta para acessar a agenda.</p>
+      <form id="csa-auth-form">
+        <label id="csa-nome-campo" hidden>Nome completo<input name="nome" autocomplete="name" maxlength="255"></label>
+        <label>E-mail<input name="email" type="email" autocomplete="username" required></label>
+        <label>Senha<input name="senha" type="password" autocomplete="current-password" required maxlength="128"></label>
+        <label id="csa-confirmacao-campo" hidden>Confirme a senha<input name="confirmacao" type="password" autocomplete="new-password" maxlength="128"></label>
+        <p id="csa-auth-mensagem" role="alert" hidden></p>
+        <button class="csa-auth__principal" type="submit" id="csa-auth-enviar">Entrar</button>
+      </form>
+      <button class="csa-auth__alternar" type="button" id="csa-auth-alternar">Não tem conta? Criar conta</button>
+    </div>
+  </main>
+</body>
+</html>
