@@ -105,6 +105,18 @@ agenda-casa-saberes/
 
 Não é preciso instalar o WordPress para desenvolver.
 
+### Iniciar pelo terminal
+
+Com Python 3 instalado, execute na raiz do projeto:
+
+```bash
+./scripts/iniciar.sh
+```
+
+Abra http://127.0.0.1:8000/pages/agenda.html. Encerre com `Ctrl+C`.
+Para executar os testes com Node.js, use `./scripts/testar.sh`.
+Veja outras opções em [scripts/README.md](scripts/README.md).
+
 ---
 
 ## Como as partes se conectam
