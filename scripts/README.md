@@ -1,36 +1,52 @@
-# Scripts do projeto
+# Iniciar o sistema integrado
 
-Execute os comandos a partir da raiz do repositório. Os scripts também funcionam a partir de outra pasta, usando o caminho completo.
+Requisitos: Python 3 para o servidor do frontend; Node.js para os testes. O frontend não exige instalação de pacotes.
 
-## Iniciar o sistema
+## 1. Iniciar Keycloak e backend
 
-Requer Python 3. Não precisa instalar dependências.
+No repositório do backend, prepare o `.env` e as dependências conforme sua documentação. Inicie o Keycloak:
 
 ```bash
+cd ~/programing/AgendamentoCasaDosSaberes
+./scripts/start-keycloak.sh
+```
+
+Esse comando também inicia o banco do Keycloak; não é necessário executar `start-db.sh` separadamente. Aguarde a inicialização do Keycloak.
+
+No mesmo terminal, inicie a API e deixe-a em execução:
+
+```bash
+cd ~/programing/AgendamentoCasaDosSaberes
+./scripts/start-back.sh
+```
+
+A API usa a porta **8000** e o Keycloak usa **8080**. Encerre servidores antigos do frontend que estejam ocupando a porta 8000.
+
+## 2. Iniciar o frontend
+
+```bash
+cd ~/programing/Casa-dos-saberes
 ./scripts/iniciar.sh
 ```
 
-Abra http://127.0.0.1:8000/ no navegador: a página inicial encaminha para a Agenda Administrativa. Para encerrar o servidor, pressione `Ctrl+C` no terminal.
+Abra **http://127.0.0.1:3000/**. A entrada leva ao login, com opção de criar conta. Após criar a conta, entre com e-mail e senha para acessar a agenda.
 
-Páginas disponíveis:
+Use um segundo terminal para o frontend. Na inicialização, o script verifica se o endereço da API contém as rotas esperadas e avisa quando ela não está disponível. A verificação não autentica no Keycloak. Para consultar os comandos novamente, execute `./scripts/iniciar.sh --help`.
 
-- `/pages/agenda.html`: sistema com agenda e painéis laterais de eventos.
-- `/pages/componentes.html`: vitrine de componentes para desenvolvimento.
-
-Para escolher outra porta:
+O servidor encaminha `/api/*` ao backend. Não é necessário configurar CORS para esse modo de execução. Para personalizar portas:
 
 ```bash
-PORT=8080 ./scripts/iniciar.sh
+API_URL=http://127.0.0.1:8001 PORT=3001 ./scripts/iniciar.sh
 ```
 
-O servidor atende apenas no computador local. O sistema utiliza os dados de exemplo do repositório.
+Use `Ctrl+C` para encerrar cada servidor. A vitrine de componentes continua em `/pages/componentes.html`.
 
-Se a porta estiver em uso, encerre a execução anterior com `Ctrl+C` ou use `PORT=8080 ./scripts/iniciar.sh`.
-
-## Executar os testes
-
-Requer Node.js.
+## Testes
 
 ```bash
 ./scripts/testar.sh
 ```
+
+Os testes verificam calendário, adaptação dos schemas, chamadas HTTP, erros e sessão expirada. Não precisam de backend ativo.
+
+Consulte [a integração e os ajustes necessários no backend](../docs/integracao-backend.md).

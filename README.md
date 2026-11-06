@@ -105,17 +105,17 @@ agenda-casa-saberes/
 
 Não é preciso instalar o WordPress para desenvolver.
 
-### Iniciar pelo terminal
+### Iniciar o sistema integrado
 
-Com Python 3 instalado, execute na raiz do projeto:
+Inicie o Keycloak e o FastAPI no repositório do backend. Em seguida, execute aqui:
 
 ```bash
 ./scripts/iniciar.sh
 ```
 
-Abra http://127.0.0.1:8000/pages/agenda.html. Encerre com `Ctrl+C`.
-Para executar os testes com Node.js, use `./scripts/testar.sh`.
-Veja outras opções em [scripts/README.md](scripts/README.md).
+Abra http://127.0.0.1:3000/ para entrar ou criar uma conta. Após o login, a agenda usa os controles do protótipo para consultar, cadastrar e decidir sobre eventos. A aprovação persistente depende do [ajuste de status no backend](docs/ajustes-backend-mvp.md).
+
+Veja o [passo a passo dos serviços](scripts/README.md) e os [contratos e ajustes necessários no backend](docs/integracao-backend.md). Para executar os testes com Node.js, use `./scripts/testar.sh`.
 
 ---
 
