@@ -337,3 +337,8 @@
     .csa-agenda { flex: 1; padding: 29px 20px; }
     .csa-barra-controle { flex-wrap: wrap; }
 }
+
+@media print {
+  .csa-header, .csa-sidebar, .csa-barra-controle, .csa-painel, .csa-disponibilidade { display: none !important; }
+  .csa-layout, .csa-agenda { display: block; width: 100%; margin: 0; }
+}

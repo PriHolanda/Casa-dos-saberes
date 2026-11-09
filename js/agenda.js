@@ -9,7 +9,7 @@ const csaAgenda = (() => {
   const somarDias = modelo.somarDias;
   function periodo() {
     const inicio = estado.visao === 'semanal' ? somarDias(estado.data, -((lerData(estado.data).getUTCDay() + 6) % 7)) : estado.data;
-    return Array.from({ length: estado.visao === 'semanal' ? 6 : 1 }, (_, i) => somarDias(inicio, i));
+    return Array.from({ length: estado.visao === 'semanal' ? (csaDadosAgenda.diasSemana || 6) : 1 }, (_, i) => somarDias(inicio, i));
   }
   function EventCard(evento, espaco) {
     if (!espaco) return '';

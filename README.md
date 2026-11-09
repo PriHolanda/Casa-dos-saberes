@@ -28,6 +28,7 @@ Nesta tela o administrador:
 ## Tecnologias
 
 - **HTML, CSS e JavaScript puro** (sem frameworks e sem etapa de build)
+- **FastAPI em Python** no repositório separado `AgendamentoCasaDosSaberes`; o navegador chama a API diretamente
 - **VS Code** como editor, com a extensão **Live Server**
 - **Git/GitHub** para versionamento
 
@@ -52,7 +53,10 @@ agenda-casa-saberes/
 │   └── paineis.css          T3   conteúdo dos painéis laterais
 ├── js/
 │   ├── utilitarios.js       T1   funções e tabelas de apoio (datas, nomes de espaços, proteção de HTML)
-│   ├── dados-exemplo.js     todos  lista de eventos de exemplo (mock)
+│   ├── config.js            endereço público da API
+│   ├── api.js               login, sessão e requisições HTTP ao FastAPI
+│   ├── dados-api.js         adapta e consulta os eventos reais da API
+│   ├── dados-exemplo.js     fixture histórica dos testes do calendário
 │   ├── barra-controle.js    T1   Diária/Semanal, setas de data e filtro de status
 │   ├── agenda.js            T2   desenha a grade e os cards
 │   └── paineis.js           T3   abre/fecha os painéis e monta o conteúdo
@@ -99,11 +103,23 @@ agenda-casa-saberes/
    ```
 
 2. Abra a pasta no VS Code.
-3. Abra `pages/agenda.html`, clique com o botão direito e escolha **Open with Live Server**.
-4. Você já deve ver a agenda com os eventos de exemplo. Clique em um card para abrir o painel lateral.
+3. Para trabalhar somente no visual, abra `pages/componentes.html` com Live Server. Para login e agenda reais, siga [Iniciar o sistema integrado](#iniciar-o-sistema-integrado).
+4. No sistema integrado, entre ou crie uma conta; a agenda carrega os eventos do FastAPI.
 5. Crie sua branch antes de começar a trabalhar (veja [Fluxo de trabalho com Git](#fluxo-de-trabalho-com-git)).
 
 Não é preciso instalar o WordPress para desenvolver.
+
+### Iniciar o sistema integrado
+
+Inicie o Keycloak e o FastAPI no repositório do backend. Em seguida, execute aqui:
+
+```bash
+./scripts/iniciar.sh
+```
+
+Abra http://127.0.0.1:3000/ para entrar ou criar uma conta. Após o login, a agenda usa os controles do protótipo para consultar, cadastrar e decidir sobre eventos. A aprovação persistente depende do [ajuste de status no backend](docs/ajustes-backend-mvp.md).
+
+Veja o [passo a passo dos serviços](scripts/README.md) e os [contratos e ajustes necessários no backend](docs/integracao-backend.md). Para executar os testes com Node.js, use `./scripts/testar.sh`.
 
 ---
 
@@ -155,7 +171,7 @@ Os scripts compartilham o mesmo espaço, então **dê nomes específicos às sua
    ```
 
 3. **Componentes reutilizáveis.** Funções que recebem os dados por parâmetro e devolvem o HTML, sem textos fixos dentro.
-4. **Dados de exemplo (mock).** Enquanto o back não definir a API, os dados vêm de `js/dados-exemplo.js`. Quando a API existir, o mock é trocado sem mexer nos componentes.
+4. **Dados da agenda.** A tela real usa `js/dados-api.js` para consultar o FastAPI e adaptar os schemas aos componentes. `js/dados-exemplo.js` fica como fixture histórica dos testes do calendário.
 5. **Escapar textos vindos de dados.** Use `csaEscapar()` ao colocar qualquer texto dentro de `innerHTML`.
 6. **Conteúdo separado do container nos painéis.** No desktop, os painéis são laterais; no mobile viram pop-ups. Por isso o conteúdo é montado por funções (`painelConteudo...`) independentes do container (`#csa-painel`).
 7. **Seguir o design fielmente.** Se algo estiver inconsistente, anote na tarefa e pergunte ao design, sem inventar.
@@ -223,12 +239,12 @@ O site é de outro desenvolvedor, hospedado na Hostinger, e o plano é gratuito 
 ## Pendências e pontos em aberto
 
 - [ ] Confirmar com o tech lead o fluxo de integração (LocalWP + plugin com shortcode).
-- [ ] Definir **onde o back em Python vai rodar** e como será a API (hospedagem compartilhada costuma não suportar Python).
+- [ ] Definir **onde o back em Python vai rodar em produção** e o domínio HTTPS da API (a integração local já usa FastAPI diretamente).
 - [ ] Definir o **login do administrador**: usuário do WordPress ou sistema próprio do back.
 - [ ] Design: exportar logos, ícones, ilustração e faixa decorativa; informar as fontes e os valores exatos de cor.
 - [ ] Design: corrigir inconsistências entre as telas. Cadastrar Evento não tem celular, classificação indicativa nem anexo e usa "Responsável" onde os detalhes usam "Solicitante"; alguns cards têm horários incoerentes; as datas da semana no mockup (Sex e Sáb) repetem 24/09 e 25/09; o título da semana diz "21 a 27" mas não há coluna de domingo.
 - [ ] Combinar com o responsável pelo site o aviso sobre o plugin *PRO Elements* (não é o Elementor Pro oficial).
-- [ ] Ligar o botão Confirmar do cadastro, Editar Evento e Cancelar Evento à API do back (hoje só registram no console ou mudam o status no mock).
+- [x] Ligar login, cadastro, consulta, criação, edição, aprovação e exclusão à API do backend.
 
 ---
 

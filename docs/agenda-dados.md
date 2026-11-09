@@ -1,5 +1,8 @@
 # Dados e componentes da agenda
 
+> Documento histórico da versão com mocks, mantida nos testes de calendário.
+> A página atual usa a API real; consulte [Integração com o backend](integracao-backend.md).
+
 A implementação usa HTML, CSS e JavaScript puro, com consulta síncrona aos
 mocks. Não há API, persistência, estados de requisição ou confirmação de reservas.
 
