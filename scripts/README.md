@@ -20,7 +20,7 @@ cd ~/programing/AgendamentoCasaDosSaberes
 ./scripts/start-back.sh
 ```
 
-A API usa a porta **8000** e o Keycloak usa **8080**. Encerre servidores antigos do frontend que estejam ocupando a porta 8000.
+A API usa a porta **8000** e o Keycloak usa **8080**. Se a API já estiver em outra porta, configure `API_URL` ao iniciar o frontend.
 
 ## 2. Iniciar o frontend
 
@@ -33,11 +33,15 @@ Abra **http://127.0.0.1:3000/**. A entrada leva ao login, com opção de criar c
 
 Use um segundo terminal para o frontend. Na inicialização, o script verifica se o endereço da API contém as rotas esperadas e avisa quando ela não está disponível. A verificação não autentica no Keycloak. Para consultar os comandos novamente, execute `./scripts/iniciar.sh --help`.
 
-O servidor encaminha `/api/*` ao backend. Não é necessário configurar CORS para esse modo de execução. Para personalizar portas:
+O navegador chama o backend diretamente, sem proxy `/api`. O backend precisa permitir `http://127.0.0.1:3000` e `http://localhost:3000` em seu CORS. `API_URL` configura o endereço que o JavaScript usará; `PORT` configura a porta do frontend.
+
+Para personalizar portas:
 
 ```bash
 API_URL=http://127.0.0.1:8001 PORT=3001 ./scripts/iniciar.sh
 ```
+
+Ao usar `PORT=3001`, adicione `http://127.0.0.1:3001` à variável `CORS_ORIGINS` do backend e reinicie a API. Para Live Server, faça o mesmo com a origem correspondente e ajuste o endereço da API em `js/config.js` se necessário.
 
 Use `Ctrl+C` para encerrar cada servidor. A vitrine de componentes continua em `/pages/componentes.html`.
 

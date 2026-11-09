@@ -15,32 +15,12 @@ O pop-up é inteiramente do frontend e não exige nenhuma mudança ou rota de co
 
 Os detalhes do evento oferecem ações para alterar e deletar eventos já criados.
 
-## O que falta
+## Estado da integração
 
-O backend consultado já protege PUT/DELETE e valida o intervalo e a sobreposição dos eventos. Faltam os campos `status` e `celular` no schema, modelo e banco:
+O frontend já usa a API real para login, cadastro, listagem, criação, edição, aprovação e exclusão. O backend atual define `status` (`pendente` ou `aceito`) e `celular` nos schemas e no modelo. As rotas existentes bastam; o navegador chama o FastAPI diretamente.
 
-- `status`: `pendente` ou `aceito`, com padrão `pendente`. Necessário para os filtros, badges e aprovação persistente.
-- `celular`: texto opcional, para o campo já existente nos detalhes. O formulário original não coleta celular; se não houver dado vindo da API, aparece “Não informado”.
+O backend do projeto usa PostgreSQL. Se a tabela `eventos` já existia antes de `status` e `celular` entrarem no modelo, é necessário adicionar essas colunas ao banco com uma migração PostgreSQL, preservando os registros existentes e atribuindo `pendente` aos eventos antigos. `Base.metadata.create_all()` não atualiza tabelas já criadas. Faça a migração no repositório do backend, seguindo o procedimento de backup e manutenção adotado pelo projeto.
 
-Enquanto `status` não estiver disponível, os eventos são exibidos como pendentes por compatibilidade com o MVP. Aprovar mostra uma mensagem de recurso indisponível, sem simular sucesso. Criação e recusa/exclusão continuam utilizando as rotas atuais.
+O script `scripts/ajustar-backend-mvp.py` é uma ferramenta antiga para um banco SQLite local. Não o use contra o backend atual, que usa PostgreSQL.
 
-O catálogo ainda não possui rota própria: confirmar os IDs 1 = Auditório, 2 = Quintal, 3 = Salas Expositivas e 4 = Varanda. O bloqueio de sobreposição atual vale para a agenda toda, inclusive espaços diferentes; se o cliente permitir simultaneidade entre espaços, essa regra precisa ser ajustada no serviço do backend.
-
-## Script para aplicar por conta própria
-
-O arquivo `scripts/ajustar-backend-mvp.py` está neste repositório do frontend. As alterações não foram aplicadas ao seu backend; somente a prévia foi conferida. Primeiro confira a prévia:
-
-```bash
-cd ~/programing/Casa-dos-saberes
-python3 scripts/ajustar-backend-mvp.py ~/programing/AgendamentoCasaDosSaberes
-```
-
-Encerre a API com `Ctrl+C` e aplique:
-
-```bash
-python3 scripts/ajustar-backend-mvp.py ~/programing/AgendamentoCasaDosSaberes --aplicar
-```
-
-O script preserva o restante dos arquivos, cria um backup ao lado do repositório do backend e adiciona as colunas ao SQLite existente sem apagar eventos. Se o banco ainda não existir, o modelo atualizado cria as colunas no próximo início da API. Eventos antigos recebem `pendente`; não presume aprovação. O script pode ser repetido sem duplicar os campos. Se encontrar definições incompatíveis, pede revisão manual.
-
-Depois reinicie `./scripts/start-back.sh` no backend e recarregue a agenda. GET e POST permanecem públicos; PUT e DELETE continuam usando a proteção já implementada. Nenhuma nova rota é exigida.
+O catálogo ainda não possui rota própria: os IDs usados pelo frontend são 1 = Auditório, 2 = Quintal, 3 = Salas Expositivas e 4 = Varanda. O backend precisa permitir a origem do frontend em CORS; veja [as instruções de integração](integracao-backend.md).

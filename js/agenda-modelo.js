@@ -1,4 +1,4 @@
-// Datas civis dos mocks: YYYY-MM-DDTHH:mm[:ss], sem Z ou offset.
+// Datas civis da API: YYYY-MM-DDTHH:mm[:ss], sem Z ou offset.
 // UTC é usado apenas como calendário para evitar depender do fuso do navegador.
 const csaAgendaModelo = (() => {
   const status = {

@@ -1,4 +1,5 @@
 const csaApi = (() => {
+  const baseUrl = (globalThis.csaConfig?.apiUrl || 'http://127.0.0.1:8000').replace(/\/+$/, '');
   const chave = 'csa-sessao';
   function sessao() {
     try { return JSON.parse(sessionStorage.getItem(chave)); } catch { return null; }
@@ -9,7 +10,7 @@ const csaApi = (() => {
     if (autenticado && (!atual || atual.expira <= Date.now())) { sair(); throw new Error('Sua sessão expirou. Entre novamente.'); }
     let resposta;
     try {
-      resposta = await fetch(`/api${caminho}`, {
+      resposta = await fetch(`${baseUrl}${caminho}`, {
         method: metodo,
         headers: { ...(dados ? { 'Content-Type': 'application/json' } : {}), ...(autenticado ? { Authorization: `Bearer ${atual.token}` } : {}) },
         ...(dados ? { body: JSON.stringify(dados) } : {})

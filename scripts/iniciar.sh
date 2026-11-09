@@ -13,9 +13,11 @@ Antes, no repositório AgendamentoCasaDosSaberes, execute:
   ./scripts/start-back.sh
 
 Este script inicia o frontend em http://127.0.0.1:3000/.
-A API deve estar em http://127.0.0.1:8000; o Keycloak usa a porta 8080.
+O navegador chama diretamente a API em http://127.0.0.1:8000.
+O Keycloak usa a porta 8080. O backend precisa permitir a origem do frontend via CORS.
 
-Para usar outras portas:
+API_URL define o endereço que o navegador usa para chamar o backend.
+Para usar outras portas (adicione a nova origem ao CORS_ORIGINS do backend):
   API_URL=http://127.0.0.1:8001 PORT=3001 ./scripts/iniciar.sh
 
 Encerre o frontend com Ctrl+C.

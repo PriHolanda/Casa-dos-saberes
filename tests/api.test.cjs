@@ -3,17 +3,17 @@ const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const vm = require('node:vm');
 const path = require('node:path');
-function ambiente(responder) {
+function ambiente(responder, config) {
   const itens = new Map();
   const chamadas = [];
   const redirecionamentos = [];
   const ctx = vm.createContext({
-    console, Date, Intl,
+    console, Date, Intl, csaConfig: config,
     sessionStorage: { getItem: chave => itens.get(chave), setItem: (chave, valor) => itens.set(chave, valor), removeItem: chave => itens.delete(chave) },
     location: { replace: url => redirecionamentos.push(url) },
     fetch: async (url, opcoes) => { chamadas.push({ url, ...opcoes }); return responder(url, opcoes); }
   });
-  for (const nome of ['api.js', 'agenda-modelo.js', 'dados-api.js']) vm.runInContext(fs.readFileSync(path.join(__dirname, '../js', nome), 'utf8'), ctx);
+  for (const nome of ['config.js', 'api.js', 'agenda-modelo.js', 'dados-api.js']) vm.runInContext(fs.readFileSync(path.join(__dirname, '../js', nome), 'utf8'), ctx);
   return { ctx, chamadas, itens, redirecionamentos, rodar: codigo => vm.runInContext(codigo, ctx) };
 }
 const resposta = (corpo, status = 200) => ({ ok: status < 400, status, json: async () => corpo });
@@ -22,9 +22,25 @@ function autenticar(a) { a.itens.set('csa-sessao', JSON.stringify({ token: 'toke
 test('login usa o contrato real e busca o perfil com Bearer', async () => {
   const a = ambiente(url => resposta(url.endsWith('/login') ? { access_token: 'abc', expires_in: 60 } : { nome: 'Maria' }));
   await a.rodar("csaApi.entrar('maria@example.com', 'senha-segura')");
+  assert.equal(a.chamadas[0].url, 'http://127.0.0.1:8000/usuarios/login');
   assert.deepEqual(JSON.parse(a.chamadas[0].body), { email: 'maria@example.com', senha: 'senha-segura' });
-  assert.equal(a.chamadas[1].url, '/api/usuarios/me');
+  assert.equal(a.chamadas[1].url, 'http://127.0.0.1:8000/usuarios/me');
   assert.equal(a.chamadas[1].headers.Authorization, 'Bearer abc');
+});
+test('endereço configurado aceita subcaminho e remove barras finais sem usar o proxy', async () => {
+  const a = ambiente(() => resposta({}), { apiUrl: 'https://api.example.com/v1///' });
+  await a.rodar("csaApi.requisitar('/usuarios', { metodo: 'POST', dados: { nome: 'Maria' }, autenticado: false })");
+  autenticar(a);
+  await a.rodar("csaApi.requisitar('/eventos/7', { metodo: 'PUT', dados: { titulo: 'Oficina' } })");
+  await a.rodar("csaApi.requisitar('/eventos/7', { metodo: 'DELETE' })");
+  assert.deepEqual(a.chamadas.map(chamada => chamada.url), [
+    'https://api.example.com/v1/usuarios',
+    'https://api.example.com/v1/eventos/7',
+    'https://api.example.com/v1/eventos/7'
+  ]);
+  assert.equal(a.chamadas[1].headers.Authorization, 'Bearer token-teste');
+  assert.equal(a.chamadas[1].headers['Content-Type'], 'application/json');
+  assert.equal(a.chamadas[2].headers.Authorization, 'Bearer token-teste');
 });
 test('sessão expirada não envia operação e retorna ao login', async () => {
   const a = ambiente(() => resposta({}));
