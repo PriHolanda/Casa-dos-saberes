@@ -1,0 +1,332 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&display=swap');
+
+.csa-confirmacao {
+  --csa-confirmacao-fonte: 'Outfit', system-ui, sans-serif;
+  --csa-confirmacao-fundo: #f8f7f2;
+  --csa-confirmacao-bege: #e8e2c9;
+  --csa-confirmacao-vermelho: #a22d2e;
+  --csa-confirmacao-verde: #2b3f26;
+  --csa-confirmacao-cinza: #707070;
+  --csa-confirmacao-borda: #bfbfbf;
+  margin: 0;
+  color: #080808;
+  background: var(--csa-confirmacao-fundo);
+  font: 400 18px/1.4 var(--csa-confirmacao-fonte);
+}
+
+.csa-confirmacao *, .csa-confirmacao *::before, .csa-confirmacao *::after {
+  box-sizing: border-box;
+}
+
+.csa-confirmacao [hidden] {
+  display: none !important;
+}
+
+.csa-confirmacao button, .csa-confirmacao a {
+  font: inherit;
+}
+
+.csa-confirmacao button {
+  cursor: pointer;
+}
+
+.csa-confirmacao button:disabled {
+  cursor: default;
+}
+
+.csa-confirmacao a {
+  color: inherit;
+}
+
+.csa-confirmacao :focus-visible {
+  outline: 3px solid var(--csa-confirmacao-verde);
+  outline-offset: 5px;
+}
+
+.csa-confirmacao-cabecalho {
+  background: var(--csa-confirmacao-bege);
+}
+
+.csa-confirmacao-topo {
+  height: 75px;
+  padding: 0 3.6% 0 4%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.csa-confirmacao-logo {
+  width: 215px;
+  height: auto;
+  display: block;
+}
+
+.csa-confirmacao-menu {
+  position: relative;
+}
+
+.csa-confirmacao-menu summary {
+  list-style: none;
+  cursor: pointer;
+  width: 42px;
+  padding: 5px 0;
+}
+
+.csa-confirmacao-menu summary::-webkit-details-marker {
+  display: none;
+}
+
+.csa-confirmacao-menu summary span {
+  display: block;
+  height: 5px;
+  background: var(--csa-confirmacao-verde);
+  margin: 6px 0;
+}
+
+.csa-confirmacao-menu nav {
+  position: absolute;
+  right: 0;
+  top: 50px;
+  width: 280px;
+  padding: 20px;
+  background: white;
+  border: 1px solid var(--csa-confirmacao-borda);
+  z-index: 2;
+  font-size: 18px;
+}
+
+.csa-confirmacao-menu a {
+  display: block;
+  margin: 8px 0;
+}
+
+.csa-confirmacao-faixa {
+  height: 30px;
+  background: url('../assets/barra1.svg') left center / auto 30px repeat-x;
+}
+
+.csa-confirmacao-conteudo {
+  width: calc(100% - 48px);
+  max-width: 1120px;
+  margin: 24px auto 0;
+  padding-bottom: 32px;
+}
+
+.csa-confirmacao-voltar {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+  border: 0;
+  padding: 0;
+  background: transparent;
+  color: var(--csa-confirmacao-cinza);
+}
+
+.csa-confirmacao-seta {
+  width: 44px;
+  height: 44px;
+  background: var(--csa-confirmacao-bege);
+  display: grid;
+  place-items: center;
+  color: black;
+}
+
+.csa-confirmacao-seta svg {
+  width: 28px;
+  height: 28px;
+}
+
+.csa-confirmacao h1 {
+  font-size: 38px;
+  line-height: 1.2;
+  font-weight: 700;
+  margin: 18px 0 20px;
+}
+
+.csa-confirmacao-grade {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  column-gap: 32px;
+  row-gap: 16px;
+  align-items: start;
+}
+
+.csa-confirmacao-card {
+  padding: 18px;
+  background: #fff;
+  border: 1px solid var(--csa-confirmacao-borda);
+  min-width: 0;
+}
+
+.csa-confirmacao-card h2 {
+  font-size: 23px;
+  line-height: 1.25;
+  margin: 2px 0 14px;
+  font-weight: 600;
+}
+
+.csa-confirmacao-card dl {
+  margin: 0;
+}
+
+.csa-confirmacao-campo + .csa-confirmacao-campo {
+  margin-top: 8px;
+}
+
+.csa-confirmacao-card dt {
+  color: var(--csa-confirmacao-cinza);
+  font-weight: 400;
+}
+
+.csa-confirmacao-card dd {
+  margin: 0;
+  font-weight: 500;
+  overflow-wrap: anywhere;
+}
+
+.csa-confirmacao-termos {
+  grid-column: 1 / -1;
+  grid-row: 2;
+  margin: 0;
+  font-size: 18px;
+  text-align: center;
+}
+
+.csa-confirmacao-acoes {
+  grid-column: 2;
+  grid-row: 3;
+  display: grid;
+  gap: 8px;
+  margin: 40px 0 0;
+}
+
+.csa-confirmacao .csa-confirmacao-botao {
+  display: block;
+  width: 100%;
+  min-height: 44px;
+  padding: 5px 12px;
+  text-align: center;
+  color: inherit;
+  font-weight: 600;
+  line-height: 1.4;
+  border: 2px solid #080808;
+  background: transparent;
+  text-decoration: none;
+}
+
+.csa-confirmacao .csa-confirmacao-botao--principal {
+  color: #fff;
+  background: var(--csa-confirmacao-vermelho);
+  border-color: var(--csa-confirmacao-vermelho);
+}
+
+.csa-confirmacao--visita .csa-confirmacao-card:nth-child(2) .csa-confirmacao-campo:last-child {
+  line-height: 1.05;
+}
+
+.csa-confirmacao--visita .csa-confirmacao-card:nth-child(3) .csa-confirmacao-campo:last-child dt {
+  font-size: 17px;
+}
+
+.csa-confirmacao-estado {
+  padding: 18px;
+  background: #fff;
+  border: 1px solid var(--csa-confirmacao-borda);
+  margin-bottom: 18px;
+}
+
+.csa-confirmacao-estado h2 {
+  margin: 0 0 12px;
+  font-size: 23px;
+}
+
+.csa-confirmacao-estado p {
+  margin: 8px 0;
+}
+
+.csa-confirmacao-status {
+  display: inline-block;
+  padding: 5px 14px;
+  border-radius: 20px;
+  background: #fff0ce;
+  color: #744800;
+  font-size: 16px;
+}
+
+.csa-confirmacao-status--confirmada {
+  color: var(--csa-confirmacao-verde);
+  background: #e0ebdc;
+}
+
+.csa-confirmacao-exemplos {
+  display: inline-block;
+  margin-top: 16px;
+}
+
+@media (max-width: 1100px) {
+  .csa-confirmacao {
+    font-size: 16px;
+  }
+  .csa-confirmacao-conteudo {
+    margin-top: 24px;
+  }
+  .csa-confirmacao-grade {
+    column-gap: 20px;
+  }
+  .csa-confirmacao-card {
+    padding: 16px;
+  }
+  .csa-confirmacao-card h2 {
+    font-size: 21px;
+  }
+  .csa-confirmacao h1 {
+    font-size: 34px;
+  }
+  .csa-confirmacao-termos {
+    font-size: 16px;
+  }
+}
+
+@media (max-width: 760px) {
+  .csa-confirmacao {
+    font-size: 16px;
+  }
+  .csa-confirmacao-topo {
+    height: 68px;
+    padding: 0 5%;
+  }
+  .csa-confirmacao-logo {
+    width: 190px;
+  }
+  .csa-confirmacao-conteudo {
+    width: calc(100% - 32px);
+    margin-top: 20px;
+    padding-bottom: 24px;
+  }
+  .csa-confirmacao h1 {
+    font-size: 28px;
+    margin: 18px 0;
+  }
+  .csa-confirmacao-seta {
+    width: 44px;
+    height: 44px;
+  }
+  .csa-confirmacao-grade {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 16px;
+  }
+  .csa-confirmacao--visita .csa-confirmacao-card:nth-child(2) .csa-confirmacao-campo:last-child {
+    line-height: 1.4;
+  }
+  .csa-confirmacao--visita .csa-confirmacao-card:nth-child(3) .csa-confirmacao-campo:last-child dt {
+    font-size: inherit;
+  }
+  .csa-confirmacao-termos, .csa-confirmacao-acoes {
+    grid-column: auto;
+    grid-row: auto;
+    margin: 0;
+    padding: 0;
+    font-size: 15px;
+  }
+}
