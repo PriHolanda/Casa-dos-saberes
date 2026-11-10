@@ -1,6 +1,6 @@
-# Agenda Casa dos Saberes — Front-end (Tela do Administrador, Desktop)
+# Casa dos Saberes — Frontend da Agenda e do Formulário de Reserva
 
-Front-end da **Agenda Administrativa** do sistema de agendamento da **Casa dos Saberes Cego Aderaldo (Quixadá-CE)**.
+Frontend da **Agenda Administrativa** e do **Formulário de Reserva** do sistema de agendamento da **Casa dos Saberes Cego Aderaldo (Quixadá-CE)**.
 
 Nesta tela o administrador:
 
@@ -9,7 +9,7 @@ Nesta tela o administrador:
 - **aprova** ou **nega** solicitações pendentes;
 - **edita** ou **cancela** eventos aceitos.
 
-> Escopo atual: apenas a tela do administrador na versão **desktop**. A versão mobile é uma etapa futura.
+> A agenda administrativa usa o backend real e tem foco em desktop. O formulário de reserva é uma página independente, responsiva e somente frontend nesta etapa. Veja a [documentação do formulário](docs/formulario-reservas.md).
 
 ## Sumário
 
@@ -22,6 +22,7 @@ Nesta tela o administrador:
 7. [Divisão do trabalho e cronograma](#divisão-do-trabalho-e-cronograma)
 8. [Integração com o WordPress](#integração-com-o-wordpress)
 9. [Pendências e pontos em aberto](#pendências-e-pontos-em-aberto)
+10. [Formulário de reserva](#formulário-de-reserva)
 
 ---
 
@@ -43,14 +44,16 @@ Cada arquivo tem um dono (T1, T2 ou T3). **Cada pessoa edita só os seus arquivo
 ```
 agenda-casa-saberes/
 ├── pages/
-│   └── agenda.html          T1   página única: moldura + espaços vazios + linhas que carregam os arquivos
+│   ├── agenda.html          T1   agenda administrativa
+│   └── reservas.html            formulário de reserva independente
 ├── css/
 │   ├── variaveis.css        T1   cores, fontes, espaçamentos (valores provisórios: trocar pelos do design)
 │   ├── base.css             T1   reset e estilos gerais
 │   ├── layout.css           T1   header, faixa, sidebar, barra de controle e legenda
 │   ├── componentes.css      T1   botão, badge, campo, arquivo anexado, container do painel
 │   ├── agenda.css           T2   grade semanal/diária e cards
-│   └── paineis.css          T3   conteúdo dos painéis laterais
+│   ├── paineis.css          T3   conteúdo dos painéis laterais
+│   └── reservas.css              tokens, layout e componentes do formulário de reserva
 ├── js/
 │   ├── utilitarios.js       T1   funções e tabelas de apoio (datas, nomes de espaços, proteção de HTML)
 │   ├── config.js            endereço público da API
@@ -59,7 +62,11 @@ agenda-casa-saberes/
 │   ├── dados-exemplo.js     fixture histórica dos testes do calendário
 │   ├── barra-controle.js    T1   Diária/Semanal, setas de data e filtro de status
 │   ├── agenda.js            T2   desenha a grade e os cards
-│   └── paineis.js           T3   abre/fecha os painéis e monta o conteúdo
+│   ├── paineis.js           T3   abre/fecha os painéis e monta o conteúdo
+│   ├── reservas-dados.js         definição local das perguntas e consulta por ID
+│   ├── reservas-modelo.js        validação e contrato das respostas
+│   ├── reservas-perguntas/       componentes isolados por tipo de pergunta
+│   └── reservas.js               controlador do formulário
 ├── assets/                  logos, ícones e ilustrações exportados pelo design
 ├── .gitignore
 └── README.md
@@ -245,6 +252,20 @@ O site é de outro desenvolvedor, hospedado na Hostinger, e o plano é gratuito 
 - [ ] Design: corrigir inconsistências entre as telas. Cadastrar Evento não tem celular, classificação indicativa nem anexo e usa "Responsável" onde os detalhes usam "Solicitante"; alguns cards têm horários incoerentes; as datas da semana no mockup (Sex e Sáb) repetem 24/09 e 25/09; o título da semana diz "21 a 27" mas não há coluna de domingo.
 - [ ] Combinar com o responsável pelo site o aviso sobre o plugin *PRO Elements* (não é o Elementor Pro oficial).
 - [x] Ligar login, cadastro, consulta, criação, edição, aprovação e exclusão à API do backend.
+
+---
+
+## Formulário de reserva
+
+Execute `./scripts/iniciar-reservas.sh` e abra **http://127.0.0.1:3001/pages/reservas.html**, ou use Live Server em `pages/reservas.html`. Essa prévia funciona sem backend e sem login. Encerre com `Ctrl+C`.
+
+O formulário reproduz a tela do Figma com 13 perguntas independentes, dados separados dos componentes, placeholders nas perguntas abertas, opções de escolha, PDF ou link e termos de aceite. A fonte e os recursos visuais ficam em `assets/reservas/`.
+
+A mesma página apresenta automaticamente a versão mobile do Figma em telas de até 760 px e em dispositivos de toque sem hover, inclusive na horizontal. Perguntas e respostas são compartilhadas entre as apresentações; girar o celular ou redimensionar a janela preserva os dados preenchidos.
+
+Para adicionar, editar, remover ou reordenar perguntas, altere a definição em `js/reservas-dados.js`. Cada pergunta tem ID estável, título, descrição e corpo. O botão valida as respostas e prepara o evento `csa:reserva-preparada`; o envio real será integrado em uma próxima etapa.
+
+Consulte [Formulário de reserva: componentes e integração](docs/formulario-reservas.md) para o schema, os IDs, as regras de validação, o payload e as rotas propostas para a futura edição administrativa. Execute `./scripts/testar.sh` para verificar os testes existentes e os do formulário.
 
 ---
 
