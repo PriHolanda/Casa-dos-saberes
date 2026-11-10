@@ -1,0 +1,311 @@
+/* Fora do media query: elementos só do mobile (a lista é gerada por js/semanal-mobile.js) */
+.csa-menu-btn {
+  display: none;
+  background: none;
+  border: 0;
+  font-size: 28px;
+  cursor: pointer;
+}
+
+.csa-semanal-mobile {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  /* Cabeçalho e menu lateral */
+  .csa-conteiner {
+    padding: 10px 16px;
+  }
+  .csa-img-logo {
+    width: 160px;
+  }
+  .csa-header-usuario {
+    display: none;
+  }
+  .csa-menu-btn {
+    display: block;
+  }
+  .csa-barra {
+    overflow: hidden;
+  }
+    /* Sidebar vira faixa abaixo da barra do topo; --csa-menu-topo e --csa-menu-altura vêm do js/menu-mobile.js */
+  .csa-sidebar {
+    display: none;
+    position: absolute;
+    top: var(--csa-menu-topo, 0px);
+    left: 0;
+    right: 0;
+    z-index: 100;
+    width: auto;
+    padding: 12px 16px;
+    gap: 8px;
+    border-top: 1px solid var(--csa-cinza-borda);
+  }
+  .csa-sidebar--aberta {
+    display: flex;
+  }
+  .csa-sidebar img {
+    display: none;
+  }
+  .csa-button-sidebar {
+    margin: 0;
+  }
+  .csa-header--menu-aberto .csa-barra {
+    margin-top: var(--csa-menu-altura, 0px);
+  }
+
+  /* Conteúdo e barra de controle */
+  .csa-agenda {
+    padding: 16px;
+  }
+  .csa-titulo {
+    font-size: 24px;
+  }
+  .csa-barra-controle {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+  .csa-alternador,
+  .csa-navegacao {
+    grid-column: span 2;
+  }
+  .csa-alternador button {
+    flex: 1;
+  }
+  .csa-data {
+    flex: 1;
+    text-align: center;
+  }
+  .csa-legenda {
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .csa-legenda li {
+    font-size: 14px;
+  }
+
+  /* Semanal: esconde a tabela e mostra a lista de dias */
+  #csa-agenda {
+    border: 0;
+    overflow: visible;
+  }
+  .csa-grid:not(.csa-grid--diaria) {
+    display: none;
+  }
+  .csa-semanal-mobile {
+    display: block;
+    margin-top: 10px;
+  }
+
+  .csa-dia {
+    margin-bottom: 8px;
+    border: 1px solid var(--csa-cinza-borda);
+    border-radius: 5px;
+    background: var(--csa-fundo-pagina);
+  }
+  .csa-dia__cabecalho {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    padding: 14px 12px;
+    background: none;
+    border: 0;
+    text-align: left;
+    font: inherit;
+    color: var(--csa-texto);
+    cursor: pointer;
+  }
+  .csa-dia__titulo {
+    flex: 1;
+  }
+  .csa-dia__titulo strong {
+    display: block;
+    font-size: 16px;
+  }
+  .csa-dia__titulo span {
+    font-size: 13px;
+    color: var(--csa-cinza-texto);
+  }
+  .csa-dia__pendente {
+    padding: 2px 8px;
+    border-radius: 999px;
+    font-size: 12px;
+    background: color-mix(in srgb, var(--csa-laranja) 20%, var(--csa-fundo-pagina));
+    color: #963c00; /* mesmo tom do status pendente dos cards (agenda.css) */
+  }
+  .csa-dia__seta {
+    flex-shrink: 0;
+    width: 8px;
+    height: 8px;
+    margin: 0 4px;
+    border-right: 2px solid currentColor;
+    border-bottom: 2px solid currentColor;
+    transform: rotate(45deg);
+    transition: transform 0.2s;
+  }
+  .csa-dia__cabecalho[aria-expanded="true"] .csa-dia__seta {
+    transform: rotate(-135deg);
+  }
+  .csa-dia__corpo {
+    padding: 0 12px 12px;
+  }
+  .csa-dia__turno {
+    margin-bottom: 12px;
+  }
+  .csa-dia__turno-nome {
+    margin: 4px 0 8px;
+    font-weight: 600;
+  }
+
+  /* o design mostra só o botão "Adicionar Evento", sem título nem ícone */
+  .csa-semanal-mobile .csa-event-card {
+    max-width: none;
+  }
+  .csa-semanal-mobile .csa-disponibilidade {
+    background: transparent;
+    padding: 0;
+  }
+  .csa-semanal-mobile .csa-disponibilidade__titulo,
+  .csa-semanal-mobile .csa-disponibilidade__icone {
+    display: none;
+  }
+  .csa-semanal-mobile .csa-disponibilidade__adicionar {
+    min-height: 80px;
+  }
+
+  /* Diária: a tabela vira lista de seções */
+  .csa-grid--diaria,
+  .csa-grid--diaria tbody,
+  .csa-grid--diaria tr,
+  .csa-grid--diaria th,
+  .csa-grid--diaria td {
+    display: block;
+    border: 0;
+  }
+  .csa-grid.csa-grid--diaria {
+    min-width: 0;
+  }
+  .csa-grid.csa-grid--diaria tr > :first-child {
+    width: auto;
+  }
+
+  /* thead escondido só visualmente: o dia já aparece na barra de data */
+  .csa-grid--diaria thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+  }
+
+  .csa-grid--diaria tbody th {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 4px;
+    text-align: left;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .csa-grid--diaria tbody th::after {
+    content: "";
+    width: 8px;
+    height: 8px;
+    border-right: 2px solid currentColor;
+    border-bottom: 2px solid currentColor;
+    transform: rotate(45deg);
+    transition: transform 0.2s;
+  }
+  .csa-grid--diaria .csa-grid__celula {
+    height: auto;
+    padding: 0 0 16px;
+  }
+  .csa-grid--diaria .csa-event-card {
+    max-width: none;
+  }
+  .csa-grid--diaria .csa-disponibilidade {
+    max-width: none;
+    background: transparent;
+    padding: 0;
+  }
+  .csa-grid--diaria .csa-disponibilidade__titulo,
+  .csa-grid--diaria .csa-disponibilidade__icone {
+    display: none;
+  }
+  .csa-grid--diaria .csa-disponibilidade__adicionar {
+    min-height: 80px;
+  }
+
+  /* precisa vir depois das regras de display acima, senão não esconde */
+  .csa-turno--fechado th::after {
+    transform: rotate(-45deg);
+  }
+  .csa-turno--fechado td {
+    display: none;
+  }
+
+  /* Painel vira folha inferior; --csa-painel-topo é definida pelo js/menu-mobile.js */
+  #csa-painel:not([hidden]) {
+    position: fixed;
+    top: auto;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: auto;
+    max-width: none;
+    max-height: calc(100dvh - var(--csa-painel-topo, 0px));
+    box-sizing: border-box;
+    overflow-y: auto;
+    z-index: 200;
+    border-radius: 16px 16px 0 0;
+    box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.15);
+  }
+
+  /* setas da data com a mesma altura da caixa (Diária e Semanal) */
+  .csa-navegacao {
+    align-items: stretch;
+  }
+  .csa-data {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    flex: 1;
+    padding: 8px 6px;
+    font-size: 14px;
+    text-align: center;
+  }
+
+    /* Filtro de status e PDF: mesma altura; o select sem o visual nativo do sistema */
+  .csa-filtro-status,
+  .csa-btn-pdf {
+    box-sizing: border-box;
+    width: 100%;
+    min-height: 48px;
+    font-size: 14px;
+  }
+  .csa-filtro-status {
+    appearance: none;
+    -webkit-appearance: none;
+    padding: 0 8px 0 36px;
+    font-family: inherit;
+    color: var(--csa-texto);
+    background-color: var(--csa-fundo-pagina);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 9l7 7 7-7'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: 14px center;
+    background-size: 14px;
+    text-align: center;
+    text-align-last: center;
+    text-overflow: ellipsis;
+    cursor: pointer;
+  }
+  .csa-btn-pdf i {
+    margin-right: 8px;
+    font-size: 18px;
+  }
+}
