@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Solicite a reserva de um espaço na Casa dos Saberes Cego Aderaldo.">
+  <title>Formulário de reserva | Casa dos Saberes</title>
+  <link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
+  <link rel="preload" href="../assets/reservas/urbanist-variable.ttf" as="font" type="font/ttf" crossorigin>
+  <link rel="stylesheet" href="../css/base.css">
+  <link rel="stylesheet" href="../css/componentes.css">
+  <link rel="stylesheet" href="../css/reservas.css">
+  <script src="../js/reservas-dados.js" defer></script>
+  <script src="../js/reservas-modelo.js" defer></script>
+  <script src="../js/reservas-perguntas/base.js" defer></script>
+  <script src="../js/reservas-perguntas/aberta.js" defer></script>
+  <script src="../js/reservas-perguntas/escolha.js" defer></script>
+  <script src="../js/reservas-perguntas/anexo.js" defer></script>
+  <script src="../js/reservas-perguntas/termo.js" defer></script>
+  <script src="../js/reservas-perguntas/registro.js" defer></script>
+  <script src="../js/reservas.js" defer></script>
+</head>
+<body class="csa-reservas">
+  <a class="csa-reservas__pular" href="#csa-reservas-conteudo">Ir para o formulário</a>
+  <header class="csa-reservas-header">
+    <div class="csa-reservas-header__conteudo">
+      <a href="agenda.html" aria-label="Casa dos Saberes — agenda">
+        <img src="../assets/reservas/csca-gov.png" width="214" height="31" alt="Casa dos Saberes Cego Aderaldo e Governo do Ceará">
+      </a>
+      <button class="csa-reservas-menu__botao" type="button" aria-label="Abrir menu" aria-expanded="false" aria-controls="csa-reservas-menu">
+        <img src="../assets/reservas/menu.svg" width="41" height="27" alt="">
+      </button>
+      <nav class="csa-reservas-menu" id="csa-reservas-menu" aria-label="Navegação principal" hidden>
+        <a href="agenda.html">Agenda</a>
+        <a href="reservas.html" aria-current="page">Formulário de reserva</a>
+      </nav>
+    </div>
+    <div class="csa-reservas-header__faixa" aria-hidden="true"></div>
+  </header>
+
+  <main class="csa-reservas__conteudo" id="csa-reservas-conteudo">
+    <a class="csa-reservas__voltar" href="agenda.html">
+      <span class="csa-reservas__seta"><img src="../assets/reservas/voltar.svg" width="24" height="24" alt=""></span>
+      <span>Voltar para agenda</span>
+    </a>
+    <h1 class="csa-reservas__titulo" id="csa-reservas-titulo">Formulário de reserva</h1>
+    <p class="csa-reservas__aviso" id="csa-reservas-aviso"><strong>Importante:</strong> ao enviar sua solicitação, aguarde a confirmação da nossa equipe via telefone ou e-mail. O envio do formulário não significa que a reserva já foi confirmada.</p>
+
+    <form id="csa-reservas-form" aria-labelledby="csa-reservas-titulo" aria-describedby="csa-reservas-aviso" novalidate>
+      <div class="csa-reservas__colunas" id="csa-reservas-perguntas" aria-busy="true"></div>
+      <noscript><p>Ative o JavaScript no navegador para preencher o formulário de reserva.</p></noscript>
+      <div class="csa-reservas__acoes">
+        <button class="csa-botao csa-botao--vermelho csa-reservas__enviar" type="submit" disabled>Enviar formulário</button>
+        <p class="csa-reservas__mensagem" id="csa-reservas-mensagem" role="status" aria-live="polite" tabindex="-1" hidden></p>
+      </div>
+    </form>
+  </main>
+</body>
+</html>
