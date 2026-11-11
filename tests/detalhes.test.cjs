@@ -36,7 +36,8 @@ test('modelo valida data, horário e título sem depender do DOM', () => {
   assert.throws(() => modelo.normalizarApresentacao({}), /título/);
   assert.throws(() => modelo.normalizarApresentacao({ titulo: 'X', data: '2026-02-31' }), /Data/);
   assert.throws(() => modelo.normalizarApresentacao({ titulo: 'X', horario: '28:55' }), /Horário/);
-  assert.equal(modelo.formatarData('2026-09-21'), 'segunda-feira, 21 de setembro de 2026');
+  assert.equal(modelo.formatarData('2026-09-21'),
+  'Segunda-feira, 21 de setembro de 2026');
   assert.equal(modelo.formatarHorario('09:00'), '9h00');
 });
 
