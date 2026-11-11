@@ -1,13 +1,15 @@
 
-# Páginas de Informações — Reservas e Visitas Mediadas
+# Páginas de Informações — Eventos e Visitas Mediadas
 
 ## 1. Visão geral
 
-As páginas de informações da Casa dos Saberes apresentam ao usuário os detalhes de eventos, espaços culturais e visitas mediadas, permitindo consultar descrições, horários, locais, classificações indicativas e orientações antes de prosseguir na navegação ou no agendamento.
+As páginas de informações da Casa dos Saberes Cego Aderaldo apresentam ao usuário os detalhes de eventos e visitas mediadas disponíveis para consulta na programação pública.
 
-A implementação utiliza HTML, CSS e JavaScript puro, seguindo a organização modular adotada no frontend do projeto.
+A funcionalidade permite visualizar informações como título, descrição, espaço de realização, data, horário, classificação indicativa e orientações relacionadas à atividade.
 
-As duas páginas compartilham estilos e lógica de apresentação, preservando as particularidades de cada modalidade.
+A implementação utiliza HTML, CSS e JavaScript puro, seguindo a arquitetura modular adotada no frontend do projeto.
+
+As páginas possuem estrutura responsiva e compartilham os módulos de consulta, preparação e apresentação dos dados.
 
 ## 2. Estrutura dos arquivos
 
@@ -40,50 +42,85 @@ tests/
 
 | Arquivo | Responsabilidade |
 |---|---|
-| `detalhes-reserva.html` | Estrutura visual das informações de eventos e espaços disponíveis. |
-| `detalhes-visita.html` | Estrutura visual das informações de visitas mediadas. |
-| `detalhes.css` | Estilização compartilhada e responsividade das páginas. |
-| `detalhes-dados.js` | Consulta e disponibilização dos dados. |
+| `detalhes-reserva.html` | Apresentação das informações de eventos cadastrados e confirmados. |
+| `detalhes-visita.html` | Apresentação das informações de visitas mediadas. |
+| `detalhes.css` | Estilos compartilhados e responsividade das páginas. |
+| `detalhes-dados.js` | Consulta e disponibilização dos dados utilizados nas páginas. |
 | `detalhes-modelo.js` | Validação, normalização e formatação das informações. |
-| `detalhes.js` | Carregamento, apresentação dos dados e interações. |
-| `detalhes.test.cjs` | Testes automatizados das regras e comportamentos. |
+| `detalhes.js` | Controlador responsável pelo carregamento e preenchimento das interfaces. |
+| `detalhes.test.cjs` | Testes automatizados das principais regras e comportamentos. |
 
 ## 3. Arquitetura
 
-A implementação separa a obtenção dos dados, as regras de preparação e a apresentação das informações.
+A funcionalidade segue a separação de responsabilidades utilizada no frontend, organizando a implementação em três camadas principais: dados, modelo e controlador.
 
 ### 3.1. Camada de dados
 
-O módulo `detalhes-dados.js` centraliza as consultas utilizadas pelas páginas.
+O módulo `detalhes-dados.js` centraliza as consultas necessárias para a apresentação de eventos e visitas.
 
-Suas responsabilidades incluem:
+Suas principais responsabilidades são:
 
-- Consultar eventos pelo identificador.
-- Recuperar informações dos espaços culturais.
+- Consultar eventos a partir de seus identificadores.
+- Recuperar informações dos espaços associados às atividades.
 - Disponibilizar dados demonstrativos para testes.
 - Isolar a origem dos dados da lógica de apresentação.
 
-A consulta de eventos utiliza a rota pública `GET /eventos/`, por meio da infraestrutura de API do projeto, com acesso não autenticado.
+#### Consulta de eventos
 
-A exibição pública considera somente eventos com status `aceito`, evitando apresentar atividades pendentes como confirmadas.
+Os eventos são consultados por meio do endpoint:
 
-As informações dos espaços são disponibilizadas por um catálogo local, permitindo a substituição da fonte de dados na integração com o backend.
+`GET /eventos/`
+
+A requisição é realizada utilizando `csaApi.requisitar`, com a opção `autenticado: false`, permitindo o acesso público às informações disponibilizadas pela API.
+
+O módulo identifica o evento solicitado pelo seu ID e verifica o status do registro.
+
+Somente eventos com status `aceito` são considerados disponíveis para apresentação pública.
+
+Após identificar o evento, o módulo resolve o espaço associado e utiliza o modelo da agenda para validar e normalizar as informações recebidas.
+
+#### Informações dos espaços
+
+A camada de dados mantém um catálogo de espaços culturais utilizado para identificar os locais associados aos eventos e visitas.
+
+O catálogo contempla:
+
+- Auditório.
+- Quintal.
+- Salas Expositivas.
+- Varanda.
+
+As consultas retornam cópias dos objetos, evitando alterações acidentais na fonte original.
+
+Os espaços são utilizados como informações complementares das atividades, não como uma modalidade independente da página de detalhes dos eventos.
 
 ### 3.2. Camada de modelo
 
-O módulo `detalhes-modelo.js` concentra as regras de validação, normalização e preparação das informações.
+O módulo `detalhes-modelo.js` concentra as regras de preparação dos dados apresentados nas páginas.
 
-É responsável por:
+Suas principais funções são:
 
-- Validar os dados recebidos.
-- Preparar eventos, espaços e visitas para apresentação.
-- Formatar datas e horários.
-- Tratar campos opcionais.
-- Garantir a consistência dos objetos apresentados.
+- `normalizarApresentacao()`: valida e normaliza a estrutura dos dados destinados à interface.
+- `prepararEvento()`: prepara as informações de um evento e seu espaço correspondente.
+- `prepararVisita()`: prepara as informações de uma visita mediada.
+- `formatarData()`: formata datas no padrão brasileiro.
+- `formatarHorario()`: formata horários para apresentação.
 
-As regras são implementadas sem acesso ao DOM ou realização de requisições.
+O modelo não realiza requisições nem acessa diretamente os elementos HTML.
 
-A preparação dos eventos considera as estruturas e validações utilizadas pelo modelo da agenda.
+#### Preparação dos eventos
+
+A função `prepararEvento()` utiliza `csaAgendaModelo.normalizarEvento()` para verificar a consistência dos dados do evento.
+
+Essa validação contempla a identificação do evento, a relação com o espaço e a consistência das datas e dos horários.
+
+Após a validação, o evento é preparado para apresentação, utilizando os campos esperados pelo controlador.
+
+#### Preparação das visitas
+
+A função `prepararVisita()` organiza as informações de visitas mediadas, considerando os dados específicos da atividade e seu espaço correspondente.
+
+Campos opcionais são normalizados, permitindo que a interface apresente somente as informações disponíveis.
 
 ### 3.3. Controlador
 
@@ -91,151 +128,122 @@ O módulo `detalhes.js` coordena o funcionamento das duas páginas.
 
 Suas responsabilidades incluem:
 
-- Identificar a modalidade da página.
+- Identificar a modalidade da página acessada.
 - Interpretar os parâmetros recebidos pela URL.
-- Solicitar os dados necessários.
-- Preencher os elementos da interface.
-- Controlar a visibilidade de campos opcionais.
-- Apresentar mensagens de indisponibilidade.
-- Gerenciar os botões de continuidade e a navegação.
+- Consultar os dados necessários.
+- Preparar as informações para apresentação.
+- Preencher os elementos HTML.
+- Controlar a visibilidade das seções opcionais.
+- Apresentar mensagens de carregamento e indisponibilidade.
+- Gerenciar o menu de navegação.
 
-A estrutura principal dos cards é definida no HTML. O controlador atualiza seus conteúdos utilizando `textContent`, enquanto listas variáveis de regras são preenchidas dinamicamente.
+A estrutura principal dos cards é definida diretamente nos arquivos HTML.
 
-Essa organização mantém a apresentação independente da origem dos dados.
+O controlador utiliza `textContent` para preencher títulos, descrições e demais informações.
+
+As listas variáveis de regras são preenchidas dinamicamente com elementos `li`, mantendo a estrutura principal dos cards independente da quantidade de informações recebidas.
 
 ## 4. Páginas implementadas
 
-### 4.1. Informações da reserva
+### 4.1. Detalhes dos eventos
 
 **Arquivo:** `pages/detalhes-reserva.html`
 
-Apresenta as informações correspondentes à opção selecionada na agenda.
+A página apresenta as informações de um evento selecionado na programação pública da Casa dos Saberes.
 
-A página contempla dois cenários.
-
-#### Evento cadastrado
-
-Permite consultar informações de uma atividade confirmada, incluindo:
+As informações disponíveis incluem:
 
 - Nome do evento.
 - Espaço de realização.
 - Data e horário.
 - Descrição da atividade.
 - Classificação indicativa.
-- Demais informações disponíveis.
+- Orientações e regras, quando disponíveis.
 
-#### Espaço disponível
+A página possui caráter informativo e não realiza solicitações de reserva.
 
-Apresenta as informações de um espaço cultural disponível para solicitação de reserva, incluindo descrição, regras e orientações, quando disponibilizadas.
+Eventos cadastrados e confirmados podem ser consultados por meio de seus identificadores.
 
-Nesse cenário, a página oferece continuidade para o formulário de reserva, preservando o contexto da seleção.
-
-### 4.2. Informações da visita mediada
+### 4.2. Detalhes das visitas mediadas
 
 **Arquivo:** `pages/detalhes-visita.html`
 
-Apresenta informações relacionadas às visitas mediadas e aos espaços destinados a essas atividades.
+A página apresenta informações relacionadas às visitas mediadas e aos espaços destinados a essas atividades.
 
-O conteúdo pode incluir:
+O conteúdo contempla:
 
 - Identificação da visita ou atividade.
-- Espaço relacionado.
+- Espaço correspondente.
 - Descrição.
 - Classificação indicativa.
-- Data e horário, quando aplicáveis.
-- Regras e orientações.
-- Opção de continuidade para o agendamento.
+- Data e horário, quando disponíveis.
+- Orientações e regras relacionadas à visita.
 
-Os campos opcionais são exibidos conforme a disponibilidade dos dados.
+A interface adapta a apresentação conforme a disponibilidade dos dados.
+
+Assim como a página de eventos, sua responsabilidade é exclusivamente informativa.
 
 ## 5. Navegação e integração com a agenda
 
-As páginas utilizam parâmetros na URL para identificar a opção selecionada pelo usuário.
+As páginas são organizadas para receber as informações selecionadas na agenda pública.
 
-### 5.1. Evento cadastrado
+### 5.1. Eventos
+
+A agenda deve encaminhar o identificador do evento selecionado para a página de detalhes.
+
+Exemplo:
 
 ```text
 pages/detalhes-reserva.html?eventoId=15
 ```
 
-O parâmetro `eventoId` identifica o evento que deverá ser consultado e apresentado.
+O parâmetro `eventoId` identifica o registro que deverá ser consultado.
 
-### 5.2. Espaço disponível
+O controlador realiza a consulta, prepara as informações recebidas e preenche a interface.
 
-```text
-pages/detalhes-reserva.html?espacoId=1
-```
-
-O parâmetro `espacoId` identifica o espaço selecionado.
-
-Também é possível preservar informações da escolha do usuário:
-
-```text
-pages/detalhes-reserva.html?espacoId=1&data=2026-11-20&turno=manha
-```
-
-### 5.3. Parâmetros utilizados
-
-| Parâmetro | Descrição |
-|---|---|
-| `eventoId` | Identificador do evento selecionado. |
-| `espacoId` | Identificador do espaço selecionado. |
-| `data` | Data selecionada para a solicitação. |
-| `turno` | Turno selecionado. |
-| `demo` | Ativa o carregamento de dados demonstrativos. |
-
-### 5.4. Contrato de navegação
-
-A agenda pública deve encaminhar o usuário à página correspondente, informando o identificador da opção selecionada.
-
-Exemplo de navegação para um evento:
+Exemplo de navegação a partir da agenda pública:
 
 ```javascript
-// Encaminha o evento selecionado para a página de informações.
+// Encaminha o evento selecionado para sua página de informações.
 window.location.href =
   `../detalhes-reserva.html?eventoId=${encodeURIComponent(evento.id)}`;
 ```
 
-Exemplo de navegação para um espaço disponível:
+A integração utiliza o identificador do evento, sem necessidade de transferir o objeto completo pela URL.
 
-```javascript
-// Preserva o espaço, a data e o turno selecionados.
-const parametros = new URLSearchParams({
-  espacoId: espaco.id,
-  data: dataSelecionada,
-  turno: turnoSelecionado
-});
+### 5.2. Visitas mediadas
 
-window.location.href = `../detalhes-reserva.html?${parametros}`;
-```
-
-A página de detalhes realiza a consulta a partir do identificador recebido. Não é necessário transferir o objeto completo do evento pela URL.
-
-## 6. Continuidade para os formulários
-
-O comportamento dos botões de continuidade depende da modalidade apresentada.
-
-### Reserva de espaço
-
-A página pode encaminhar o usuário ao formulário de reserva, preservando o contexto da seleção:
+A página de visitas pode ser acessada com o identificador de um espaço associado:
 
 ```text
-pages/reservas.html?espacoId=1&data=2026-11-20&turno=manha
+pages/detalhes-visita.html?espacoId=3
 ```
 
-O recebimento desses parâmetros pelo formulário permite uma futura integração para preenchimento automático dos dados relacionados à solicitação.
+Nesse cenário, o controlador utiliza as informações disponíveis no catálogo de espaços para preparar a apresentação básica da visita.
 
-### Visita mediada
+A identificação de visitas individuais dependerá do contrato de dados definido para esse módulo.
 
-A página de visita utiliza um endereço de continuidade configurável.
+### 5.3. Solicitação de reserva de espaços
 
-O botão correspondente é exibido quando existe um endereço válido para o formulário de agendamento.
+A solicitação de uso de espaços disponíveis constitui um fluxo independente da apresentação dos detalhes dos eventos.
 
-As URLs são validadas antes da apresentação dos botões.
+Quando um usuário seleciona a opção **Solicitar reserva** na agenda pública, a navegação deve encaminhá-lo diretamente ao formulário:
 
-## 7. Apresentação das informações
+```text
+pages/reservas.html
+```
 
-O controlador disponibiliza o método `csaDetalhes.apresentar()`, responsável por preencher os elementos visuais com os dados preparados.
+A página `detalhes-reserva.html` não participa desse fluxo.
+
+Essa separação mantém as responsabilidades das funcionalidades bem definidas:
+
+- A agenda apresenta a programação e as opções disponíveis.
+- As páginas de detalhes apresentam informações das atividades.
+- O formulário de reservas recebe solicitações de uso de espaços.
+
+## 6. Contrato de apresentação
+
+O controlador disponibiliza o método `csaDetalhes.apresentar()`, responsável por preencher os elementos visuais com as informações recebidas.
 
 Exemplo de utilização:
 
@@ -245,36 +253,88 @@ csaDetalhes.apresentar({
   categoria: 'Auditório',
   titulo: 'Título do evento',
   espaco: 'Auditório',
-  descricao: 'Descrição do evento.',
+  descricao: 'Descrição da atividade.',
+  descricaoTitulo: 'Sobre o evento',
   classificacao: 'Livre',
-  orientacoes: '',
-  regras: [],
   data: '2026-11-20',
   horario: '09:00',
-  urlContinuar: ''
+  orientacoes: '',
+  regras: []
 });
 ```
 
-Os campos opcionais são apresentados conforme o conteúdo disponível.
+Os campos opcionais são apresentados somente quando possuem conteúdo.
 
-Essa abordagem permite reutilizar a estrutura visual para diferentes eventos, espaços e visitas.
+### Estrutura dos dados
 
-## 8. Interface e responsividade
+| Campo | Descrição |
+|---|---|
+| `modalidade` | Identifica o tipo de apresentação. |
+| `categoria` | Categoria ou espaço associado à atividade. |
+| `titulo` | Título principal apresentado na página. |
+| `espaco` | Nome do espaço de realização. |
+| `descricao` | Descrição da atividade. |
+| `descricaoTitulo` | Título da seção de descrição. |
+| `classificacao` | Classificação indicativa. |
+| `data` | Data da atividade no formato `YYYY-MM-DD`. |
+| `horario` | Horário no formato `HH:mm`. |
+| `orientacoes` | Orientações relacionadas à atividade. |
+| `regras` | Lista de regras aplicáveis. |
 
-As páginas seguem a identidade visual do sistema Casa dos Saberes, utilizando a tipografia Urbanist, os elementos gráficos institucionais e as variáveis CSS compartilhadas.
+O método `apresentar()` valida os dados antes de atualizar a interface.
 
-O layout contempla:
+As informações são inseridas utilizando operações seguras de manipulação do DOM, sem interpretar o conteúdo recebido como HTML.
 
-- **Desktop:** organização dos conteúdos em cards principal e lateral.
-- **Mobile:** reorganização vertical, com ajustes de espaçamentos, dimensões e tipografia.
-- **Navegação:** menu responsivo e botões de interação.
-- **Conteúdo:** exibição condicional das seções conforme as informações disponíveis.
+## 7. Interface e responsividade
 
-Os estilos são centralizados em `css/detalhes.css`, utilizando também as variáveis definidas em `css/base.css`.
+As páginas seguem a identidade visual do sistema Casa dos Saberes, utilizando tipografia Urbanist, elementos gráficos institucionais e variáveis CSS compartilhadas.
+
+### Desktop
+
+A interface organiza as informações em dois cards principais:
+
+- **Card principal:** título, categoria, data, horário, descrição e orientações.
+- **Card lateral:** espaço de realização e classificação indicativa.
+
+### Mobile
+
+Em telas menores, os cards são reorganizados verticalmente.
+
+Também são adaptados:
+
+- Espaçamentos internos e externos.
+- Dimensões dos elementos.
+- Tipografia.
+- Organização das informações.
+- Menu de navegação.
+
+Os estilos são centralizados em `css/detalhes.css`, utilizando as variáveis globais definidas em `css/base.css`.
+
+## 8. Estados de apresentação
+
+O controlador gerencia diferentes estados durante o funcionamento das páginas.
+
+### Carregamento
+
+Ao iniciar uma consulta, a interface apresenta uma mensagem de carregamento.
+
+### Apresentação
+
+Após a obtenção e preparação dos dados, os cards são preenchidos e disponibilizados para visualização.
+
+### Informações opcionais
+
+Seções que não possuem informações disponíveis permanecem ocultas.
+
+Isso permite apresentar diferentes atividades utilizando a mesma estrutura visual.
+
+### Indisponibilidade
+
+Quando os dados não podem ser consultados ou são considerados inválidos, a interface apresenta uma mensagem informativa sem modificar sua estrutura principal.
 
 ## 9. Testes e demonstração
 
-As páginas disponibilizam um modo demonstrativo para validar o funcionamento das interfaces sem depender da disponibilidade do backend.
+As páginas disponibilizam um modo demonstrativo para validação das interfaces sem depender da disponibilidade do backend.
 
 ### Evento demonstrativo
 
@@ -288,39 +348,48 @@ http://127.0.0.1:3001/pages/detalhes-reserva.html?demo=1
 http://127.0.0.1:3001/pages/detalhes-visita.html?demo=1
 ```
 
-### Espaço do catálogo
+### Consulta de espaço associado à visita
 
 ```text
-http://127.0.0.1:3001/pages/detalhes-reserva.html?espacoId=1
+http://127.0.0.1:3001/pages/detalhes-visita.html?espacoId=3
 ```
 
-O parâmetro `demo=1` utiliza dados de demonstração, mantendo esses exemplos separados das consultas normais.
+O parâmetro `demo=1` utiliza exemplos específicos para testes, mantendo-os separados das consultas normais.
 
 ### Testes automatizados
 
-Execute na raiz do frontend:
+Para executar os testes, utilize o comando na raiz do projeto:
 
 ```bash
 node tests/detalhes.test.cjs
 ```
 
-Os testes abrangem:
+Os testes verificam:
 
-- Validação e formatação de dados.
-- Consulta pública de eventos confirmados.
-- Restrição de divulgação de eventos pendentes.
-- Preparação dos dados de espaços e visitas.
-- Isolamento dos dados demonstrativos.
-- Organização dos componentes HTML e do controlador.
+1. Validação de datas, horários e títulos.
+2. Consulta de eventos confirmados sem autenticação administrativa.
+3. Restrição de exibição pública de eventos pendentes.
+4. Integridade dos dados do catálogo de espaços.
+5. Preparação das informações de visitas mediadas.
+6. Isolamento dos dados demonstrativos.
+7. Organização dos componentes HTML e ausência de botões de continuidade.
 
-## 10. Considerações sobre a integração
+Também é possível verificar a sintaxe dos módulos:
 
-As páginas estão organizadas para integrar o fluxo público de consulta de eventos e solicitação de agendamentos.
+```bash
+node --check js/detalhes-dados.js
+node --check js/detalhes-modelo.js
+node --check js/detalhes.js
+```
 
-A comunicação entre os módulos utiliza identificadores na URL e uma camada de dados independente da apresentação.
+## 10. Considerações sobre integração
 
-A integração com a agenda pública deve utilizar os parâmetros documentados para encaminhar a opção selecionada.
+As páginas foram organizadas para receber informações da agenda pública e apresentar os detalhes correspondentes à seleção do usuário.
 
-As informações institucionais, como descrições, regras e orientações, são apresentadas de acordo com os dados disponíveis para cada modalidade.
+A comunicação utiliza identificadores na URL e uma camada de consulta independente da interface.
 
-Essa organização permite integrar os módulos do sistema sem comprometer a separação de responsabilidades, a responsividade e a manutenção das interfaces.
+A consulta de eventos considera os registros confirmados disponibilizados pelo backend, enquanto a preparação dos dados preserva compatibilidade com o modelo da agenda.
+
+As descrições, regras e orientações específicas são apresentadas conforme as informações disponibilizadas para cada atividade.
+
+A separação entre dados, modelo e controlador facilita a manutenção, a integração com os demais módulos do projeto e a evolução das interfaces sem comprometer suas responsabilidades.
