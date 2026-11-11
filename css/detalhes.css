@@ -1,0 +1,103 @@
+@font-face {
+  font-family: "Urbanist";
+  src: url("../assets/reservas/urbanist-variable.ttf") format("truetype");
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+}
+
+/* Mesmo padrão de tokens de reservas.css, com estilos isolados. */
+.csa-detalhes {
+  --csa-fonte: "Urbanist", system-ui, sans-serif;
+  --csa-detalhes-margem: clamp(24px, 8.16vw, 126px);
+  --csa-detalhes-largura: 1292px;
+  --csa-detalhes-fundo: var(--csa-fundo-creme, #f8f7f2);
+  --csa-detalhes-neutro: #6b6b6b;
+  --csa-detalhes-foco: #2d69a2;
+  min-height: 100%;
+  height: auto;
+  background: var(--csa-detalhes-fundo);
+  color: var(--csa-texto);
+  font-size: 20px;
+  font-weight: 500;
+  line-height: 1.4;
+}
+.csa-detalhes [hidden] { display: none !important; }
+.csa-detalhes button { cursor: pointer; font: inherit; }
+.csa-detalhes :is(a, button):focus-visible { outline: 3px solid var(--csa-detalhes-foco); outline-offset: 4px; }
+.csa-detalhes__pular:not(:focus) { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.csa-detalhes__pular:focus { position: fixed; top: 8px; left: 8px; z-index: 10; padding: 8px 16px; background: var(--csa-fundo-pagina); }
+
+/* Cabeçalho idêntico ao padrão público do formulário de reserva. */
+.csa-detalhes-header { background: var(--csa-fundo-nav) url("../assets/reservas/menu-base.svg") repeat-x top left; }
+.csa-detalhes-header__conteudo { position: relative; display: flex; align-items: center; justify-content: space-between; height: 74px; padding-left: clamp(24px, 3.89vw, 60px); padding-right: var(--csa-detalhes-margem); }
+.csa-detalhes-header__conteudo > a, .csa-detalhes-header img { display: block; }
+.csa-detalhes-menu__botao { padding: 0; border: 0; background: transparent; }
+.csa-detalhes-header__faixa { height: 31px; background: url("../assets/reservas/faixa.png") repeat-x left center / 402px 31px; }
+.csa-detalhes-menu { position: absolute; top: 66px; right: var(--csa-detalhes-margem); z-index: 5; padding: 12px; border: 1px solid var(--csa-cinza-borda-detalhes); background: var(--csa-fundo-pagina); box-shadow: 0 8px 24px #0002; font-size: 18px; }
+.csa-detalhes-menu a { display: block; padding: 12px; color: var(--csa-texto); text-decoration: none; }
+.csa-detalhes-menu a:hover { background: var(--csa-detalhes-fundo); }
+
+.csa-detalhes__conteudo { width: calc(100% - 2 * var(--csa-detalhes-margem)); max-width: var(--csa-detalhes-largura); margin: 0 auto; padding: 32px 0 89px; }
+.csa-detalhes__voltar { display: inline-flex; align-items: center; gap: 16px; margin-bottom: 32px; color: var(--csa-detalhes-neutro); font-weight: 600; text-decoration: none; }
+.csa-detalhes__seta { display: grid; place-items: center; width: 59px; height: 59px; background: var(--csa-fundo-nav); }
+.csa-detalhes__seta img { display: block; transform: scale(1.787875); }
+.csa-detalhes__mensagem { margin: 0; font-size: 18px; color: var(--csa-detalhes-neutro); }
+.csa-detalhes__mensagem--erro { color: var(--csa-vermelho); }
+
+.csa-detalhes__grade { display: grid; grid-template-columns: minmax(0, 2.35fr) minmax(0, 1fr); gap: 20px; align-items: start; }
+.csa-detalhes-card { min-width: 0; padding: 32px; background: var(--csa-fundo-pagina); border: 1px solid var(--csa-cinza-borda-detalhes); }
+.csa-detalhes-card--lateral { min-height: 250px; padding: 24px; }
+.csa-detalhes-card__categoria { margin: 0 0 4px; font-size: 18px; font-weight: 800; text-transform: uppercase; }
+.csa-detalhes-card__titulo { margin: 0 0 20px; font-size: clamp(28px, 3vw, 40px); font-weight: 800; line-height: 1.2; overflow-wrap: anywhere; }
+.csa-detalhes--visita .csa-detalhes-card__categoria,
+.csa-detalhes--visita .csa-detalhes-card__titulo { color: var(--csa-vermelho); }
+.csa-detalhes-card__metadados { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px; margin-bottom: 20px; padding: 14px 0; border-top: 1px solid var(--csa-cinza-borda-detalhes); border-bottom: 1px solid var(--csa-cinza-borda-detalhes); }
+.csa-detalhes-card__metadado { display: inline-flex; align-items: center; gap: 8px; font-size: 16px; font-weight: 600; }
+.csa-detalhes-card__metadado img { display: block; flex: 0 0 18px; width: 18px; height: 18px; }
+.csa-detalhes-card__secao + .csa-detalhes-card__secao:not([hidden]) { margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--csa-cinza-borda-detalhes); }
+.csa-detalhes-card__secao h2 { margin: 0 0 8px; font-size: 22px; font-weight: 800; line-height: 1.3; }
+.csa-detalhes-card__secao p { margin: 0; font-size: 18px; line-height: 1.5; white-space: pre-line; overflow-wrap: anywhere; }
+.csa-detalhes-card__regras { margin: 0; padding-left: 22px; font-size: 18px; line-height: 1.5; }
+.csa-detalhes-card__regras li + li { margin-top: 6px; }
+.csa-detalhes-card--lateral h2 { margin: 0 0 14px; font-size: 22px; font-weight: 800; }
+.csa-detalhes-card__lista { margin: 0; }
+.csa-detalhes-card__campo + .csa-detalhes-card__campo { margin-top: 16px; }
+.csa-detalhes-card__campo dt { color: var(--csa-detalhes-neutro); font-size: 17px; font-weight: 500; }
+.csa-detalhes-card__campo dd { margin: 2px 0 0; font-size: 17px; font-weight: 700; overflow-wrap: anywhere; }
+.csa-detalhes__acoes { display: flex; justify-content: flex-end; grid-column: 1 / -1; margin-top: 12px; }
+.csa-detalhes__continuar { display: inline-flex; align-items: center; justify-content: center; min-height: 50px; padding: 10px 24px; border-radius: 0; background: var(--csa-vermelho); color: #fff; font-size: 18px; font-weight: 800; text-decoration: none; }
+.csa-detalhes__continuar:hover { filter: brightness(.93); }
+
+@media (max-width: 1100px) {
+  .csa-detalhes__grade { gap: 16px; }
+  .csa-detalhes-card { padding: 24px; }
+  .csa-detalhes-card__titulo { font-size: 32px; }
+  .csa-detalhes-card__secao p, .csa-detalhes-card__regras { font-size: 16px; }
+}
+@media (max-width: 760px), (hover: none) and (pointer: coarse) {
+  .csa-detalhes { --csa-detalhes-margem: 30px; -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+  .csa-detalhes-header { background-image: url("../assets/reservas/menu-base-mobile.svg"); }
+  .csa-detalhes-header__conteudo { align-items: flex-start; padding: 24px 30px 0 29px; }
+  .csa-detalhes-header__faixa { margin-top: -1px; background-image: url("../assets/reservas/faixa-mobile.png"); }
+  .csa-detalhes__conteudo { padding-top: 18px; padding-bottom: 50px; }
+  .csa-detalhes__voltar { gap: 8px; margin-bottom: 24px; font-size: 16px; }
+  .csa-detalhes__seta { width: 33px; height: 33px; }
+  .csa-detalhes__seta img { transform: none; }
+  .csa-detalhes__grade { grid-template-columns: minmax(0, 1fr); gap: 20px; }
+  .csa-detalhes-card, .csa-detalhes-card--lateral { padding: 20px; min-height: 0; }
+  .csa-detalhes-card__categoria { font-size: 14px; }
+  .csa-detalhes-card__titulo { font-size: 28px; }
+  .csa-detalhes-card__metadado { font-size: 14px; }
+  .csa-detalhes-card__secao h2, .csa-detalhes-card--lateral h2 { font-size: 19px; }
+  .csa-detalhes-card__secao p, .csa-detalhes-card__regras, .csa-detalhes-card__campo dt, .csa-detalhes-card__campo dd { font-size: 16px; }
+  .csa-detalhes__acoes { margin-top: 4px; }
+  .csa-detalhes__continuar { width: 100%; }
+}
+@media (max-width: 380px) {
+  .csa-detalhes { --csa-detalhes-margem: 16px; }
+  .csa-detalhes-header__conteudo { padding-left: 16px; padding-right: 16px; }
+  .csa-detalhes-header__conteudo > a img { width: 170px; height: auto; }
+  .csa-detalhes-card { padding: 16px; }
+  .csa-detalhes-card__titulo { font-size: 25px; }
+}
