@@ -1,94 +1,326 @@
-# Páginas públicas de informações — espaços, eventos e visitas
 
-## Escopo
+# Páginas de Informações — Reservas e Visitas Mediadas
 
-Tarefa: apresentar espaço/atividade e visita mediada antes do agendamento, com descrição, regras, orientações e continuidade quando houver formulário disponível. HTML e CSS seguem o protótipo; o conteúdo institucional não é inventado quando ausente.
+## 1. Visão geral
 
-- `pages/detalhes-reserva.html`: informações de evento confirmado **ou** espaço disponível escolhido para solicitar uso.
-- `pages/detalhes-visita.html`: informações de visita mediada ou espaço de visita.
-- `css/detalhes.css`: estilos compartilhados, Urbanist, fundo creme, classes `csa-`.
-- `js/detalhes-dados.js`: consulta de espaços e eventos, demonstrações isoladas.
-- `js/detalhes-modelo.js`: prepara dados para a apresentação, sem DOM/API.
-- `js/detalhes.js`: controlador que preenche os cards **declarados no HTML**.
+As páginas de informações da Casa dos Saberes apresentam ao usuário os detalhes de eventos, espaços culturais e visitas mediadas, permitindo consultar descrições, horários, locais, classificações indicativas e orientações antes de prosseguir na navegação ou no agendamento.
 
-Não altera nem compartilha o controlador da agenda administrativa. Não altera o formulário de reservas.
+A implementação utiliza HTML, CSS e JavaScript puro, seguindo a organização modular adotada no frontend do projeto.
 
-## Execução estática
+As duas páginas compartilham estilos e lógica de apresentação, preservando as particularidades de cada modalidade.
 
-Execute `./scripts/iniciar-reservas.sh` e abra:
+## 2. Estrutura dos arquivos
 
-- `http://127.0.0.1:3001/pages/detalhes-reserva.html?demo=1` — evento fictício do Figma.
-- `http://127.0.0.1:3001/pages/detalhes-visita.html?demo=1` — exposição fictícia.
-- `http://127.0.0.1:3001/pages/detalhes-reserva.html?espacoId=1` — Auditório do catálogo local.
-- `http://127.0.0.1:3001/pages/detalhes-reserva.html?espacoId=2&data=2026-11-20&turno=manha` — seleção de espaço com data e turno.
-- `http://127.0.0.1:3001/pages/detalhes-visita.html?espacoId=3` — visão básica do espaço de visita.
+```text
+pages/
+├── detalhes-reserva.html
+└── detalhes-visita.html
 
-Os dois SVGs `assets/detalhes-evento-visita/calendario-icon.svg` e `relogio-icon.svg` foram exportados do Figma pela equipe e devem estar presentes no projeto. Não foram incluídos no ZIP original utilizado como base para esta refatoração.
+css/
+└── detalhes.css
 
-## Evento real
+js/
+├── detalhes-dados.js
+├── detalhes-modelo.js
+└── detalhes.js
 
-`pages/detalhes-reserva.html?eventoId=15` (ou `?id=15`):
+assets/
+└── detalhes-evento-visita/
+    ├── calendario-icon.svg
+    └── relogio-icon.svg
 
-1. `csaDadosDetalhes.consultarEvento('15')` chama `csaApi.requisitar('/eventos/', { autenticado: false })`.
-2. Busca o evento pelo ID, **exigindo status `aceito`** para não divulgar solicitações pendentes.
-3. Resolve `espaco_id` no catálogo de espaços atual, com IDs 1–4.
-4. Usa `csaAgendaModelo.normalizarEvento` para validar referências, datas e horários civis.
-5. `csaDetalhesModelo.prepararEvento` prepara os campos da interface.
-6. `csaDetalhes.apresentar` preenche os elementos já existentes no HTML com `textContent`.
+docs/
+└── detalhes.md
 
-O backend documentado expõe `GET /eventos/` público, mas **não confirma** `GET /eventos/{id}`. Por isso a implementação consulta a listagem. Não há uso de sessão administrativa nesta tela. Para a chamada real, o FastAPI precisa estar rodando e liberar a origem do frontend via CORS.
+tests/
+└── detalhes.test.cjs
+```
 
-### Observação importante sobre o catálogo
+### Responsabilidades
 
-O catálogo local `{1: Auditório, 2: Quintal, 3: Salas Expositivas, 4: Varanda}` foi extraído de `js/dados-api.js`, pois o backend ainda não oferece um endpoint específico de espaços. As descrições, orientações e regras são strings/listas vazias por padrão. **Os textos oficiais deverão ser fornecidos pela instituição; não foram presumidos.** Quando houver endpoint próprio, substitua apenas a implementação de consulta em `detalhes-dados.js`.
+| Arquivo | Responsabilidade |
+|---|---|
+| `detalhes-reserva.html` | Estrutura visual das informações de eventos e espaços disponíveis. |
+| `detalhes-visita.html` | Estrutura visual das informações de visitas mediadas. |
+| `detalhes.css` | Estilização compartilhada e responsividade das páginas. |
+| `detalhes-dados.js` | Consulta e disponibilização dos dados. |
+| `detalhes-modelo.js` | Validação, normalização e formatação das informações. |
+| `detalhes.js` | Carregamento, apresentação dos dados e interações. |
+| `detalhes.test.cjs` | Testes automatizados das regras e comportamentos. |
 
-## Fluxo e continuidade
+## 3. Arquitetura
 
-A agenda pública ainda não está presente no ZIP utilizado como base. A página `pages/agenda.html` atual é a **agenda administrativa** e seus cards acionam painéis internos (`csa:abrir-detalhes`). Não altere esse comportamento.
+A implementação separa a obtenção dos dados, as regras de preparação e a apresentação das informações.
 
-O fluxo público projetado é:
+### 3.1. Camada de dados
 
-- **Evento já confirmado:** agenda pública → `detalhes-reserva.html?eventoId=15` → informações do evento. Sem botão de solicitação, conforme o frame de evento no protótipo.
-- **Espaço disponível:** agenda pública → `detalhes-reserva.html?espacoId=1&data=2026-11-20&turno=manha` → informação do espaço → `reservas.html?espacoId=1&data=2026-11-20&turno=manha`.
-- **Visita mediada:** agenda pública → `detalhes-visita.html?espacoId=3` → informações da visita → formulário quando a equipe definir sua rota.
+O módulo `detalhes-dados.js` centraliza as consultas utilizadas pelas páginas.
 
-**Atenção:** o formulário `reservas.html` existente ainda não consome `espacoId`, `data` nem `turno`. Os parâmetros preservam contexto para a futura integração, mas não preenchem automaticamente o formulário nem garantem disponibilidade.
+Suas responsabilidades incluem:
 
-Não há `pages/visita.html` ou `pages/visitas.html` no ZIP. Em vez de criar um link quebrado, o botão de continuidade de visita permanece oculto até que a equipe forneça uma rota real. Para configurar, forneça `csaConfig.formularioVisitaUrl`, por exemplo, `globalThis.csaConfig = { formularioVisitaUrl: 'NOME-REAL-DO-FORMULARIO.html' }` antes de `config.js`. O controlador só habilita URLs HTTP(S) da mesma origem.
+- Consultar eventos pelo identificador.
+- Recuperar informações dos espaços culturais.
+- Disponibilizar dados demonstrativos para testes.
+- Isolar a origem dos dados da lógica de apresentação.
 
-## Contrato de apresentação
+A consulta de eventos utiliza a rota pública `GET /eventos/`, por meio da infraestrutura de API do projeto, com acesso não autenticado.
 
-Sem acoplamento ao endpoint, um integrador pode chamar:
+A exibição pública considera somente eventos com status `aceito`, evitando apresentar atividades pendentes como confirmadas.
 
-```js
+As informações dos espaços são disponibilizadas por um catálogo local, permitindo a substituição da fonte de dados na integração com o backend.
+
+### 3.2. Camada de modelo
+
+O módulo `detalhes-modelo.js` concentra as regras de validação, normalização e preparação das informações.
+
+É responsável por:
+
+- Validar os dados recebidos.
+- Preparar eventos, espaços e visitas para apresentação.
+- Formatar datas e horários.
+- Tratar campos opcionais.
+- Garantir a consistência dos objetos apresentados.
+
+As regras são implementadas sem acesso ao DOM ou realização de requisições.
+
+A preparação dos eventos considera as estruturas e validações utilizadas pelo modelo da agenda.
+
+### 3.3. Controlador
+
+O módulo `detalhes.js` coordena o funcionamento das duas páginas.
+
+Suas responsabilidades incluem:
+
+- Identificar a modalidade da página.
+- Interpretar os parâmetros recebidos pela URL.
+- Solicitar os dados necessários.
+- Preencher os elementos da interface.
+- Controlar a visibilidade de campos opcionais.
+- Apresentar mensagens de indisponibilidade.
+- Gerenciar os botões de continuidade e a navegação.
+
+A estrutura principal dos cards é definida no HTML. O controlador atualiza seus conteúdos utilizando `textContent`, enquanto listas variáveis de regras são preenchidas dinamicamente.
+
+Essa organização mantém a apresentação independente da origem dos dados.
+
+## 4. Páginas implementadas
+
+### 4.1. Informações da reserva
+
+**Arquivo:** `pages/detalhes-reserva.html`
+
+Apresenta as informações correspondentes à opção selecionada na agenda.
+
+A página contempla dois cenários.
+
+#### Evento cadastrado
+
+Permite consultar informações de uma atividade confirmada, incluindo:
+
+- Nome do evento.
+- Espaço de realização.
+- Data e horário.
+- Descrição da atividade.
+- Classificação indicativa.
+- Demais informações disponíveis.
+
+#### Espaço disponível
+
+Apresenta as informações de um espaço cultural disponível para solicitação de reserva, incluindo descrição, regras e orientações, quando disponibilizadas.
+
+Nesse cenário, a página oferece continuidade para o formulário de reserva, preservando o contexto da seleção.
+
+### 4.2. Informações da visita mediada
+
+**Arquivo:** `pages/detalhes-visita.html`
+
+Apresenta informações relacionadas às visitas mediadas e aos espaços destinados a essas atividades.
+
+O conteúdo pode incluir:
+
+- Identificação da visita ou atividade.
+- Espaço relacionado.
+- Descrição.
+- Classificação indicativa.
+- Data e horário, quando aplicáveis.
+- Regras e orientações.
+- Opção de continuidade para o agendamento.
+
+Os campos opcionais são exibidos conforme a disponibilidade dos dados.
+
+## 5. Navegação e integração com a agenda
+
+As páginas utilizam parâmetros na URL para identificar a opção selecionada pelo usuário.
+
+### 5.1. Evento cadastrado
+
+```text
+pages/detalhes-reserva.html?eventoId=15
+```
+
+O parâmetro `eventoId` identifica o evento que deverá ser consultado e apresentado.
+
+### 5.2. Espaço disponível
+
+```text
+pages/detalhes-reserva.html?espacoId=1
+```
+
+O parâmetro `espacoId` identifica o espaço selecionado.
+
+Também é possível preservar informações da escolha do usuário:
+
+```text
+pages/detalhes-reserva.html?espacoId=1&data=2026-11-20&turno=manha
+```
+
+### 5.3. Parâmetros utilizados
+
+| Parâmetro | Descrição |
+|---|---|
+| `eventoId` | Identificador do evento selecionado. |
+| `espacoId` | Identificador do espaço selecionado. |
+| `data` | Data selecionada para a solicitação. |
+| `turno` | Turno selecionado. |
+| `demo` | Ativa o carregamento de dados demonstrativos. |
+
+### 5.4. Contrato de navegação
+
+A agenda pública deve encaminhar o usuário à página correspondente, informando o identificador da opção selecionada.
+
+Exemplo de navegação para um evento:
+
+```javascript
+// Encaminha o evento selecionado para a página de informações.
+window.location.href =
+  `../detalhes-reserva.html?eventoId=${encodeURIComponent(evento.id)}`;
+```
+
+Exemplo de navegação para um espaço disponível:
+
+```javascript
+// Preserva o espaço, a data e o turno selecionados.
+const parametros = new URLSearchParams({
+  espacoId: espaco.id,
+  data: dataSelecionada,
+  turno: turnoSelecionado
+});
+
+window.location.href = `../detalhes-reserva.html?${parametros}`;
+```
+
+A página de detalhes realiza a consulta a partir do identificador recebido. Não é necessário transferir o objeto completo do evento pela URL.
+
+## 6. Continuidade para os formulários
+
+O comportamento dos botões de continuidade depende da modalidade apresentada.
+
+### Reserva de espaço
+
+A página pode encaminhar o usuário ao formulário de reserva, preservando o contexto da seleção:
+
+```text
+pages/reservas.html?espacoId=1&data=2026-11-20&turno=manha
+```
+
+O recebimento desses parâmetros pelo formulário permite uma futura integração para preenchimento automático dos dados relacionados à solicitação.
+
+### Visita mediada
+
+A página de visita utiliza um endereço de continuidade configurável.
+
+O botão correspondente é exibido quando existe um endereço válido para o formulário de agendamento.
+
+As URLs são validadas antes da apresentação dos botões.
+
+## 7. Apresentação das informações
+
+O controlador disponibiliza o método `csaDetalhes.apresentar()`, responsável por preencher os elementos visuais com os dados preparados.
+
+Exemplo de utilização:
+
+```javascript
 csaDetalhes.apresentar({
-  modalidade: 'visita',
-  categoria: 'Visita mediada',
-  titulo: 'Título fornecido pela instituição',
-  espaco: 'Salas Expositivas',
-  descricao: 'Descrição fornecida pela instituição',
-  classificacao: '',
-  orientacoes: 'Orientações fornecidas pela instituição',
-  regras: ['Regra oficial 1', 'Regra oficial 2'],
-  data: '',
-  horario: '',
+  modalidade: 'evento',
+  categoria: 'Auditório',
+  titulo: 'Título do evento',
+  espaco: 'Auditório',
+  descricao: 'Descrição do evento.',
+  classificacao: 'Livre',
+  orientacoes: '',
+  regras: [],
+  data: '2026-11-20',
+  horario: '09:00',
   urlContinuar: ''
 });
 ```
 
-A apresentação atualiza apenas os campos do HTML, ocultando seções opcionais vazias. Apenas itens de lista (`li`) são criados dinamicamente. Não usa `innerHTML` para dados externos.
+Os campos opcionais são apresentados conforme o conteúdo disponível.
 
-## Estados e segurança
+Essa abordagem permite reutilizar a estrutura visual para diferentes eventos, espaços e visitas.
 
-A página não exibe eventos fictícios sem `?demo=1`. Falhas apresentam apenas uma mensagem breve no conteúdo, sem criar telas inteiras não previstas no protótipo. Os dados e regras apresentados não são persistidos em localStorage. URLs de continuidade são validadas pela mesma origem e protocolos HTTP(S).
+## 8. Interface e responsividade
 
-## Verificação
+As páginas seguem a identidade visual do sistema Casa dos Saberes, utilizando a tipografia Urbanist, os elementos gráficos institucionais e as variáveis CSS compartilhadas.
 
-```bash
-node --check js/detalhes-dados.js
-node --check js/detalhes-modelo.js
-node --check js/detalhes.js
-node --test tests/detalhes.test.cjs
+O layout contempla:
+
+- **Desktop:** organização dos conteúdos em cards principal e lateral.
+- **Mobile:** reorganização vertical, com ajustes de espaçamentos, dimensões e tipografia.
+- **Navegação:** menu responsivo e botões de interação.
+- **Conteúdo:** exibição condicional das seções conforme as informações disponíveis.
+
+Os estilos são centralizados em `css/detalhes.css`, utilizando também as variáveis definidas em `css/base.css`.
+
+## 9. Testes e demonstração
+
+As páginas disponibilizam um modo demonstrativo para validar o funcionamento das interfaces sem depender da disponibilidade do backend.
+
+### Evento demonstrativo
+
+```text
+http://127.0.0.1:3001/pages/detalhes-reserva.html?demo=1
 ```
 
-Compare visualmente as versões desktop e mobile com as imagens do Figma. O arquivo base do projeto não traz todos os assets pessoais exportados na sua branch nem a futura página pública da agenda.
+### Visita demonstrativa
+
+```text
+http://127.0.0.1:3001/pages/detalhes-visita.html?demo=1
+```
+
+### Espaço do catálogo
+
+```text
+http://127.0.0.1:3001/pages/detalhes-reserva.html?espacoId=1
+```
+
+O parâmetro `demo=1` utiliza dados de demonstração, mantendo esses exemplos separados das consultas normais.
+
+### Testes automatizados
+
+Execute na raiz do frontend:
+
+```bash
+node tests/detalhes.test.cjs
+```
+
+Os testes abrangem:
+
+- Validação e formatação de dados.
+- Consulta pública de eventos confirmados.
+- Restrição de divulgação de eventos pendentes.
+- Preparação dos dados de espaços e visitas.
+- Isolamento dos dados demonstrativos.
+- Organização dos componentes HTML e do controlador.
+
+## 10. Considerações sobre a integração
+
+As páginas estão organizadas para integrar o fluxo público de consulta de eventos e solicitação de agendamentos.
+
+A comunicação entre os módulos utiliza identificadores na URL e uma camada de dados independente da apresentação.
+
+A integração com a agenda pública deve utilizar os parâmetros documentados para encaminhar a opção selecionada.
+
+As informações institucionais, como descrições, regras e orientações, são apresentadas de acordo com os dados disponíveis para cada modalidade.
+
+Essa organização permite integrar os módulos do sistema sem comprometer a separação de responsabilidades, a responsividade e a manutenção das interfaces.
