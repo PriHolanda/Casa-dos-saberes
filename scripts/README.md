@@ -10,7 +10,7 @@ Na raiz do projeto, execute:
 ./scripts/iniciar-reservas.sh
 ```
 
-Abra **http://127.0.0.1:3001/pages/reservas.html**. Essa prévia não inicia nem consulta o backend ou o Keycloak e não exige login. A porta 3001 permite usá-la junto do sistema integrado, que usa 3000.
+Abra **http://127.0.0.1:3001/pages/cliente/reservas.html**. Essa prévia não inicia nem consulta o backend ou o Keycloak e não exige login. A porta 3001 permite usá-la junto do sistema integrado, que usa 3000.
 
 Para mudar a porta, use `PORT=3002 ./scripts/iniciar-reservas.sh`. Encerre com `Ctrl+C`; consulte as instruções com `./scripts/iniciar-reservas.sh --help`.
 

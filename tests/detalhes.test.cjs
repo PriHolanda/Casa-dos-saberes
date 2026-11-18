@@ -48,8 +48,8 @@ const contexto = vm.createContext({
 // Carrega os módulos no mesmo contexto, sem depender do navegador.
 for (const arquivo of [
   'agenda-modelo.js',
-  'detalhes-dados.js',
-  'detalhes-modelo.js'
+  'cliente/detalhes-dados.js',
+  'cliente/detalhes-modelo.js'
 ]) {
   vm.runInContext(
     fs.readFileSync(path.join(raiz, 'js', arquivo), 'utf8'),
@@ -211,7 +211,7 @@ test('demo não contamina consultas normais e preserva os exemplos', () => {
 
 test('HTML mantém cards fixos e não possui botões de continuidade', () => {
   const script = fs.readFileSync(
-    path.join(raiz, 'js', 'detalhes.js'),
+    path.join(raiz, 'js', 'cliente', 'detalhes.js'),
     'utf8'
   );
 
@@ -227,7 +227,7 @@ test('HTML mantém cards fixos e não possui botões de continuidade', () => {
     'detalhes-visita.html'
   ]) {
     const html = fs.readFileSync(
-      path.join(raiz, 'pages', pagina),
+      path.join(raiz, 'pages', 'cliente', pagina),
       'utf8'
     );
 

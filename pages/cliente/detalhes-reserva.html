@@ -4,34 +4,34 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Informações sobre visitas mediadas da Casa dos Saberes Cego Aderaldo.">
-  <title>Informações da visita mediada | Casa dos Saberes</title>
+  <meta name="description" content="Informações sobre eventos da Casa dos Saberes Cego Aderaldo.">
+  <title>Informações do evento | Casa dos Saberes</title>
 
-  <link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
-  <link rel="preload" href="../assets/reservas/urbanist-variable.ttf" as="font" type="font/ttf" crossorigin>
+  <link rel="icon" type="image/svg+xml" href="../../assets/favicon.svg">
+  <link rel="preload" href="../../assets/reservas/urbanist-variable.ttf" as="font" type="font/ttf" crossorigin>
 
-  <link rel="stylesheet" href="../css/base.css">
-  <link rel="stylesheet" href="../css/componentes.css">
-  <link rel="stylesheet" href="../css/detalhes.css">
+  <link rel="stylesheet" href="../../css/base.css">
+  <link rel="stylesheet" href="../../css/componentes.css">
+  <link rel="stylesheet" href="../../css/cliente/detalhes.css">
 
-  <script src="../js/config.js" defer></script>
-  <script src="../js/api.js" defer></script>
-  <script src="../js/agenda-modelo.js" defer></script>
-  <script src="../js/detalhes-dados.js" defer></script>
-  <script src="../js/detalhes-modelo.js" defer></script>
-  <script src="../js/detalhes.js" defer></script>
+  <script src="../../js/config.js" defer></script>
+  <script src="../../js/api.js" defer></script>
+  <script src="../../js/agenda-modelo.js" defer></script>
+  <script src="../../js/cliente/detalhes-dados.js" defer></script>
+  <script src="../../js/cliente/detalhes-modelo.js" defer></script>
+  <script src="../../js/cliente/detalhes.js" defer></script>
 </head>
 
-<body class="csa-detalhes csa-detalhes--visita" data-csa-tipo="visita">
+<body class="csa-detalhes csa-detalhes--reserva" data-csa-tipo="reserva">
   <a class="csa-detalhes__pular" href="#csa-detalhes-conteudo">
     Ir para o conteúdo
   </a>
 
   <header class="csa-detalhes-header">
     <div class="csa-detalhes-header__conteudo">
-      <a href="cliente/agenda-cliente.html" aria-label="Casa dos Saberes — agenda">
+      <a href="agenda-cliente.html" aria-label="Casa dos Saberes — agenda">
         <img
-          src="../assets/reservas/csca-gov.png"
+          src="../../assets/reservas/csca-gov.png"
           width="214"
           height="31"
           alt="Casa dos Saberes Cego Aderaldo e Governo do Ceará"
@@ -45,7 +45,7 @@
         aria-expanded="false"
         aria-controls="csa-detalhes-menu"
       >
-        <img src="../assets/reservas/menu.svg" width="41" height="27" alt="">
+        <img src="../../assets/reservas/menu.svg" width="41" height="27" alt="">
       </button>
 
       <nav
@@ -54,7 +54,7 @@
         aria-label="Navegação principal"
         hidden
       >
-        <a href="cliente/agenda-cliente.html">Agenda</a>
+        <a href="agenda-cliente.html">Agenda</a>
         <a href="reservas.html">Formulário de reserva</a>
       </nav>
     </div>
@@ -63,9 +63,9 @@
   </header>
 
   <main class="csa-detalhes__conteudo" id="csa-detalhes-conteudo">
-    <a class="csa-detalhes__voltar" href="cliente/agenda-cliente.html">
+    <a class="csa-detalhes__voltar" href="agenda-cliente.html">
       <span class="csa-detalhes__seta" aria-hidden="true">
-        <img src="../assets/reservas/voltar.svg" width="24" height="24" alt="">
+        <img src="../../assets/reservas/voltar.svg" width="24" height="24" alt="">
       </span>
       <span>Voltar para a agenda</span>
     </a>
@@ -92,7 +92,7 @@
             hidden
           >
             <img
-              src="../assets/detalhes-evento-visita/calendario-icon.svg"
+              src="../../assets/detalhes-evento-visita/calendario-icon.svg"
               width="18"
               height="18"
               alt=""
@@ -106,7 +106,7 @@
             hidden
           >
             <img
-              src="../assets/detalhes-evento-visita/relogio-icon.svg"
+              src="../../assets/detalhes-evento-visita/relogio-icon.svg"
               width="18"
               height="18"
               alt=""
@@ -120,7 +120,7 @@
           id="csa-detalhes-descricao-secao"
           hidden
         >
-          <h2 id="csa-detalhes-descricao-titulo">Sobre a visita</h2>
+          <h2 id="csa-detalhes-descricao-titulo">Sobre o evento</h2>
           <p id="csa-detalhes-descricao"></p>
         </section>
 
@@ -138,7 +138,7 @@
           id="csa-detalhes-regras-secao"
           hidden
         >
-          <h2>Regras da visita</h2>
+          <h2>Regras de utilização</h2>
           <ul class="csa-detalhes-card__regras" id="csa-detalhes-regras"></ul>
         </section>
       </article>

@@ -1,337 +1,200 @@
-
 document.addEventListener("DOMContentLoaded", () => {
+  const dataAtualElemento = document.querySelector(".csa-date-current");
+  const formatoDataMobile = window.matchMedia("(max-width: 759px)");
 
-    // ==========================================
-    // 1. SELECIONANDO OS ELEMENTOS DO HTML
-    // ==========================================
+  const botoesData = document.querySelectorAll(".csa-date-button");
+  const botaoDataAnterior = botoesData[0];
+  const botaoDataProxima = botoesData[1];
 
-    const dataAtualElemento = document.querySelector(
-        ".csa-date-current"
-    );
-    const formatoDataMobile = window.matchMedia("(max-width: 768px)");
+  const botaoEscolherData = document.querySelector(".csa-date-picker");
+  const seletorData = document.querySelector(".csa-date-input");
+  const filtroDisponibilidade = document.querySelector(".csa-available-checkbox");
+  const botoesPeriodo = document.querySelectorAll(".csa-filter-btn");
+  const periodos = document.querySelectorAll(".csa-period");
+  const botoesReserva = document.querySelectorAll(".csa-event-reserve");
+  const paginaFormularioReserva = "reservas.html";
 
-    const botoesData = document.querySelectorAll(
-        ".csa-date-button"
-    );
+  let dataSelecionada = new Date(2026, 8, 21);
+  let periodoSelecionado = "todos";
 
-    const botaoDataAnterior = botoesData[0];
-    const botaoDataProxima = botoesData[1];
+  const mapaPeriodos = {
+    "Todos": "todos",
+    "Manhã": "morning",
+    "Tarde": "afternoon",
+    "Noite": "night"
+  };
 
-    const botaoEscolherData = document.querySelector(
-        ".csa-date-picker"
-    );
+  function capitalizar(texto) {
+    return texto.charAt(0).toUpperCase() + texto.slice(1);
+  }
 
-    const filtroDisponibilidade = document.querySelector(
-        ".csa-available-checkbox"
-    );
+  function formatarData(data) {
+    return data.toLocaleDateString("pt-BR", {
+      weekday: "long",
+      day: "numeric",
+      month: "long"
+    });
+  }
 
-    const botoesPeriodo = document.querySelectorAll(
-        ".csa-filter-btn"
-    );
+  function formatarDataMobileCompacta(data) {
+    const semana = data.toLocaleDateString("pt-BR", { weekday: "short" }).replace(".", "");
+    const mes = data.toLocaleDateString("pt-BR", { month: "long" });
 
-    const periodos = document.querySelectorAll(
-        ".csa-period"
-    );
+    return `${capitalizar(semana)}, ${data.getDate()} de ${capitalizar(mes)} de ${data.getFullYear()}`;
+  }
 
-    const botoesReserva = document.querySelectorAll(
-        ".csa-event-reserve"
-    );
+  function formatarDataISO(data) {
+    const ano = data.getFullYear();
+    const mes = String(data.getMonth() + 1).padStart(2, "0");
+    const dia = String(data.getDate()).padStart(2, "0");
 
+    return `${ano}-${mes}-${dia}`;
+  }
 
-    // ==========================================
-    // 2. CONTROLE DA DATA
-    // ==========================================
+  function atualizarData() {
+    dataAtualElemento.textContent = formatoDataMobile.matches
+      ? formatarDataMobileCompacta(dataSelecionada)
+      : capitalizar(formatarData(dataSelecionada));
+  }
 
-    // Data inicial exibida no HTML
-    let dataSelecionada = new Date(2026, 8, 21);
-
-    // Formata a data para exibição
-    function formatarData(data) {
-
-        return data.toLocaleDateString("pt-BR", {
-            weekday: "long",
-            day: "numeric",
-            month: "long"
-        });
-
-    }
-
-    function formatarDataMobileCompacta(data) {
-
-        const dataFormatada = data.toLocaleDateString("pt-BR", {
-            weekday: "short",
-            day: "numeric",
-            month: "long",
-            year: "numeric"
-        });
-
-        return dataFormatada.charAt(0).toUpperCase() +
-            dataFormatada.slice(1).replace(",", "");
-
-    }
-
-    // Atualiza o texto da data na tela
-    function atualizarData() {
-
-        dataAtualElemento.textContent = formatoDataMobile.matches
-            ? formatarDataMobileCompacta(dataSelecionada)
-            : formatarData(dataSelecionada).replace(/^./, letra => letra.toUpperCase());
-
-    }
-
-    // Formata para o padrão YYYY-MM-DD
-    function formatarDataISO(data) {
-
-        const ano = data.getFullYear();
-
-        const mes = String(data.getMonth() + 1).padStart(2, "0");
-
-        const dia = String(data.getDate()).padStart(2, "0");
-
-        return `${ano}-${mes}-${dia}`;
-
-    }
-
-    // Altera a data
-    function alterarData(dias) {
-
-        dataSelecionada.setDate(
-            dataSelecionada.getDate() + dias
-        );
-
-        atualizarData();
-
-        console.log("Data selecionada:", formatarDataISO(dataSelecionada));
-
-        // Futuramente: buscar os eventos dessa data na API
-
-    }
-
-    // Inicializa a data
+  function alterarData(dias) {
+    dataSelecionada.setDate(dataSelecionada.getDate() + dias);
     atualizarData();
-    formatoDataMobile.addEventListener("change", atualizarData);
+    console.log("Data selecionada:", formatarDataISO(dataSelecionada));
+  }
 
-    // Voltar um dia
-    botaoDataAnterior.addEventListener("click", () => {
-        alterarData(-1);
-    });
+  function aplicarFiltros() {
+    periodos.forEach(periodo => {
+      const periodoVisivel =
+        periodoSelecionado === "todos" ||
+        periodo.classList.contains(`csa-period-${periodoSelecionado}`);
 
-    // Avançar um dia
-    botaoDataProxima.addEventListener("click", () => {
-        alterarData(1);
-    });
+      const eventos = periodo.querySelectorAll(".csa-event");
+      let possuiEventoVisivel = false;
 
+      eventos.forEach(evento => {
+        const estaDisponivel = evento.classList.contains("csa-event-available");
+        const deveMostrar = !filtroDisponibilidade.checked || estaDisponivel;
 
-    // ==========================================
-    // 3. ESCOLHER DATA NO CALENDÁRIO
-    // ==========================================
+        evento.style.display = deveMostrar ? "flex" : "none";
 
-    const seletorData = document.querySelector(".csa-date-input");
-
-    botaoEscolherData.addEventListener("click", () => {
-
-        seletorData.value = formatarDataISO(dataSelecionada);
-
-        const posicaoBotao = botaoEscolherData.getBoundingClientRect();
-        seletorData.style.left = `${posicaoBotao.left}px`;
-        seletorData.style.top = `${posicaoBotao.top}px`;
-        seletorData.style.width = `${posicaoBotao.width}px`;
-        seletorData.style.height = `${posicaoBotao.height}px`;
-
-        if (typeof seletorData.showPicker === "function") {
-            seletorData.showPicker();
-        } else {
-            seletorData.click();
+        if (deveMostrar) {
+          possuiEventoVisivel = true;
         }
+      });
 
+      periodo.style.display = periodoVisivel && possuiEventoVisivel ? "" : "none";
     });
+  }
 
-    seletorData.addEventListener("change", () => {
+  atualizarData();
+  formatoDataMobile.addEventListener("change", atualizarData);
 
-        if (!seletorData.value) return;
+  botaoDataAnterior.addEventListener("click", () => {
+    alterarData(-1);
+  });
 
-        const [ano, mes, dia] = seletorData.value
-            .split("-")
-            .map(Number);
+  botaoDataProxima.addEventListener("click", () => {
+    alterarData(1);
+  });
 
-        dataSelecionada = new Date(ano, mes - 1, dia);
+  botaoEscolherData.addEventListener("click", () => {
+    seletorData.value = formatarDataISO(dataSelecionada);
 
-        atualizarData();
+    const posicaoBotao = botaoEscolherData.getBoundingClientRect();
+    seletorData.style.left = `${posicaoBotao.left}px`;
+    seletorData.style.top = `${posicaoBotao.top}px`;
+    seletorData.style.width = `${posicaoBotao.width}px`;
+    seletorData.style.height = `${posicaoBotao.height}px`;
 
-    });
-
-
-    // ==========================================
-    // 4. FILTRO DE PERÍODO
-    // ==========================================
-
-    let periodoSelecionado = "todos";
-
-    // Relaciona os nomes dos botões às classes do HTML
-    const mapaPeriodos = {
-        "Todos": "todos",
-        "Manhã": "morning",
-        "Tarde": "afternoon",
-        "Noite": "night"
-    };
-
-    // Aplica os filtros da agenda
-    function aplicarFiltros() {
-
-        periodos.forEach(periodo => {
-
-            const periodoVisivel =
-                periodoSelecionado === "todos" ||
-                periodo.classList.contains(
-                    `csa-period-${periodoSelecionado}`
-                );
-
-            const eventos = periodo.querySelectorAll(
-                ".csa-event"
-            );
-
-            let possuiEventoVisivel = false;
-
-            eventos.forEach(evento => {
-
-                // Verifica se o evento está disponível
-                const estaDisponivel = evento.classList.contains(
-                    "csa-event-available"
-                );
-
-                // Verifica o filtro de disponibilidade
-                const deveMostrar =
-                    !filtroDisponibilidade.checked || estaDisponivel;
-
-                // Mostra ou esconde o cartão
-                evento.style.display = deveMostrar ? "flex" : "none";
-
-                if (deveMostrar) {
-                    possuiEventoVisivel = true;
-                }
-
-            });
-
-            // Esconde o período se não houver eventos visíveis
-            periodo.style.display =
-                periodoVisivel && possuiEventoVisivel
-                    ? ""
-                    : "none";
-
-        });
-
+    if (typeof seletorData.showPicker === "function") {
+      seletorData.showPicker();
+    } else {
+      seletorData.click();
     }
+  });
 
-    // Clique nos botões de período
-    botoesPeriodo.forEach(botao => {
+  seletorData.addEventListener("change", () => {
+    if (!seletorData.value) return;
 
-        botao.addEventListener("click", () => {
+    const [ano, mes, dia] = seletorData.value.split("-").map(Number);
 
-            // Remove a seleção dos outros botões
-            botoesPeriodo.forEach(item => {
-                item.classList.remove("csa-filter-active");
-            });
+    dataSelecionada = new Date(ano, mes - 1, dia);
+    atualizarData();
+  });
 
-            // Ativa o botão clicado
-            botao.classList.add("csa-filter-active");
+  botoesPeriodo.forEach(botao => {
+    botao.addEventListener("click", () => {
+      botoesPeriodo.forEach(item => {
+        item.classList.remove("csa-filter-active");
+      });
 
-            // Identifica o período escolhido
-            const nomePeriodo = botao.textContent.trim();
+      botao.classList.add("csa-filter-active");
 
-            periodoSelecionado = mapaPeriodos[nomePeriodo];
+      const nomePeriodo = botao.textContent.trim();
+      periodoSelecionado = mapaPeriodos[nomePeriodo];
 
-            // Atualiza a agenda
-            aplicarFiltros();
-
-        });
-
+      aplicarFiltros();
     });
+  });
 
-
-    // ==========================================
-    // 5. FILTRO SOMENTE DISPONÍVEIS
-    // ==========================================
-
-    filtroDisponibilidade.addEventListener("change", () => {
-
-        aplicarFiltros();
-
-    });
-
-
-    // ==========================================
-    // 6. SOLICITAR RESERVA
-    // ==========================================
-
-    botoesReserva.forEach(botao => {
-
-        botao.addEventListener("click", () => {
-
-            // Identifica o cartão clicado
-            const evento = botao.closest(".csa-event");
-
-            // Identifica o espaço
-            const espaco = evento.querySelector(
-                ".csa-event-space"
-            ).textContent.trim();
-
-            // Identifica o período
-            const periodo = evento.closest(".csa-period");
-
-            let nomePeriodo = "";
-
-            if (periodo.classList.contains("csa-period-morning")) {
-                nomePeriodo = "Manhã";
-            } else if (periodo.classList.contains("csa-period-afternoon")) {
-                nomePeriodo = "Tarde";
-            } else if (periodo.classList.contains("csa-period-night")) {
-                nomePeriodo = "Noite";
-            }
-
-            // Organiza as informações da reserva
-            const reserva = {
-                espaco: espaco,
-                periodo: nomePeriodo,
-                data: formatarData(dataSelecionada),
-                dataISO: formatarDataISO(dataSelecionada)
-            };
-
-            // Dispara o evento para integração com o formulário
-            document.dispatchEvent(
-                new CustomEvent("csa:solicitar-reserva", {
-                    detail: reserva
-                })
-            );
-
-        });
-
-    });
-
-
-    // ==========================================
-    // 7. RECEBER SOLICITAÇÃO DE RESERVA
-    // ==========================================
-
-    document.addEventListener("csa:solicitar-reserva", (event) => {
-
-        const reserva = event.detail;
-
-        console.log("Informações da reserva:");
-        console.log("Espaço:", reserva.espaco);
-        console.log("Período:", reserva.periodo);
-        console.log("Data:", reserva.data);
-        console.log("Data ISO:", reserva.dataISO);
-
-        // Futuramente:
-        // Salvar as informações e abrir o formulário de reserva.
-
-    });
-
-
-    // ==========================================
-    // 8. INICIALIZAÇÃO
-    // ==========================================
-
+  filtroDisponibilidade.addEventListener("change", () => {
     aplicarFiltros();
+  });
 
+  botoesReserva.forEach(botao => {
+    botao.addEventListener("click", () => {
+      const evento = botao.closest(".csa-event");
+      const espaco = evento.querySelector(".csa-event-space").textContent.trim();
+      const periodo = evento.closest(".csa-period");
+
+      let nomePeriodo = "";
+
+      if (periodo.classList.contains("csa-period-morning")) {
+        nomePeriodo = "Manhã";
+      } else if (periodo.classList.contains("csa-period-afternoon")) {
+        nomePeriodo = "Tarde";
+      } else if (periodo.classList.contains("csa-period-night")) {
+        nomePeriodo = "Noite";
+      }
+
+      const reserva = {
+        espaco: espaco,
+        periodo: nomePeriodo,
+        data: formatarData(dataSelecionada),
+        dataISO: formatarDataISO(dataSelecionada)
+      };
+
+      document.dispatchEvent(
+        new CustomEvent("csa:solicitar-reserva", {
+          detail: reserva
+        })
+      );
+    });
+  });
+
+  document.addEventListener("csa:solicitar-reserva", (event) => {
+    const reserva = event.detail;
+
+    const parametros = new URLSearchParams({
+      espaco: reserva.espaco,
+      periodo: reserva.periodo,
+      data: reserva.dataISO
+    });
+
+    window.location.href = `${paginaFormularioReserva}?${parametros.toString()}`;
+  });
+
+  document.querySelectorAll(".csa-event-details").forEach(link => {
+    link.addEventListener("click", (evento) => {
+      evento.preventDefault();
+
+      const url = new URL(link.getAttribute("href"), window.location.href);
+      url.searchParams.set("data", formatarDataISO(dataSelecionada));
+
+      window.location.href = url.toString();
+    });
+  });
+
+  aplicarFiltros();
 });

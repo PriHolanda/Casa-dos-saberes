@@ -46,7 +46,7 @@ let ws;
   };
   const abrir = async (tipo, demo) => {
     const origem = process.env.CSA_BASE_URL;
-    const pagina = `pages/confirmacao-${tipo}.html`;
+    const pagina = `pages/cliente/confirmacao-${tipo}.html`;
     const url = (origem ? new URL(pagina, origem).href : pathToFileURL(path.resolve(__dirname, '..', pagina)).href) + (demo ? '?demo=1' : '');
     await cmd('Page.navigate', { url });
     for (let tentativa = 0; tentativa < 100; tentativa++) {

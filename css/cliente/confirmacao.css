@@ -102,7 +102,7 @@
 
 .csa-confirmacao-faixa {
   height: 30px;
-  background: url('../assets/barra1.svg') left center / auto 30px repeat-x;
+  background: url('../../assets/barra1.svg') left center / auto 30px repeat-x;
 }
 
 .csa-confirmacao-conteudo {

@@ -15,16 +15,19 @@ As páginas possuem estrutura responsiva e compartilham os módulos de consulta,
 
 ```text
 pages/
-├── detalhes-reserva.html
-└── detalhes-visita.html
+└── cliente/
+    ├── detalhes-reserva.html
+    └── detalhes-visita.html
 
 css/
-└── detalhes.css
+└── cliente/
+    └── detalhes.css
 
 js/
-├── detalhes-dados.js
-├── detalhes-modelo.js
-└── detalhes.js
+└── cliente/
+    ├── detalhes-dados.js
+    ├── detalhes-modelo.js
+    └── detalhes.js
 
 assets/
 └── detalhes-evento-visita/
@@ -42,12 +45,12 @@ tests/
 
 | Arquivo | Responsabilidade |
 |---|---|
-| `detalhes-reserva.html` | Apresentação das informações de eventos cadastrados e confirmados. |
-| `detalhes-visita.html` | Apresentação das informações de visitas mediadas. |
-| `detalhes.css` | Estilos compartilhados e responsividade das páginas. |
-| `detalhes-dados.js` | Consulta e disponibilização dos dados utilizados nas páginas. |
-| `detalhes-modelo.js` | Validação, normalização e formatação das informações. |
-| `detalhes.js` | Controlador responsável pelo carregamento e preenchimento das interfaces. |
+| `pages/cliente/detalhes-reserva.html` | Apresentação das informações de eventos cadastrados e confirmados. |
+| `pages/cliente/detalhes-visita.html` | Apresentação das informações de visitas mediadas. |
+| `css/cliente/detalhes.css` | Estilos compartilhados e responsividade das páginas. |
+| `js/cliente/detalhes-dados.js` | Consulta e disponibilização dos dados utilizados nas páginas. |
+| `js/cliente/detalhes-modelo.js` | Validação, normalização e formatação das informações. |
+| `js/cliente/detalhes.js` | Controlador responsável pelo carregamento e preenchimento das interfaces. |
 | `detalhes.test.cjs` | Testes automatizados das principais regras e comportamentos. |
 
 ## 3. Arquitetura
@@ -56,7 +59,7 @@ A funcionalidade segue a separação de responsabilidades utilizada no frontend,
 
 ### 3.1. Camada de dados
 
-O módulo `detalhes-dados.js` centraliza as consultas necessárias para a apresentação de eventos e visitas.
+O módulo `js/cliente/detalhes-dados.js` centraliza as consultas necessárias para a apresentação de eventos e visitas.
 
 Suas principais responsabilidades são:
 
@@ -124,7 +127,7 @@ Campos opcionais são normalizados, permitindo que a interface apresente somente
 
 ### 3.3. Controlador
 
-O módulo `detalhes.js` coordena o funcionamento das duas páginas.
+O módulo `js/cliente/detalhes.js` coordena o funcionamento das duas páginas.
 
 Suas responsabilidades incluem:
 
@@ -147,7 +150,7 @@ As listas variáveis de regras são preenchidas dinamicamente com elementos `li`
 
 ### 4.1. Detalhes dos eventos
 
-**Arquivo:** `pages/detalhes-reserva.html`
+**Arquivo:** `pages/cliente/detalhes-reserva.html`
 
 A página apresenta as informações de um evento selecionado na programação pública da Casa dos Saberes.
 
@@ -166,7 +169,7 @@ Eventos cadastrados e confirmados podem ser consultados por meio de seus identif
 
 ### 4.2. Detalhes das visitas mediadas
 
-**Arquivo:** `pages/detalhes-visita.html`
+**Arquivo:** `pages/cliente/detalhes-visita.html`
 
 A página apresenta informações relacionadas às visitas mediadas e aos espaços destinados a essas atividades.
 
@@ -194,7 +197,7 @@ A agenda deve encaminhar o identificador do evento selecionado para a página de
 Exemplo:
 
 ```text
-pages/detalhes-reserva.html?eventoId=15
+pages/cliente/detalhes-reserva.html?eventoId=15
 ```
 
 O parâmetro `eventoId` identifica o registro que deverá ser consultado.
@@ -216,7 +219,7 @@ A integração utiliza o identificador do evento, sem necessidade de transferir 
 A página de visitas pode ser acessada com o identificador de um espaço associado:
 
 ```text
-pages/detalhes-visita.html?espacoId=3
+pages/cliente/detalhes-visita.html?espacoId=3
 ```
 
 Nesse cenário, o controlador utiliza as informações disponíveis no catálogo de espaços para preparar a apresentação básica da visita.
@@ -230,7 +233,7 @@ A solicitação de uso de espaços disponíveis constitui um fluxo independente 
 Quando um usuário seleciona a opção **Solicitar reserva** na agenda pública, a navegação deve encaminhá-lo diretamente ao formulário:
 
 ```text
-pages/reservas.html
+pages/cliente/reservas.html
 ```
 
 A página `detalhes-reserva.html` não participa desse fluxo.
@@ -308,7 +311,7 @@ Também são adaptados:
 - Organização das informações.
 - Menu de navegação.
 
-Os estilos são centralizados em `css/detalhes.css`, utilizando as variáveis globais definidas em `css/base.css`.
+Os estilos são centralizados em `css/cliente/detalhes.css`, utilizando as variáveis globais definidas em `css/base.css`.
 
 ## 8. Estados de apresentação
 
@@ -339,19 +342,19 @@ As páginas disponibilizam um modo demonstrativo para validação das interfaces
 ### Evento demonstrativo
 
 ```text
-http://127.0.0.1:3001/pages/detalhes-reserva.html?demo=1
+http://127.0.0.1:3001/pages/cliente/detalhes-reserva.html?demo=1
 ```
 
 ### Visita demonstrativa
 
 ```text
-http://127.0.0.1:3001/pages/detalhes-visita.html?demo=1
+http://127.0.0.1:3001/pages/cliente/detalhes-visita.html?demo=1
 ```
 
 ### Consulta de espaço associado à visita
 
 ```text
-http://127.0.0.1:3001/pages/detalhes-visita.html?espacoId=3
+http://127.0.0.1:3001/pages/cliente/detalhes-visita.html?espacoId=3
 ```
 
 O parâmetro `demo=1` utiliza exemplos específicos para testes, mantendo-os separados das consultas normais.
@@ -377,9 +380,9 @@ Os testes verificam:
 Também é possível verificar a sintaxe dos módulos:
 
 ```bash
-node --check js/detalhes-dados.js
-node --check js/detalhes-modelo.js
-node --check js/detalhes.js
+node --check js/cliente/detalhes-dados.js
+node --check js/cliente/detalhes-modelo.js
+node --check js/cliente/detalhes.js
 ```
 
 ## 10. Considerações sobre integração

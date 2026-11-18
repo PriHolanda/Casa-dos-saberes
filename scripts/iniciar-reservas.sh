@@ -9,7 +9,7 @@ if [[ "${1:-}" == "--help" || "${1:-}" == "-h" ]]; then
 Uso: ./scripts/iniciar-reservas.sh
 
 Inicia uma prévia estática do formulário de reserva, sem backend ou login.
-Abra http://127.0.0.1:3001/pages/reservas.html no navegador.
+Abra http://127.0.0.1:3001/pages/cliente/reservas.html no navegador.
 
 Para escolher outra porta:
   PORT=3002 ./scripts/iniciar-reservas.sh
@@ -34,6 +34,6 @@ if [[ ! "$PORTA" =~ ^[0-9]{1,5}$ ]] || (( 10#$PORTA < 1 || 10#$PORTA > 65535 ));
   exit 1
 fi
 
-echo "Formulário de reserva: http://127.0.0.1:$PORTA/pages/reservas.html"
+echo "Formulário de reserva: http://127.0.0.1:$PORTA/pages/cliente/reservas.html"
 echo "Encerre com Ctrl+C."
 exec python3 -m http.server "$PORTA" --bind 127.0.0.1 --directory "$PROJETO_DIR"

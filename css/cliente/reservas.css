@@ -1,6 +1,6 @@
 @font-face {
   font-family: "Urbanist";
-  src: url("../assets/reservas/urbanist-variable.ttf") format("truetype");
+  src: url("../../assets/reservas/urbanist-variable.ttf") format("truetype");
   font-style: normal;
   font-weight: 100 900;
   font-display: swap;
@@ -65,7 +65,7 @@
 }
 
 .csa-reservas-header {
-  background: var(--csa-fundo-nav) url("../assets/reservas/menu-base.svg") repeat-x top left;
+  background: var(--csa-fundo-nav) url("../../assets/reservas/menu-base.svg") repeat-x top left;
 }
 .csa-reservas-header__conteudo {
   position: relative;
@@ -80,7 +80,7 @@
 .csa-reservas-menu__botao { padding: 0; border: 0; background: transparent; }
 .csa-reservas-header__faixa {
   height: 31px;
-  background: url("../assets/reservas/faixa.png") repeat-x left center / 402px 31px;
+  background: url("../../assets/reservas/faixa.png") repeat-x left center / 402px 31px;
 }
 .csa-reservas-menu {
   position: absolute;
@@ -215,9 +215,9 @@ textarea.csa-pergunta__entrada { min-height: 150px; resize: vertical; }
     -webkit-text-size-adjust: 100%;
     text-size-adjust: 100%;
   }
-  .csa-reservas-header { background-image: url("../assets/reservas/menu-base-mobile.svg"); }
+  .csa-reservas-header { background-image: url("../../assets/reservas/menu-base-mobile.svg"); }
   .csa-reservas-header__conteudo { align-items: flex-start; padding: 24px 30px 0 29px; }
-  .csa-reservas-header__faixa { margin-top: -1px; background-image: url("../assets/reservas/faixa-mobile.png"); }
+  .csa-reservas-header__faixa { margin-top: -1px; background-image: url("../../assets/reservas/faixa-mobile.png"); }
   .csa-reservas__conteudo { padding-top: 18px; padding-bottom: 50px; }
   .csa-reservas__titulo { font-size: 30px; margin-bottom: 18px; }
   .csa-reservas__voltar { gap: 8px; font-size: 16px; margin-bottom: 24px; }

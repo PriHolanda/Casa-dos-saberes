@@ -36,7 +36,7 @@
         form.elements.confirmacao.value = '';
       } else {
         await csaApi.entrar(dados.email, dados.senha);
-        location.replace('/pages/agenda.html');
+        location.replace('/pages/admin/agenda.html');
       }
     } catch (erro) { mensagem.textContent = erro.message; mensagem.hidden = false; }
     finally { enviar.disabled = alternar.disabled = false; }

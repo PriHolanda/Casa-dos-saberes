@@ -13,7 +13,7 @@ function ambiente(responder, config) {
     location: { replace: url => redirecionamentos.push(url) },
     fetch: async (url, opcoes) => { chamadas.push({ url, ...opcoes }); return responder(url, opcoes); }
   });
-  for (const nome of ['config.js', 'api.js', 'agenda-modelo.js', 'dados-api.js']) vm.runInContext(fs.readFileSync(path.join(__dirname, '../js', nome), 'utf8'), ctx);
+  for (const nome of ['config.js', 'api.js', 'agenda-modelo.js', 'admin/dados-api.js']) vm.runInContext(fs.readFileSync(path.join(__dirname, '../js', nome), 'utf8'), ctx);
   return { ctx, chamadas, itens, redirecionamentos, rodar: codigo => vm.runInContext(codigo, ctx) };
 }
 const resposta = (corpo, status = 200) => ({ ok: status < 400, status, json: async () => corpo });

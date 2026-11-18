@@ -1,12 +1,12 @@
 # Formulário de reserva
 
-Página: `pages/reservas.html`. Referências: [desktop no Figma](https://www.figma.com/design/tMVK9Y7SW6weOfEss6KhDf/SGA---Casa-de-Saberes--c%C3%B3pia-?node-id=398-403), frame de 1544 × 2359 px, e [mobile no Figma](https://www.figma.com/design/tMVK9Y7SW6weOfEss6KhDf/SGA---Casa-de-Saberes--c%C3%B3pia-?node-id=90-582), frame de 402 × 2854 px.
+Página: `pages/cliente/reservas.html`. Referências: [desktop no Figma](https://www.figma.com/design/tMVK9Y7SW6weOfEss6KhDf/SGA---Casa-de-Saberes--c%C3%B3pia-?node-id=398-403), frame de 1544 × 2359 px, e [mobile no Figma](https://www.figma.com/design/tMVK9Y7SW6weOfEss6KhDf/SGA---Casa-de-Saberes--c%C3%B3pia-?node-id=90-582), frame de 402 × 2854 px.
 
 Esta entrega implementa somente o frontend. A página não depende de login, Keycloak ou FastAPI. Não consulta disponibilidade, não envia reservas e não persiste dados. As respostas e o PDF permanecem na memória da página até que ela seja fechada ou recarregada.
 
 ## Abrir e verificar
 
-Para visualizar somente esta página, execute `./scripts/iniciar-reservas.sh` na raiz e abra **http://127.0.0.1:3001/pages/reservas.html**. Esse script usa somente um servidor estático Python, sem consultar backend ou Keycloak. Use `Ctrl+C` para encerrar e `PORT=3002 ./scripts/iniciar-reservas.sh` para escolher outra porta. Também é possível abrir o arquivo com Live Server.
+Para visualizar somente esta página, execute `./scripts/iniciar-reservas.sh` na raiz e abra **http://127.0.0.1:3001/pages/cliente/reservas.html**. Esse script usa somente um servidor estático Python, sem consultar backend ou Keycloak. Use `Ctrl+C` para encerrar e `PORT=3002 ./scripts/iniciar-reservas.sh` para escolher outra porta. Também é possível abrir o arquivo com Live Server.
 
 O caminho atual é uma página HTML física, como as outras telas do projeto. Não foi adicionado roteador, framework, etapa de build ou alteração no redirecionamento da página inicial.
 
@@ -14,17 +14,17 @@ O caminho atual é uma página HTML física, como as outras telas do projeto. N�
 
 | Arquivo | Responsabilidade |
 |---|---|
-| `pages/reservas.html` | Moldura, cabeçalho, introdução e formulário; carrega os recursos na ordem necessária. |
-| `css/reservas.css` | Tokens locais, layout e aparência dos componentes. Reutiliza `base.css` e `componentes.css`, com prefixo `csa-`. |
-| `js/reservas-dados.js` | Definição local das perguntas e consultas assíncronas por ID. Ponto de substituição por HTTP. |
-| `js/reservas-modelo.js` | Validação da definição, respostas e preparação dos dados para a futura integração; sem DOM. |
-| `js/reservas-perguntas/base.js` | Estrutura de cada pergunta: título, descrição, corpo e erro; escape de textos. |
-| `js/reservas-perguntas/aberta.js` | Campo de texto, telefone, e-mail, URL, número ou texto longo. A descrição aparece como placeholder. |
-| `js/reservas-perguntas/escolha.js` | Escolha única ou múltipla, com opções recebidas nos dados. |
-| `js/reservas-perguntas/anexo.js` | Seletor de PDF e área de arquivo selecionado. |
-| `js/reservas-perguntas/termo.js` | Aceite individual de um termo. |
-| `js/reservas-perguntas/registro.js` | Resolve o componente pelo tipo da pergunta. |
-| `js/reservas.js` | Consulta, montagem das colunas, apresentação responsiva, eventos, erros, arquivo e menu. |
+| `pages/cliente/reservas.html` | Moldura, cabeçalho, introdução e formulário; carrega os recursos na ordem necessária. |
+| `css/cliente/reservas.css` | Tokens locais, layout e aparência dos componentes. Reutiliza `base.css` e `componentes.css`, com prefixo `csa-`. |
+| `js/cliente/reservas-dados.js` | Definição local das perguntas e consultas assíncronas por ID. Ponto de substituição por HTTP. |
+| `js/cliente/reservas-modelo.js` | Validação da definição, respostas e preparação dos dados para a futura integração; sem DOM. |
+| `js/cliente/reservas-perguntas/base.js` | Estrutura de cada pergunta: título, descrição, corpo e erro; escape de textos. |
+| `js/cliente/reservas-perguntas/aberta.js` | Campo de texto, telefone, e-mail, URL, número ou texto longo. A descrição aparece como placeholder. |
+| `js/cliente/reservas-perguntas/escolha.js` | Escolha única ou múltipla, com opções recebidas nos dados. |
+| `js/cliente/reservas-perguntas/anexo.js` | Seletor de PDF e área de arquivo selecionado. |
+| `js/cliente/reservas-perguntas/termo.js` | Aceite individual de um termo. |
+| `js/cliente/reservas-perguntas/registro.js` | Resolve o componente pelo tipo da pergunta. |
+| `js/cliente/reservas.js` | Consulta, montagem das colunas, apresentação responsiva, eventos, erros, arquivo e menu. |
 | `assets/reservas/` | Recursos exportados do Figma e fonte Urbanist local, com licença. |
 | `tests/reservas.test.cjs` | Contrato dinâmico, validação, escape de conteúdo e recursos locais. |
 
@@ -112,7 +112,7 @@ Exemplo de variação de apresentação na mesma pergunta:
 
 ## Adicionar, editar, remover ou reordenar
 
-Nesta fase, altere apenas o array `perguntas` em `js/reservas-dados.js`:
+Nesta fase, altere apenas o array `perguntas` em `js/cliente/reservas-dados.js`:
 
 1. Para adicionar, inclua uma definição com novo ID e tipo já registrado. O controlador cria a instância automaticamente.
 2. Para editar, altere título, descrição, opções e regras, preservando o ID se ainda for a mesma pergunta.
@@ -215,7 +215,7 @@ A condição compartilhada pelo CSS e pelo `matchMedia` do controlador é:
 (max-width: 760px), (hover: none) and (pointer: coarse)
 ```
 
-Se o breakpoint mudar, atualize tanto `css/reservas.css` quanto `js/reservas.js`. A alteração de apresentação não recarrega o formulário e não refaz seus componentes.
+Se o breakpoint mudar, atualize tanto `css/cliente/reservas.css` quanto `js/cliente/reservas.js`. A alteração de apresentação não recarrega o formulário e não refaz seus componentes.
 
 O mobile reproduz as margens de 30 px, título de 30 px, campos de 40 px, caixas de seleção de 30 px, tipografia e quebras de linha dos grupos, área de PDF de 154 px e botão de largura completa do frame. Em dispositivos largos de toque, o conteúdo mantém uma coluna com largura máxima de 600 px. O cabeçalho usa sua faixa e fundo próprios, exportados em `faixa-mobile.png` e `menu-base-mobile.svg`; os demais recursos são compartilhados com o desktop.
 

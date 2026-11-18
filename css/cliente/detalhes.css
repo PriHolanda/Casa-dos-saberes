@@ -1,6 +1,6 @@
 @font-face {
   font-family: "Urbanist";
-  src: url("../assets/reservas/urbanist-variable.ttf") format("truetype");
+  src: url("../../assets/reservas/urbanist-variable.ttf") format("truetype");
   font-style: normal;
   font-weight: 100 900;
   font-display: swap;
@@ -29,11 +29,11 @@
 .csa-detalhes__pular:focus { position: fixed; top: 8px; left: 8px; z-index: 10; padding: 8px 16px; background: var(--csa-fundo-pagina); }
 
 /* Cabeçalho idêntico ao padrão público do formulário de reserva. */
-.csa-detalhes-header { background: var(--csa-fundo-nav) url("../assets/reservas/menu-base.svg") repeat-x top left; }
+.csa-detalhes-header { background: var(--csa-fundo-nav) url("../../assets/reservas/menu-base.svg") repeat-x top left; }
 .csa-detalhes-header__conteudo { position: relative; display: flex; align-items: center; justify-content: space-between; height: 74px; padding-left: clamp(24px, 3.89vw, 60px); padding-right: var(--csa-detalhes-margem); }
 .csa-detalhes-header__conteudo > a, .csa-detalhes-header img { display: block; }
 .csa-detalhes-menu__botao { padding: 0; border: 0; background: transparent; }
-.csa-detalhes-header__faixa { height: 31px; background: url("../assets/reservas/faixa.png") repeat-x left center / 402px 31px; }
+.csa-detalhes-header__faixa { height: 31px; background: url("../../assets/reservas/faixa.png") repeat-x left center / 402px 31px; }
 .csa-detalhes-menu { position: absolute; top: 66px; right: var(--csa-detalhes-margem); z-index: 5; padding: 12px; border: 1px solid var(--csa-cinza-borda-detalhes); background: var(--csa-fundo-pagina); box-shadow: 0 8px 24px #0002; font-size: 18px; }
 .csa-detalhes-menu a { display: block; padding: 12px; color: var(--csa-texto); text-decoration: none; }
 .csa-detalhes-menu a:hover { background: var(--csa-detalhes-fundo); }
@@ -77,9 +77,9 @@
 }
 @media (max-width: 760px), (hover: none) and (pointer: coarse) {
   .csa-detalhes { --csa-detalhes-margem: 30px; -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
-  .csa-detalhes-header { background-image: url("../assets/reservas/menu-base-mobile.svg"); }
+  .csa-detalhes-header { background-image: url("../../assets/reservas/menu-base-mobile.svg"); }
   .csa-detalhes-header__conteudo { align-items: flex-start; padding: 24px 30px 0 29px; }
-  .csa-detalhes-header__faixa { margin-top: -1px; background-image: url("../assets/reservas/faixa-mobile.png"); }
+  .csa-detalhes-header__faixa { margin-top: -1px; background-image: url("../../assets/reservas/faixa-mobile.png"); }
   .csa-detalhes__conteudo { padding-top: 18px; padding-bottom: 50px; }
   .csa-detalhes__voltar { gap: 8px; margin-bottom: 24px; font-size: 16px; }
   .csa-detalhes__seta { width: 33px; height: 33px; }

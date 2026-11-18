@@ -2,10 +2,10 @@
 
 Abra com Live Server:
 
-- `pages/confirmacao-reserva.html?demo=1`
-- `pages/confirmacao-visita.html?demo=1`
+- `pages/cliente/confirmacao-reserva.html?demo=1`
+- `pages/cliente/confirmacao-visita.html?demo=1`
 
-Sem `?demo=1` e sem entrada válida, aparece o estado sem solicitação. Os exemplos ficam em `js/confirmacao-dados.js`. Nenhuma página envia dados ou acessa uma API.
+Sem `?demo=1` e sem entrada válida, aparece o estado sem solicitação. Os exemplos ficam em `js/cliente/confirmacao-dados.js`. Nenhuma página envia dados ou acessa uma API.
 
 Os protótipos apresentam revisão anterior ao envio. Esse visual e seus botões foram preservados na demonstração; “Confirmar e enviar” apenas mostra uma simulação pendente. Para uma resposta real já enviada, a página apresenta o resumo e o status, sem oferecer um segundo envio.
 
@@ -42,7 +42,7 @@ CSS e JS compartilhados entre as páginas, isolados por `csa-confirmacao`. Reuti
 
 ## Verificação
 
-`node --check js/confirmacao.js`
+`node --check js/cliente/confirmacao.js`
 
 `node --test tests/agenda.test.cjs`
 

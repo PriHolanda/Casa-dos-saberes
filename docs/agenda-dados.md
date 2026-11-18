@@ -8,11 +8,11 @@ mocks. Não há API, persistência, estados de requisição ou confirmação de 
 
 ## Organização
 
-- `js/dados-exemplo.js`: espaços, turnos, sete eventos de exemplo e
+- `js/admin/dados-exemplo.js`: espaços, turnos, sete eventos de exemplo e
   `csaDadosAgenda.consultarPeriodo(inicio, fim)`, com datas inclusivas.
 - `js/agenda-modelo.js`: auxiliares pequenos de calendário, validação básica
   dos eventos e mapeamento de status.
-- `js/agenda.js`: estado da visualização, controles e funções `AgendaGrid`,
+- `js/admin/agenda.js`: estado da visualização, controles e funções `AgendaGrid`,
   `AgendaCell`, `EventCard` e `AvailabilityCard`.
 
 Eventos possuem `{ id, nome, espacoId, inicio, termino, status }`. Espaços possuem
@@ -70,6 +70,6 @@ futuros. `csaAgenda.recarregar()` também redesenha a visualização atual.
 
 ## Verificação
 
-Execute `node tests/agenda.test.cjs` e abra `pages/agenda.html` com Live Server.
+Execute `node tests/agenda.test.cjs` e abra `pages/admin/agenda.html` com Live Server.
 Os testes cobrem navegação, filtros, cards, vários eventos, validações básicas,
 textos dinâmicos e recursos locais, sem dependências adicionais.

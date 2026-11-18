@@ -16,7 +16,7 @@ O frontend usa os controllers e schemas existentes em `~/programing/AgendamentoC
 
 `EventoCreate`: `titulo` (3–150 caracteres), `descricao` (10–2000), `data_inicio`, `data_fim`, `classificacao_indicativa`, `espaco_id` inteiro ou nulo, `responsavel` e `publico_estimado` inteiro ou nulo. As datas enviadas são civis, sem offset, seguindo o banco atual. Datas recebidas com offset são exibidas em America/Fortaleza. O formulário original mantém a data do dia/turno escolhido na grade e os horários no mesmo dia.
 
-A agenda real usa os sete dias da semana e não carrega `dados-exemplo.js`. Os mocks permanecem apenas como fixture dos testes antigos. O cache é atualizado após a API confirmar a gravação. Recarregar a página consulta o banco novamente.
+A agenda real usa os sete dias da semana e não carrega `js/admin/dados-exemplo.js`. Os mocks permanecem apenas como fixture dos testes antigos. O cache é atualizado após a API confirmar a gravação. Recarregar a página consulta o banco novamente.
 
 O token de acesso fica no `sessionStorage` da aba, sem persistir a senha ou o refresh token. A expiração ou uma resposta 401 exige novo login. O botão Sair que havia sido acrescentado foi removido para preservar o protótipo. Não há rota de logout no backend.
 

@@ -34,7 +34,7 @@ const document = {
 const contexto = vm.createContext({ document, CustomEvent: class {
   constructor(type, opcoes) { this.type = type; this.detail = opcoes.detail; }
 } });
-for (const arquivo of ['agenda-modelo.js', 'dados-exemplo.js', 'barra-controle.js', 'agenda.js']) {
+for (const arquivo of ['agenda-modelo.js', 'admin/dados-exemplo.js', 'admin/barra-controle.js', 'admin/agenda.js']) {
   vm.runInContext(fs.readFileSync(path.join(raiz, 'js', arquivo), 'utf8'), contexto, { filename: arquivo });
 }
 const html = () => elementos['csa-agenda'].innerHTML;
@@ -122,15 +122,15 @@ assert.notEqual(executar(`csaDadosAgenda.consultarPeriodo('2026-09-21', '2026-09
 const antes = html();
 document.dispatchEvent({ type: 'csa:evento-atualizado', detail: { id: evento.id } });
 assert.equal(html(), antes);
-const pagina = fs.readFileSync(path.join(raiz, 'pages/agenda.html'), 'utf8');
+const pagina = fs.readFileSync(path.join(raiz, 'pages/admin/agenda.html'), 'utf8');
 assert.match(pagina, /<main class="csa-agenda">[\s\S]*<aside id="csa-painel" class="csa-painel" hidden><\/aside>/);
-const cssAgenda = fs.readFileSync(path.join(raiz, 'css/agenda.css'), 'utf8');
-const cssPaineis = fs.readFileSync(path.join(raiz, 'css/paineis.css'), 'utf8');
+const cssAgenda = fs.readFileSync(path.join(raiz, 'css/admin/agenda.css'), 'utf8');
+const cssPaineis = fs.readFileSync(path.join(raiz, 'css/admin/paineis.css'), 'utf8');
 assert.match(cssAgenda, /#csa-agenda\s*\{[^}]*width:\s*100%/);
 assert.match(cssAgenda, /\.csa-grid\s*\{[^}]*min-width:\s*100%/);
 assert.match(cssPaineis, /\.csa-painel--aberto\s*\{[^}]*flex:\s*0 0 clamp/);
 assert.match(cssPaineis, /\.csa-painel\[hidden\]\s*\{\s*display:\s*none/);
-for (const [, recurso] of pagina.matchAll(/(?:src|href)="(\.\.\/[^\"]+)"/g)) {
-  assert.ok(fs.existsSync(path.resolve(raiz, 'pages', recurso)), `Recurso ausente: ${recurso}`);
+for (const [, recurso] of pagina.matchAll(/(?:src|href)="((?:\.\.\/)+[^\"]+)"/g)) {
+  assert.ok(fs.existsSync(path.resolve(raiz, 'pages/admin', recurso)), `Recurso ausente: ${recurso}`);
 }
 console.log('OK: semanal, diária, filtros, navegação entre meses/anos, cards de disponibilidade, múltiplos eventos, validação básica e escape de HTML.');

@@ -44,29 +44,28 @@ Cada arquivo tem um dono (T1, T2 ou T3). **Cada pessoa edita só os seus arquivo
 ```
 agenda-casa-saberes/
 ├── pages/
-│   ├── agenda.html          T1   agenda administrativa
-│   └── reservas.html            formulário de reserva independente
+│   ├── admin/
+│   │   └── agenda.html           agenda administrativa
+│   ├── cliente/
+│   │   ├── agenda-cliente.html   agenda do cliente
+│   │   ├── reservas.html         formulário de reserva
+│   │   ├── detalhes-*.html       detalhes de eventos e visitas
+│   │   └── confirmacao-*.html    confirmações de reservas e visitas
+│   ├── login.html                autenticação compartilhada
+│   └── componentes.html          catálogo compartilhado
 ├── css/
-│   ├── variaveis.css        T1   cores, fontes, espaçamentos (valores provisórios: trocar pelos do design)
-│   ├── base.css             T1   reset e estilos gerais
-│   ├── layout.css           T1   header, faixa, sidebar, barra de controle e legenda
-│   ├── componentes.css      T1   botão, badge, campo, arquivo anexado, container do painel
-│   ├── agenda.css           T2   grade semanal/diária e cards
-│   ├── paineis.css          T3   conteúdo dos painéis laterais
-│   └── reservas.css              tokens, layout e componentes do formulário de reserva
+│   ├── admin/                    estilos da tela administrativa
+│   ├── cliente/                  estilos das telas do cliente
+│   ├── base.css                  estilos globais compartilhados
+│   ├── componentes.css           componentes compartilhados
+│   └── auth.css                  autenticação compartilhada
 ├── js/
-│   ├── utilitarios.js       T1   funções e tabelas de apoio (datas, nomes de espaços, proteção de HTML)
-│   ├── config.js            endereço público da API
-│   ├── api.js               login, sessão e requisições HTTP ao FastAPI
-│   ├── dados-api.js         adapta e consulta os eventos reais da API
-│   ├── dados-exemplo.js     fixture histórica dos testes do calendário
-│   ├── barra-controle.js    T1   Diária/Semanal, setas de data e filtro de status
-│   ├── agenda.js            T2   desenha a grade e os cards
-│   ├── paineis.js           T3   abre/fecha os painéis e monta o conteúdo
-│   ├── reservas-dados.js         definição local das perguntas e consulta por ID
-│   ├── reservas-modelo.js        validação e contrato das respostas
-│   ├── reservas-perguntas/       componentes isolados por tipo de pergunta
-│   └── reservas.js               controlador do formulário
+│   ├── admin/                    scripts da tela administrativa
+│   ├── cliente/                  scripts das telas do cliente
+│   ├── config.js                 endereço público da API
+│   ├── api.js                    sessão e requisições HTTP ao FastAPI
+│   ├── auth.js                   autenticação compartilhada
+│   └── agenda-modelo.js          funções de calendário compartilhadas
 ├── assets/                  logos, ícones e ilustrações exportados pelo design
 ├── .gitignore
 └── README.md
@@ -132,7 +131,7 @@ Veja o [passo a passo dos serviços](scripts/README.md) e os [contratos e ajuste
 
 ## Como as partes se conectam
 
-Não há rotas nem `import`. O `agenda.html` é o "palco": ele carrega todos os arquivos com `<link>` e `<script>`, e todos os scripts rodam na **mesma página**, enxergando as mesmas funções e a mesma lista `eventos`. **Só a T1 edita o `agenda.html`.**
+Não há rotas nem `import`. `pages/admin/agenda.html` é o "palco" da tela administrativa: ele carrega todos os arquivos com `<link>` e `<script>`, e todos os scripts rodam na **mesma página**, enxergando as mesmas funções e a mesma lista `eventos`.
 
 ```
 ┌──────────────────────────────────────────────────────────────┐
@@ -178,7 +177,7 @@ Os scripts compartilham o mesmo espaço, então **dê nomes específicos às sua
    ```
 
 3. **Componentes reutilizáveis.** Funções que recebem os dados por parâmetro e devolvem o HTML, sem textos fixos dentro.
-4. **Dados da agenda.** A tela real usa `js/dados-api.js` para consultar o FastAPI e adaptar os schemas aos componentes. `js/dados-exemplo.js` fica como fixture histórica dos testes do calendário.
+4. **Dados da agenda.** A tela administrativa usa `js/admin/dados-api.js` para consultar o FastAPI e adaptar os schemas aos componentes. `js/admin/dados-exemplo.js` fica como fixture histórica dos testes do calendário.
 5. **Escapar textos vindos de dados.** Use `csaEscapar()` ao colocar qualquer texto dentro de `innerHTML`.
 6. **Conteúdo separado do container nos painéis.** No desktop, os painéis são laterais; no mobile viram pop-ups. Por isso o conteúdo é montado por funções (`painelConteudo...`) independentes do container (`#csa-painel`).
 7. **Seguir o design fielmente.** Se algo estiver inconsistente, anote na tarefa e pergunte ao design, sem inventar.
@@ -214,9 +213,9 @@ Os scripts compartilham o mesmo espaço, então **dê nomes específicos às sua
 
 | # | Tarefa | Arquivos | O que inclui |
 |---|---|---|---|
-| 1 | **Fundação** | `agenda.html`, `variaveis.css`, `base.css`, `layout.css`, `componentes.css`, `utilitarios.js`, `barra-controle.js` | Guia de estilos, componentes base, layout (header, sidebar), barra de controle e legenda |
-| 2 | **Agenda** | `agenda.css`, `agenda.js` | Grade semanal, grade diária, card de evento (variantes por espaço, compacto e grande), card de turno disponível |
-| 3 | **Painéis laterais** | `paineis.css`, `paineis.js` | Cadastrar Evento, Detalhes do Evento (Aceito) e Detalhes da Solicitação (Pendente) |
+| 1 | **Fundação** | `pages/admin/agenda.html`, `css/base.css`, `css/admin/layout.css`, `css/componentes.css`, `js/admin/barra-controle.js` | Guia de estilos, componentes base, layout (header, sidebar), barra de controle e legenda |
+| 2 | **Agenda** | `css/admin/agenda.css`, `js/admin/agenda.js` | Grade semanal, grade diária, card de evento (variantes por espaço, compacto e grande), card de turno disponível |
+| 3 | **Painéis laterais** | `css/admin/paineis.css`, `js/admin/paineis.js` | Cadastrar Evento, Detalhes do Evento (Aceito) e Detalhes da Solicitação (Pendente) |
 
 O repositório já contém um **esqueleto funcional** de todas as partes. A tarefa de cada pessoa é refinar a sua parte até ficar igual ao design.
 
@@ -257,13 +256,13 @@ O site é de outro desenvolvedor, hospedado na Hostinger, e o plano é gratuito 
 
 ## Formulário de reserva
 
-Execute `./scripts/iniciar-reservas.sh` e abra **http://127.0.0.1:3001/pages/reservas.html**, ou use Live Server em `pages/reservas.html`. Essa prévia funciona sem backend e sem login. Encerre com `Ctrl+C`.
+Execute `./scripts/iniciar-reservas.sh` e abra **http://127.0.0.1:3001/pages/cliente/reservas.html**, ou use Live Server em `pages/cliente/reservas.html`. Essa prévia funciona sem backend e sem login. Encerre com `Ctrl+C`.
 
 O formulário reproduz a tela do Figma com 13 perguntas independentes, dados separados dos componentes, placeholders nas perguntas abertas, opções de escolha, PDF ou link e termos de aceite. A fonte e os recursos visuais ficam em `assets/reservas/`.
 
 A mesma página apresenta automaticamente a versão mobile do Figma em telas de até 760 px e em dispositivos de toque sem hover, inclusive na horizontal. Perguntas e respostas são compartilhadas entre as apresentações; girar o celular ou redimensionar a janela preserva os dados preenchidos.
 
-Para adicionar, editar, remover ou reordenar perguntas, altere a definição em `js/reservas-dados.js`. Cada pergunta tem ID estável, título, descrição e corpo. O botão valida as respostas e prepara o evento `csa:reserva-preparada`; o envio real será integrado em uma próxima etapa.
+Para adicionar, editar, remover ou reordenar perguntas, altere a definição em `js/cliente/reservas-dados.js`. Cada pergunta tem ID estável, título, descrição e corpo. O botão valida as respostas e prepara o evento `csa:reserva-preparada`; o envio real será integrado em uma próxima etapa.
 
 Consulte [Formulário de reserva: componentes e integração](docs/formulario-reservas.md) para o schema, os IDs, as regras de validação, o payload e as rotas propostas para a futura edição administrativa. Execute `./scripts/testar.sh` para verificar os testes existentes e os do formulário.
 

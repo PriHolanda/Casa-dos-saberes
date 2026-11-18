@@ -6,9 +6,9 @@ const vm = require('node:vm');
 const { test } = require('node:test');
 const raiz = path.resolve(__dirname, '..');
 const contexto = vm.createContext({ structuredClone, URL });
-for (const arquivo of ['reservas-dados.js', 'reservas-modelo.js', 'reservas-perguntas/base.js',
-  'reservas-perguntas/aberta.js', 'reservas-perguntas/escolha.js', 'reservas-perguntas/anexo.js',
-  'reservas-perguntas/termo.js', 'reservas-perguntas/registro.js']) {
+for (const arquivo of ['cliente/reservas-dados.js', 'cliente/reservas-modelo.js', 'cliente/reservas-perguntas/base.js',
+  'cliente/reservas-perguntas/aberta.js', 'cliente/reservas-perguntas/escolha.js', 'cliente/reservas-perguntas/anexo.js',
+  'cliente/reservas-perguntas/termo.js', 'cliente/reservas-perguntas/registro.js']) {
   vm.runInContext(fs.readFileSync(path.join(raiz, 'js', arquivo), 'utf8'), contexto, { filename: arquivo });
 }
 const executar = codigo => vm.runInContext(codigo, contexto);
@@ -129,16 +129,15 @@ test('componentes escapam conteúdo dinâmico e mantêm recursos locais', async 
     assert.ok(!html.includes('<img src=x'));
     assert.ok(html.includes('&lt;img'));
   }
-  const pagina = fs.readFileSync(path.join(raiz, 'pages/reservas.html'), 'utf8');
-  const css = fs.readFileSync(path.join(raiz, 'css/reservas.css'), 'utf8');
+  const pagina = fs.readFileSync(path.join(raiz, 'pages/cliente/reservas.html'), 'utf8');
+  const css = fs.readFileSync(path.join(raiz, 'css/cliente/reservas.css'), 'utf8');
   assert.ok(!pagina.includes('api.js'));
   const fontes = [pagina, css, componentes.renderizar(formulario.perguntas.find(p => p.tipo === 'anexo'))];
   for (const fonte of fontes) {
     assert.ok(!fonte.includes('figma.com/api/mcp/asset'));
-    for (const [, atributo, url] of fonte.matchAll(/(?:src|href)="(\.\.\/[^\"]+)"|url\("(\.\.\/[^\"]+)"\)/g)) {
-      // Os URLs CSS também são relativos a um diretório no primeiro nível.
+    for (const [, atributo, url] of fonte.matchAll(/(?:src|href)="((?:\.\.\/)+[^\"]+)"|url\("((?:\.\.\/)+[^\"]+)"\)/g)) {
       const recurso = atributo || url;
-      assert.ok(fs.statSync(path.resolve(raiz, 'pages', recurso)).size > 0, recurso);
+      assert.ok(fs.statSync(path.resolve(raiz, 'pages/cliente', recurso)).size > 0, recurso);
     }
   }
 });
