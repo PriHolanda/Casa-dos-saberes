@@ -1,7 +1,8 @@
 (() => {
   'use strict';
   const tipo = document.body.dataset.csaTipo;
-  const demo = new URLSearchParams(window.location.search).get('demo') === '1';
+  const demo = new URLSearchParams(window.location.search).get('demo') === '1'
+    && (['localhost', '127.0.0.1', '[::1]'].includes(location.hostname) || location.protocol === 'file:');
   const grade = document.getElementById('csa-confirmacao-grade');
   const estado = document.getElementById('csa-confirmacao-estado');
   const botaoVoltar = document.querySelector('[data-csa-voltar]');
@@ -17,6 +18,7 @@
     ['Sobre a visita', [['local', 'Local solicitado'], ['quantidade', 'Quantidade de pessoas'], ['faixaEtaria', 'Faixa etária'], ['grupo', 'Grupo composto em sua maioria por:'], ['acessibilidade', 'Pessoas com deficiência?'], ['quantidadePcd', 'Número de pessoas com deficiência']]]
   ];
   let retorno = null;
+  let aoVoltar = null;
   function elemento(tag, classe, texto) {
     const no = document.createElement(tag);
     if (classe) no.className = classe;
@@ -24,6 +26,7 @@
     return no;
   }
   function voltar() {
+    if (aoVoltar) { aoVoltar(); return; }
     if (retorno) window.location.assign(retorno);
   }
   botaoVoltar.addEventListener('click', voltar);
@@ -37,16 +40,17 @@
       : 'Sua solicitação foi recebida e será analisada pela equipe da Casa dos Saberes. Aguarde o retorno com as próximas orientações.'));
     estado.hidden = false;
   }
-  function renderizar(entrada, demonstracao = false) {
+  function renderizar(entrada, demonstracao = false, revisao = null) {
     grade.replaceChildren();
     grade.hidden = true;
     estado.hidden = false;
     botaoVoltar.disabled = true;
     titulo.textContent = 'Confirme as Informações';
     retorno = null;
+    aoVoltar = revisao?.voltar || null;
     const dados = entrada && entrada.dados;
     if (!dados || typeof dados !== 'object' || Array.isArray(dados) || typeof dados.responsavel !== 'string' || !dados.responsavel.trim()
-      || (!demonstracao && (entrada.enviada !== true || !['pendente', 'confirmada'].includes(entrada.status)))) {
+      || (!demonstracao && !revisao && (entrada.enviada !== true || !['pendente', 'confirmada'].includes(entrada.status)))) {
       estado.replaceChildren(elemento('h2', '', 'Nenhuma solicitação disponível'), elemento('p', '', 'Não foi possível localizar os dados de uma solicitação enviada. Nenhum envio foi confirmado nesta página.'));
       const link = elemento('a', 'csa-confirmacao-exemplos', 'Visualizar demonstração com dados fictícios');
       link.href = '?demo=1';
@@ -61,7 +65,7 @@
         retorno = null;
       }
     }
-    botaoVoltar.disabled = !retorno;
+    botaoVoltar.disabled = !retorno && !aoVoltar;
     for (const [nome, campos] of secoes) {
       const card = elemento('section', 'csa-confirmacao-card');
       card.append(elemento('h2', '', nome));
@@ -77,14 +81,40 @@
       grade.append(card);
     }
     grade.hidden = false;
-    if (demonstracao) {
+    if (demonstracao || revisao) {
       estado.hidden = true;
       const termos = elemento('p', 'csa-confirmacao-termos', 'Ao confirmar, você declara que revisou as informações e está de acordo com os termos apresentados no formulário.');
       const acoes = elemento('div', 'csa-confirmacao-acoes');
       const confirmar = elemento('button', 'csa-confirmacao-botao csa-confirmacao-botao--principal', 'Confirmar e enviar');
       confirmar.type = 'button';
-      confirmar.addEventListener('click', () => {
-        mostrarStatus('pendente');
+      confirmar.addEventListener('click', async () => {
+        let status = 'pendente';
+        if (revisao && !demonstracao) {
+          confirmar.disabled = true;
+          alterar.disabled = true;
+          botaoVoltar.disabled = true;
+          estado.replaceChildren(elemento('p', '', 'Enviando solicitação…'));
+          estado.hidden = false;
+          estado.setAttribute('aria-busy', 'true');
+          try {
+            const resposta = await revisao.enviar();
+            if (resposta?.enviada !== true || !['pendente', 'confirmada'].includes(resposta.status)) {
+              throw new Error('O serviço não confirmou o envio. Nenhum sucesso foi confirmado.');
+            }
+            status = resposta.status;
+            aoVoltar = null;
+          } catch (erro) {
+            estado.replaceChildren(elemento('h2', '', 'Envio não concluído'), elemento('p', '', erro?.message || 'Não foi possível enviar. Suas informações foram preservadas.'));
+            confirmar.disabled = false;
+            alterar.disabled = false;
+            botaoVoltar.disabled = false;
+            return;
+          } finally {
+            estado.removeAttribute('aria-busy');
+            estado.focus();
+          }
+        }
+        mostrarStatus(status);
         termos.hidden = true;
         acoes.hidden = true;
         titulo.textContent = 'Resumo da solicitação';
@@ -92,6 +122,7 @@
       });
       const alterar = elemento('button', 'csa-confirmacao-botao', 'Voltar e alterar');
       alterar.type = 'button';
+      if (revisao) alterar.addEventListener('click', voltar);
       acoes.append(confirmar, alterar);
       grade.append(termos, acoes);
     } else {
@@ -99,6 +130,11 @@
       mostrarStatus(entrada.status);
     }
   }
-  window.csaConfirmacao = Object.freeze({ apresentar: entrada => renderizar(entrada) });
+  window.csaConfirmacao = Object.freeze({
+    apresentar: entrada => renderizar(entrada),
+    revisar: (entrada, acoes) => {
+      if (tipo === 'reserva') renderizar(entrada, demo, acoes);
+    }
+  });
   renderizar(demo ? { dados: window.csaConfirmacaoExemplos?.[tipo] } : window.csaConfirmacaoEntrada, demo);
 })();
