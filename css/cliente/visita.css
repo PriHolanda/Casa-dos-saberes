@@ -1,0 +1,231 @@
+@font-face {
+  font-family: Urbanist;
+  src: url("../../assets/reservas/urbanist-variable.ttf") format("truetype");
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+}
+
+.csa-visita-publica { --csa-fonte: Urbanist, system-ui, sans-serif; --csa-vp-verde: #2b3f26; --csa-vp-neutro: #f9f8f6; min-height: 100vh; background: #fff; color: #080808; font: 500 18px/1.4 var(--csa-fonte); }
+.csa-visita-publica [hidden] { display: none !important; }
+.csa-visita-publica :focus-visible { outline: 3px solid #2d69a2; outline-offset: 4px; }
+.csa-visita-publica :is(button, summary) { cursor: pointer; }
+.csa-visita-publica button:disabled { opacity: .55; cursor: default; }
+.csa-vp-header { background: #e8e2c9; }
+.csa-vp-topo { display: flex; align-items: center; justify-content: space-between; min-height: 74px; padding: 0 29px; }
+.csa-vp-topo img { display: block; }
+.csa-vp-faixa { height: 31px; background: url("../../assets/reservas/faixa-mobile.png") repeat-x left center / 402px 31px; }
+.csa-vp-menu { position: relative; }
+.csa-vp-menu summary { display: block; list-style: none; }
+.csa-vp-menu summary::-webkit-details-marker { display: none; }
+.csa-vp-menu nav { position: absolute; top: calc(100% + 12px); right: 0; z-index: 3; min-width: max-content; padding: 5px; border: 1px solid #c5c5c5; background: #fff; box-shadow: 0 5px 12px #0002; }
+.csa-vp-menu nav a { display: block; padding: 8px 12px; color: #080808; text-decoration: none; }
+.csa-vp-menu nav a:hover { background: #f4f4f4; }
+.csa-visita-publica .csa-vp-botao { display: inline-grid; place-items: center; padding: 6px 10px; border: 0; border-radius: 0; background: #a22d2e; color: #fff; font: 800 20px/1.28 var(--csa-fonte); text-align: center; text-decoration: none; }
+.csa-vp-voltar { display: inline-flex; gap: 8px; align-items: center; border: 0; background: transparent; color: #606060; font: 600 16px/1.35 var(--csa-fonte); text-decoration: none; }
+.csa-vp-voltar > span:first-child { display: grid; place-items: center; width: 33px; height: 33px; background: #e8e2c9; }
+.csa-vp-voltar img { display: block; }
+.csa-vp-aviso { margin-top: 20px; color: #a22d2e; font-weight: 750; }
+
+/* Vitrine das exposições */
+.csa-vp-hero > div:first-child { display: grid; align-content: center; gap: 8px; min-height: 242px; padding: 25px 29px; background: linear-gradient(#35232a82, #35232a82), url("../../assets/csa-agenda.png") center 58% / cover; color: #fff; }
+.csa-vp-hero h1 { max-width: 410px; font-size: 40px; font-weight: 820; line-height: .98; }
+.csa-vp-hero p { max-width: 340px; font-size: 17px; line-height: 1.4; }
+.csa-vp-vitrine { min-height: 610px; padding: 20px 22px 26px; background: url("../../assets/cegoaderaldo-boneco.png") left 332px no-repeat, url("../../assets/nave.png") right bottom -135px no-repeat; }
+.csa-vp-vitrine > h2, .csa-vp-vitrine__rotulo, .csa-vp-acessibilidade, .csa-visita-publica .csa-vp-libras[vw] { display: none; }
+.csa-vp-acessibilidade { position: absolute; right: 12px; top: 443px; z-index: 4; }
+.csa-vp-acessibilidade .csa-acessibilidade-btn { display: grid; place-items: center; width: 44px; height: 44px; border: 0; border-radius: 50%; color: #fff; background: #087db6; font-size: 28px; }
+.csa-vp-acessibilidade .csa-acessibilidade-painel { position: absolute; top: 0; right: 52px; display: grid; gap: 6px; width: 205px; padding: 10px; border: 2px solid #087db6; border-radius: 8px; background: #fff; }
+.csa-vp-acessibilidade .csa-acessibilidade-painel button { padding: 9px 8px; border: 0; background: #e8e2c9; color: #080808; text-align: left; font-weight: 700; }
+.csa-vp-acessibilidade .csa-acessibilidade-painel button[aria-pressed="true"] { color: #fff; background: #087db6; }
+.csa-sublinhar-links .csa-visita-publica a { text-decoration: underline; }
+.csa-alto-contraste .csa-visita-publica :is(.csa-vp-vitrine, .csa-vp-data, .csa-vp-vitrine__corpo, .csa-vp-exposicao) { color: #fff; background: #000; }
+.csa-alto-contraste .csa-vp-exposicao :is(h3, a) { color: #ffeb3b; }
+.csa-vp-data { position: relative; display: grid; justify-items: center; gap: 24px; margin-bottom: 22px; }
+.csa-vp-data .csa-vp-botao { min-height: 38px; font-size: 18px; }
+.csa-vp-data .csa-vp-botao span:last-child { display: none; }
+.csa-vp-data > input { position: absolute; opacity: 0; top: 0; left: 45%; width: 24px; height: 24px; pointer-events: none; }
+.csa-vp-data > input:focus-visible { opacity: 1; width: auto; left: 5%; z-index: 1; }
+.csa-vp-data__periodo { display: grid; grid-template-columns: 33px minmax(0, 1fr) 33px; gap: 8px; align-items: center; width: 96%; text-align: center; }
+.csa-vp-data__periodo time { font-size: 19px; font-weight: 800; }
+.csa-vp-data__periodo button { display: grid; place-items: center; height: 33px; border: 0; background: #e8e2c9; }
+.csa-vp-data__periodo button:last-child img { rotate: 180deg; }
+.csa-vp-vitrine__corpo { padding: 13px 5px 0; background: #f9f8f699; text-align: center; }
+.csa-vp-vitrine__grade { display: grid; gap: 5px; }
+.csa-vp-exposicao { --csa-vp-sala: #a22d2e; display: grid; min-height: 111px; padding: 13px 14px 14px 12px; border: 2px solid var(--csa-vp-sala); border-left-width: 60px; background: #fff; text-align: left; }
+.csa-vp-exposicao[data-sala="1"] { --csa-vp-sala: #2b3f26; }
+.csa-vp-exposicao[data-sala="2"] { --csa-vp-sala: #d99840; }
+.csa-vp-exposicao[data-sala="3"] { --csa-vp-sala: #0d3456; }
+.csa-vp-exposicao h3 { color: var(--csa-vp-sala); font-size: 18px; line-height: 1.2; font-weight: 800; letter-spacing: .8px; text-transform: uppercase; }
+.csa-vp-exposicao[data-sala="2"] h3 { color: #080808; }
+.csa-vp-exposicao p { font-size: 16px; font-weight: 800; overflow-wrap: anywhere; }
+.csa-vp-exposicao a { justify-self: end; margin-top: 7px; color: var(--csa-vp-sala); font-size: 14px; font-weight: 800; text-underline-offset: 6px; }
+.csa-vp-vitrine__corpo > .csa-vp-botao { width: 100%; min-height: 65px; margin-top: 26px; font-size: 29px; }
+
+/* Horários e formulário público */
+.csa-vp-horarios { min-height: 770px; padding: 19px 21px 16px; background: url("../../assets/cegoaderaldo-boneco.png") left bottom 38px no-repeat, url("../../assets/nave.png") right bottom -313px no-repeat; }
+.csa-vp-horarios > .csa-vp-voltar { margin-left: 3px; }
+.csa-vp-horarios__painel { display: flex; flex-direction: column; min-height: 689px; margin-top: 12px; border: 1px solid #f2dfde; background: #faf9f7; }
+.csa-vp-horarios__topo { padding: 11px 16px 10px; border-bottom: 4px solid #a22d2e; }
+.csa-vp-horarios__topo h1 { color: #a22d2e; font-size: 30px; line-height: 1.3; font-weight: 800; }
+.csa-vp-horarios__topo h1 span:last-child { display: none; }
+.csa-vp-horarios__topo p { margin-top: 2px; font-size: 15px; font-weight: 650; color: #3f3f3f; }
+.csa-vp-horarios__opcoes { display: grid; gap: 24px; padding: 23px 18px 15px; }
+.csa-vp-turno { border: 0; min-width: 0; }
+.csa-vp-turno legend { display: flex; justify-content: space-between; gap: 7px; width: 100%; margin-bottom: 9px; font-size: 18px; font-weight: 800; }
+.csa-vp-turno__grade { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 11px; }
+.csa-vp-turno__opcao { position: relative; display: grid; justify-items: center; align-content: center; min-height: 50px; padding: 3px 1px; background: #d9d9d9; font-size: 13px; line-height: 1.4; cursor: pointer; }
+.csa-vp-turno__opcao:has(input:checked) { background: #a22d2e; color: #fff; }
+.csa-vp-turno__opcao:has(input:disabled) { background: #f0f0ed; cursor: default; }
+.csa-vp-turno__opcao:has(input:disabled) strong { color: #989898; }
+.csa-vp-turno__opcao:focus-within { outline: 3px solid #2d69a2; outline-offset: 3px; }
+.csa-vp-turno__opcao input { position: absolute; width: 1px; height: 1px; opacity: 0; }
+.csa-vp-turno__opcao strong { white-space: nowrap; font-size: 14px; font-weight: 800; }
+.csa-vp-horarios__painel .csa-vp-botao { align-self: center; margin: auto 12px 34px; }
+.csa-vp-horarios__painel .csa-vp-aviso { margin: 0 17px 25px; }
+.csa-vp-formulario { padding: 18px 24px 60px; }
+.csa-vp-formulario > .csa-vp-voltar, .csa-vp-formulario h1 { margin-left: 6px; }
+.csa-vp-formulario h1 { margin-top: 26px; margin-bottom: 11px; font-size: 30px; line-height: 1.2; font-weight: 825; }
+.csa-vp-formulario__aviso { display: none; }
+.csa-vp-perguntas { display: grid; gap: 17px; }
+.csa-vp-perguntas__inicio { display: grid; gap: 17px; margin-inline: -2px -10px; padding-inline: 2px 10px; background: #faf9f7; }
+.csa-vp-campo, .csa-vp-termo { min-width: 0; border: 0; }
+.csa-vp-campo > :is(label, legend) { display: block; margin-bottom: 5px; font-size: 20px; font-weight: 680; }
+.csa-vp-campo small { color: #2b3f26; font-size: 12px; white-space: nowrap; }
+.csa-vp-campo > input { display: block; width: calc(100% - 12px); min-height: 40px; padding: 7px 16px; border: 0; border-radius: 0; background: #f2f2f2; color: #161616; font-size: 17px; }
+.csa-vp-campo > input::placeholder { color: #777; opacity: 1; font-size: 13px; font-weight: 700; }
+.csa-vp-campo > input[type="number"] { appearance: textfield; }
+.csa-vp-campo__opcoes { display: grid; gap: 7px; margin: 11px 0 10px; }
+.csa-vp-campo__linha, .csa-vp-campo__linha label, .csa-vp-termo label { display: flex; align-items: center; gap: 10px; }
+.csa-vp-campo__linha label { font-weight: 650; line-height: 1.08; }
+.csa-vp-campo__opcoes input:is([type="checkbox"], [type="radio"]), .csa-vp-termo input { appearance: none; flex: none; width: 30px; height: 30px; margin: 0; border: 3px solid #000; border-radius: 50%; background: #fff; cursor: pointer; }
+.csa-vp-campo__opcoes input[type="checkbox"] { border-radius: 0; }
+.csa-vp-campo__opcoes input:checked, .csa-vp-termo input:checked { background: #a22d2e; }
+.csa-vp-campo__outro { flex: 1; min-width: 30px; max-width: 170px; border: 0; border-bottom: 2px solid #0d3456; border-radius: 0; background: transparent; font-size: inherit; }
+.csa-vp-termo { margin: 6px 0; }
+.csa-vp-termo legend { font-size: 17px; font-weight: 800; }
+.csa-vp-termo label { align-items: flex-start; margin: 13px 0 2px 3px; }
+.csa-vp-termo input { margin-top: 3px; }
+.csa-vp-termo:has([name="ciencia"]) label { max-width: 328px; }
+.csa-vp-termo:has([name="imagem"]) label { margin: 34px 0 31px 8px; }
+.csa-vp-termo:has([name="logos"]) { margin: 0 0 8px 8px; }
+.csa-vp-formulario .csa-vp-botao { width: calc(100% - 12px); min-height: 50px; margin: 39px 0 0 8px; }
+
+/* Detalhes e revisão da visita */
+.csa-detalhes--visita.csa-visita-publica { background: #fbf4eb; }
+.csa-detalhes--visita .csa-detalhes__conteudo { width: auto; margin: 0; padding: 18px 22px 108px; min-height: 810px; max-width: none; background: url("../../assets/cegoaderaldo-boneco.png") left bottom 82px no-repeat, url("../../assets/nave.png") right bottom -275px no-repeat; }
+.csa-detalhes--visita .csa-detalhes__voltar { margin: 0 0 13px 3px; }
+.csa-detalhes--visita .csa-detalhes-card { padding: 11px 15px 54px; border: 0; }
+.csa-detalhes--visita .csa-detalhes-card__categoria { margin-bottom: 4px; color: #080808; font-size: 16px; text-transform: none; }
+.csa-detalhes--visita .csa-detalhes-card__titulo { margin: 0; color: #080808; font-size: 32px; }
+.csa-detalhes--visita .csa-detalhes-card__secao { margin: 11px -15px 0; padding: 15px 15px 0; border-top: 4px solid #080808; }
+.csa-detalhes--visita :is(.csa-detalhes-card__secao h2, .csa-detalhes-card--lateral h2) { margin-bottom: 14px; font-size: 24px; }
+.csa-detalhes--visita .csa-detalhes-card__secao p { font-size: 20px; font-weight: 650; line-height: 1.4; }
+.csa-detalhes--visita .csa-detalhes-card--lateral { padding: 20px 15px 30px; }
+.csa-detalhes--visita .csa-detalhes-card__campo { margin-top: 12px; }
+.csa-detalhes--visita .csa-detalhes-card__campo :is(dt, dd) { font-size: 24px; line-height: 1.25; }
+.csa-detalhes--visita #csa-detalhes-espaco { color: #a22d2e; text-transform: uppercase; }
+
+.csa-confirmacao--visita.csa-visita-publica { background: #f8f7f2; }
+.csa-confirmacao--visita .csa-confirmacao-conteudo { width: calc(100% - 60px); margin: 18px auto 0; padding-bottom: 50px; }
+.csa-confirmacao--visita .csa-confirmacao-voltar { font-size: 16px; font-weight: 650; }
+.csa-confirmacao--visita .csa-confirmacao-seta { width: 33px; height: 33px; }
+.csa-confirmacao--visita .csa-confirmacao-seta img { display: block; }
+.csa-confirmacao--visita h1 { font-size: 30px; font-weight: 800; margin: 27px 0 12px; }
+.csa-confirmacao--visita .csa-confirmacao-grade { grid-template-columns: minmax(0, 1fr); gap: 21px; }
+.csa-confirmacao--visita .csa-confirmacao-card { padding: 24px 15px 15px; }
+.csa-confirmacao--visita .csa-confirmacao-card h2 { margin: 0 0 13px; font-size: 24px; font-weight: 800; }
+.csa-confirmacao--visita .csa-confirmacao-card dt, .csa-confirmacao--visita .csa-confirmacao-card dd { font-size: 18px; line-height: 1.38; }
+.csa-confirmacao--visita .csa-confirmacao-card dt { font-weight: 650; }
+.csa-confirmacao--visita .csa-confirmacao-card dd { margin-top: 4px; font-weight: 750; }
+.csa-confirmacao--visita .csa-confirmacao-termos { grid-area: auto; margin: -8px 4px -13px; text-align: left; font-size: 18px; }
+.csa-confirmacao--visita .csa-confirmacao-termos span { color: #a22d2e; }
+.csa-confirmacao--visita .csa-confirmacao-acoes { grid-area: auto; margin: 0; }
+.csa-confirmacao--visita .csa-confirmacao-botao { min-height: 50px; font-size: 20px; font-weight: 800; }
+.csa-visita-publica--sucesso { background: #fff !important; }
+.csa-vp-sucesso { min-height: 770px; padding: 122px 21px 0; background: url("../../assets/cegoaderaldo-boneco.png") left bottom 38px no-repeat, url("../../assets/nave.png") right bottom -315px no-repeat; }
+.csa-vp-sucesso > div { display: grid; justify-items: center; align-content: start; min-height: 643px; padding: 54px 12px 26px; background: #faf9f7; }
+.csa-vp-sucesso__icone { display: grid; place-items: center; width: 146px; aspect-ratio: 1; border-radius: 50%; background: #00a000; }
+.csa-vp-sucesso__icone::before { content: ''; width: 50%; height: 24%; margin-top: -7%; border: solid #fff; border-width: 0 0 13px 13px; border-radius: 7px; rotate: -45deg; }
+.csa-visita-publica .csa-vp-sucesso h1 { margin: 20px 0 18px; text-align: center; font-size: 18px; font-weight: 800; }
+.csa-vp-sucesso h1:focus { outline: none; }
+.csa-visita-publica .csa-vp-sucesso .csa-vp-botao { width: 82%; background: #3a4c33; }
+
+@media (max-width: 375px) {
+  .csa-vp-topo { padding-inline: 18px; }
+  .csa-vp-topo > a img { width: 187px; height: auto; }
+  .csa-vp-horarios__opcoes { padding-inline: 9px; }
+  .csa-vp-turno__grade { gap: 5px; }
+  .csa-vp-turno__opcao strong { font-size: 12px; }
+  .csa-confirmacao--visita h1 { font-size: 25px; }
+  .csa-confirmacao--visita .csa-confirmacao-conteudo { width: calc(100% - 36px); }
+}
+
+@media (min-width: 761px) and (not (pointer: coarse)) {
+  .csa-vp-topo { padding-inline: 4% 3.6%; }
+  .csa-vp-faixa {
+    background: url("../../assets/barra1.svg") no-repeat left top / 448px 31px,
+                url("../../assets/barra2.svg") no-repeat 448px top / 321px 31px,
+                url("../../assets/barra3.svg") repeat-x 769px top / 270px 31px;
+  }
+  .csa-vp-hero > div:first-child { min-height: 315px; padding-inline: 7%; background-position: center 51%; }
+  .csa-vp-hero h1 { max-width: none; font-size: clamp(46px, 5vw, 74px); }
+  .csa-vp-hero p { max-width: none; font-size: 23px; }
+  .csa-vp-vitrine { width: 88%; max-width: 1360px; min-height: initial; margin: 0 auto; padding: 44px 0 130px; background: none; }
+  .csa-vp-vitrine > h2 { display: block; margin-bottom: 18px; font-size: 32px; font-weight: 800; }
+  .csa-vp-vitrine__rotulo { display: block; margin-bottom: 3px; color: #a22d2e; font-size: 18px; font-weight: 800; }
+  .csa-vp-acessibilidade, .csa-visita-publica .csa-vp-libras[vw] { display: block; }
+  .csa-vp-data { display: flex; flex-direction: row-reverse; justify-content: flex-end; gap: 20px; padding: 12px 22px; background: #f8f7f2; }
+  .csa-vp-data .csa-vp-botao span:first-child { display: none; }
+  .csa-vp-data .csa-vp-botao span:last-child { display: inline; }
+  .csa-vp-data__periodo { width: min(100%, 430px); }
+  .csa-vp-vitrine__corpo { min-height: 610px; padding: 50px 34px 60px; background: #f8f7f2; }
+  .csa-vp-vitrine__grade { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 26px 38px; }
+  .csa-vp-exposicao { min-height: 139px; }
+  .csa-vp-vitrine__corpo > .csa-vp-botao { width: min(100%, 430px); min-height: 108px; margin-top: 116px; font-size: 40px; }
+  .csa-vp-horarios, .csa-vp-formulario { width: 83.6%; max-width: 1292px; margin: 0 auto; padding: 30px 0 100px; background: none; }
+  .csa-vp-voltar { gap: 16px; font-size: 23px; }
+  .csa-vp-voltar > span:first-child { width: 58px; height: 58px; }
+  .csa-vp-voltar img { scale: 1.35; }
+  .csa-vp-horarios__painel { min-height: 630px; margin: 18px 0 0; }
+  .csa-vp-horarios__topo { padding: 18px 24px; }
+  .csa-vp-horarios__topo h1 { font-size: 45px; }
+  .csa-vp-horarios__topo h1 span:first-child { display: none; }
+  .csa-vp-horarios__topo h1 span:last-child { display: inline; }
+  .csa-vp-horarios__topo p { font-size: 23px; }
+  .csa-vp-horarios__opcoes { width: min(100%, 940px); margin-inline: auto; padding: 30px 32px; }
+  .csa-vp-turno legend { font-size: 28px; }
+  .csa-vp-turno__opcao { min-height: 82px; font-size: 22px; }
+  .csa-vp-turno__opcao strong { font-size: 25px; }
+  .csa-vp-formulario > .csa-vp-voltar, .csa-vp-formulario h1 { margin-left: 0; }
+  .csa-vp-formulario h1 { margin: 35px 0 26px; font-size: 52px; }
+  .csa-vp-formulario__aviso { display: block; margin: 0 0 68px; font-size: 30px; }
+  .csa-vp-formulario__aviso strong { color: #a22d2e; }
+  .csa-vp-perguntas { grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: start; gap: 6%; }
+  .csa-vp-coluna { display: grid; gap: 24px; }
+  .csa-vp-campo > :is(label, legend), .csa-vp-termo legend { font-size: 23px; }
+  .csa-vp-campo > input { width: 100%; min-height: 48px; font-size: 22px; }
+  .csa-vp-termo:has([name="ciencia"]) label { max-width: none; }
+  .csa-vp-campo > input::placeholder { font-size: 21px; font-weight: 500; }
+  .csa-vp-campo__linha, .csa-vp-termo label { font-size: 23px; }
+  .csa-vp-formulario .csa-vp-botao { display: grid; width: min(100%, 280px); margin: 45px auto 0; }
+  .csa-detalhes--visita .csa-detalhes__conteudo { max-width: 1292px; width: 83.6%; margin: 0 auto; padding: 32px 0 95px; background: none; }
+  .csa-detalhes--visita .csa-detalhes__voltar { margin: 0 0 32px; }
+  .csa-detalhes--visita .csa-detalhes-card { padding: 32px; }
+  .csa-detalhes--visita .csa-detalhes-card__secao { margin-inline: 0; padding-inline: 0; }
+  .csa-confirmacao--visita .csa-confirmacao-conteudo { width: 83.6%; max-width: 1292px; margin-top: 28px; padding-bottom: 75px; }
+  .csa-confirmacao--visita h1 { margin: 24px 0 20px; font-size: 50px; }
+  .csa-confirmacao--visita .csa-confirmacao-voltar { font-size: 22px; }
+  .csa-confirmacao--visita .csa-confirmacao-seta { width: 58px; height: 58px; }
+  .csa-confirmacao--visita .csa-confirmacao-seta img { scale: 1.35; }
+  .csa-confirmacao--visita .csa-confirmacao-grade { grid-template-columns: repeat(3, minmax(0, 1fr)); column-gap: 36px; }
+  .csa-confirmacao--visita .csa-confirmacao-card { padding: 23px; }
+  .csa-confirmacao--visita .csa-confirmacao-card h2 { font-size: 27px; }
+  .csa-confirmacao--visita .csa-confirmacao-acoes { grid-area: 2 / 2; margin-top: 24px; }
+  .csa-confirmacao--visita .csa-confirmacao-termos { grid-area: 3 / 1 / 4 / -1; margin-top: 16px; text-align: center; }
+  .csa-vp-sucesso { display: grid; place-content: center; min-height: calc(100vh - 105px); padding: 75px 30px; background: none; }
+  .csa-vp-sucesso > div { min-height: 0; padding: 0; background: none; }
+  .csa-vp-sucesso__icone { width: 280px; }
+  .csa-visita-publica .csa-vp-sucesso h1 { font-size: 32px; }
+  .csa-visita-publica .csa-vp-sucesso .csa-vp-botao { width: min(100%, 355px); min-height: 55px; }
+}

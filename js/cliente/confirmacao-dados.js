@@ -13,6 +13,7 @@ window.csaConfirmacaoExemplos = {
     endereco: 'Rua dos bodes, 293, Centro, Quixadá', natureza: 'Federal', escolaridade: 'Superior',
     curso: 'Sistemas de informação, terceiro semestre', local: 'Sala expositiva - Exposição X',
     quantidade: '15 Pessoas', faixaEtaria: '18 a 22 Anos', grupo: 'Adultos',
-    acessibilidade: 'Pessoa com deficiência visual e baixa visão', quantidadePcd: '1 Pessoa'
+    acessibilidade: 'Pessoa com deficiência visual e baixa visão', quantidadePcd: '1 Pessoa',
+    trabalho: 'Não', primeiraVisita: 'Sim', objetivo: 'Conhecer', preparacao: 'Não'
   }
 };

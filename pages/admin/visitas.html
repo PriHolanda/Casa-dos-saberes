@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Visitas Mediadas | Casa dos Saberes</title>
+  <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../../css/base.css">
+  <link rel="stylesheet" href="../../css/admin/visitas.css">
+  <script src="../../js/config.js" defer></script>
+  <script src="../../js/api.js" defer></script>
+  <script src="../../js/admin/visitas.js" defer></script>
+</head>
+<body class="csa-visitas">
+  <header class="csa-visitas-header">
+    <div class="csa-visitas-header__topo">
+      <a href="agenda.html" aria-label="Casa dos Saberes — agenda administrativa">
+        <img src="../../assets/reservas/csca-gov.png" width="214" height="31" alt="Casa dos Saberes Cego Aderaldo e Governo do Ceará">
+      </a>
+      <details class="csa-visitas-menu">
+        <summary aria-label="Abrir menu">
+          <img src="../../assets/reservas/menu.svg" width="41" height="27" alt="">
+          <span class="csa-visitas-menu__admin"><span class="csa-visitas-menu__sigla">AD</span><span>Admin<small>Casa dos Saberes</small></span></span>
+        </summary>
+        <nav aria-label="Administração">
+          <a href="agenda.html">Agenda</a>
+          <a href="visitas.html" aria-current="page">Visitas Mediadas</a>
+          <a href="editor-visitas.html">Editor Administrativo</a>
+        </nav>
+      </details>
+    </div>
+    <div class="csa-visitas-header__faixa" aria-hidden="true"></div>
+  </header>
+
+  <div class="csa-visitas-admin">
+    <aside class="csa-visitas-lateral">
+      <nav aria-label="Seções administrativas">
+        <a href="agenda.html"><span aria-hidden="true">⌂</span> Dashboard</a>
+        <a href="agenda.html#csa-agenda"><span aria-hidden="true">▤</span> Sugestões de pauta</a>
+        <a href="visitas.html" aria-current="page"><span aria-hidden="true">♧</span> Visitas Mediadas</a>
+        <a href="editor-visitas.html"><span aria-hidden="true">↗</span> Editar Formulário</a>
+      </nav>
+      <img src="../../assets/cego-aderaldo.svg" alt="">
+    </aside>
+
+    <main class="csa-visitas-lista">
+      <h1>Visitas Mediadas</h1>
+      <div class="csa-visitas-controles">
+        <div class="csa-visitas-controles__tipos" role="group" aria-label="Visualização da agenda">
+          <button type="button" data-visao="diaria" aria-pressed="true">Diária</button>
+          <button type="button" data-visao="semanal" aria-pressed="false">Semanal</button>
+        </div>
+        <div class="csa-visitas-controles__periodo" role="group" aria-label="Período">
+          <button type="button" data-direcao="-1" aria-label="Período anterior">‹</button>
+          <div class="csa-visitas-data" aria-live="polite">
+            <span class="csa-visitas-calendario" aria-hidden="true"></span>
+            <span id="csa-visitas-periodo"></span>
+          </div>
+          <button type="button" data-direcao="1" aria-label="Próximo período">›</button>
+        </div>
+        <div class="csa-visitas-controles__acoes">
+          <label class="csa-visitas-filtro">
+            <span id="csa-visitas-filtro-texto" aria-hidden="true">Status: Todos</span>
+            <select id="csa-visitas-filtro" aria-label="Filtrar por status">
+              <option value="todos">Status: Todos</option>
+              <option value="aprovada">Status: Aceito</option>
+              <option value="pendente">Status: Pendente</option>
+            </select>
+          </label>
+          <button class="csa-visitas-exportar" id="csa-visitas-exportar" type="button"><span class="csa-visitas-pdf" aria-hidden="true">PDF</span> Exportar PDF</button>
+        </div>
+      </div>
+      <ul class="csa-visitas-legenda" aria-label="Status">
+        <li><span class="csa-visitas-indicador" aria-hidden="true"></span>Aceito</li>
+        <li><span class="csa-visitas-indicador csa-visitas-indicador--pendente" aria-hidden="true"></span>Pendente</li>
+      </ul>
+      <p class="csa-visitas-vazio" id="csa-visitas-mensagem" role="status">Carregando visitas…</p>
+      <div id="csa-visitas-grade" hidden></div>
+    </main>
+  </div>
+
+  <dialog class="csa-visita-detalhe" id="csa-visita-detalhe" aria-labelledby="csa-visita-detalhe-titulo">
+    <div class="csa-visita-detalhe__painel">
+      <button class="csa-visitas-botao csa-visita-detalhe__fechar" type="button" aria-label="Fechar detalhes">X</button>
+      <h2 id="csa-visita-detalhe-titulo"></h2>
+      <div class="csa-visita-detalhe__dados" id="csa-visita-detalhe-dados"></div>
+      <div class="csa-visita-detalhe__acoes">
+        <button class="csa-visitas-botao" type="button" data-acao="negar">Negar</button>
+        <button class="csa-visitas-botao" type="button" data-acao="aprovar">Aprovar</button>
+        <button class="csa-visitas-botao" type="button" data-acao="cancelar">Cancelar<span class="csa-visita-detalhe__cancelar-complemento"> visita</span></button>
+      </div>
+      <p class="csa-visitas-aviso" id="csa-visita-detalhe-aviso" role="status" hidden></p>
+    </div>
+  </dialog>
+</body>
+</html>

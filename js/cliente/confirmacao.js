@@ -15,7 +15,7 @@
   ] : [
     ['Dados do responsável', [...comum, ['formacao', 'Formação do responsável'], ['disciplina', 'Disciplina que ministra']]],
     ['Sobre a instituição', [['instituicao', 'Nome da instituição'], ['endereco', 'Endereço da instituição'], ['natureza', 'Natureza da instituição'], ['escolaridade', 'Grau de escolaridade'], ['curso', 'Curso e semestre']]],
-    ['Sobre a visita', [['local', 'Local solicitado'], ['quantidade', 'Quantidade de pessoas'], ['faixaEtaria', 'Faixa etária'], ['grupo', 'Grupo composto em sua maioria por:'], ['acessibilidade', 'Pessoas com deficiência?'], ['quantidadePcd', 'Número de pessoas com deficiência']]]
+    ['Sobre a visita', [['quantidade', 'Quantidade de pessoas'], ['faixaEtaria', 'Faixa etária'], ['grupo', 'Grupo composto em sua maioria por:'], ['acessibilidade', 'Pessoas com deficiência?'], ['quantidadePcd', 'Número de pessoas com deficiência'], ['trabalho', 'O grupo trabalhou ou pretende trabalhar alguma questão referente a exposição em sala de aula?'], ['primeiraVisita', 'Primeira vez visitando a Casa de Saberes Cego Aderaldo'], ['objetivo', 'Objetivo da visita'], ['preparacao', 'Foi realizada alguma atividade de preparação para a visitação do equipamento?']]]
   ];
   let retorno = null;
   let aoVoltar = null;
@@ -45,7 +45,7 @@
     grade.hidden = true;
     estado.hidden = false;
     botaoVoltar.disabled = true;
-    titulo.textContent = 'Confirme as Informações';
+    titulo.textContent = tipo === 'visita' ? 'Confirme as informações' : 'Confirme as Informações';
     retorno = null;
     aoVoltar = revisao?.voltar || null;
     const dados = entrada && entrada.dados;
@@ -66,11 +66,12 @@
       }
     }
     botaoVoltar.disabled = !retorno && !aoVoltar;
-    for (const [nome, campos] of secoes) {
+    for (const [indice, [nome, campos]] of secoes.entries()) {
       const card = elemento('section', 'csa-confirmacao-card');
       card.append(elemento('h2', '', nome));
       const lista = elemento('dl');
-      for (const [chave, rotulo] of campos) {
+      const extras = tipo === 'visita' && indice === 2 && Array.isArray(entrada.extras) ? entrada.extras : [];
+      for (const [chave, rotulo] of [...campos, ...extras]) {
         const campo = elemento('div', 'csa-confirmacao-campo');
         const valor = dados[chave];
         const temValor = (typeof valor === 'string' && valor.trim()) || Number.isFinite(valor);
@@ -84,6 +85,7 @@
     if (demonstracao || revisao) {
       estado.hidden = true;
       const termos = elemento('p', 'csa-confirmacao-termos', 'Ao confirmar, você declara que revisou as informações e está de acordo com os termos apresentados no formulário.');
+      if (tipo === 'visita') termos.prepend(elemento('span', '', 'Atenção:'), ' ');
       const acoes = elemento('div', 'csa-confirmacao-acoes');
       const confirmar = elemento('button', 'csa-confirmacao-botao csa-confirmacao-botao--principal', 'Confirmar e enviar');
       confirmar.type = 'button';
@@ -114,6 +116,7 @@
             estado.focus();
           }
         }
+        if (revisao?.sucesso) { revisao.sucesso(); return; }
         mostrarStatus(status);
         termos.hidden = true;
         acoes.hidden = true;
@@ -132,9 +135,7 @@
   }
   window.csaConfirmacao = Object.freeze({
     apresentar: entrada => renderizar(entrada),
-    revisar: (entrada, acoes) => {
-      if (tipo === 'reserva') renderizar(entrada, demo, acoes);
-    }
+    revisar: (entrada, acoes) => renderizar(entrada, demo, acoes)
   });
   renderizar(demo ? { dados: window.csaConfirmacaoExemplos?.[tipo] } : window.csaConfirmacaoEntrada, demo);
 })();

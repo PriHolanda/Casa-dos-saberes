@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Editor Administrativo | Casa dos Saberes</title>
+  <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../../css/base.css">
+  <link rel="stylesheet" href="../../css/admin/visitas.css">
+  <link rel="stylesheet" href="../../css/admin/editor-visitas.css">
+  <script src="../../js/visitas-modelo.js" defer></script>
+  <script src="../../js/admin/editor-visitas.js" defer></script>
+</head>
+<body class="csa-visitas">
+  <header class="csa-visitas-header">
+    <div class="csa-visitas-header__topo">
+      <a href="agenda.html" aria-label="Casa dos Saberes — agenda administrativa">
+        <img src="../../assets/reservas/csca-gov.png" width="214" height="31" alt="Casa dos Saberes Cego Aderaldo e Governo do Ceará">
+      </a>
+      <details class="csa-visitas-menu">
+        <summary aria-label="Abrir menu">
+          <img src="../../assets/reservas/menu.svg" width="41" height="27" alt="">
+          <span class="csa-visitas-menu__admin"><span class="csa-visitas-menu__sigla">AD</span><span>Admin<small>Casa dos Saberes</small></span></span>
+        </summary>
+        <nav aria-label="Administração">
+          <a href="agenda.html">Agenda</a>
+          <a href="visitas.html">Visitas Mediadas</a>
+          <a href="editor-visitas.html" aria-current="page">Editor Administrativo</a>
+          <a href="formulario-visita.html">Formulário de Visita</a>
+        </nav>
+      </details>
+    </div>
+    <div class="csa-visitas-header__faixa" aria-hidden="true"></div>
+  </header>
+
+  <div class="csa-visitas-admin">
+    <aside class="csa-visitas-lateral">
+      <nav aria-label="Seções administrativas">
+        <a href="agenda.html"><span aria-hidden="true">⌂</span> Dashboard</a>
+        <a href="agenda.html#csa-agenda"><span aria-hidden="true">▤</span> Sugestões de pauta</a>
+        <a href="visitas.html"><span aria-hidden="true">♧</span> Visitas Mediadas</a>
+        <a href="editor-visitas.html" aria-current="page"><span aria-hidden="true">↗</span> Editor Administrativo</a>
+      </nav>
+      <img src="../../assets/cego-aderaldo.svg" alt="">
+    </aside>
+
+    <main class="csa-exposicoes">
+      <section id="csa-exposicoes-inicio" aria-labelledby="csa-exposicoes-titulo">
+        <h1 id="csa-exposicoes-titulo">Editor Administrativo</h1>
+        <div class="csa-exposicoes__secoes">
+          <section aria-labelledby="csa-exposicoes-lista-titulo">
+            <div class="csa-exposicoes__cabecalho">
+              <h2 id="csa-exposicoes-lista-titulo">Edição de exposição</h2>
+              <ul class="csa-exposicoes__legenda" aria-label="Status">
+                <li><span class="csa-visitas-indicador" aria-hidden="true"></span>Ativo</li>
+                <li><span class="csa-visitas-indicador csa-exposicoes__indicador--pausado" aria-hidden="true"></span>Pausado</li>
+              </ul>
+            </div>
+            <div class="csa-exposicoes__lista" id="csa-exposicoes-lista"></div>
+          </section>
+          <section class="csa-exposicoes__formulario" aria-labelledby="csa-exposicoes-formulario-titulo">
+            <h2 id="csa-exposicoes-formulario-titulo">Edição de Formulário</h2>
+            <div>
+              <h3>Formulário de Visita Mediada</h3>
+              <a class="csa-visitas-botao" href="formulario-visita.html">Editar Formulário</a>
+            </div>
+          </section>
+        </div>
+      </section>
+
+      <section class="csa-exposicoes-edicao" id="csa-exposicoes-edicao" aria-labelledby="csa-exposicoes-edicao-titulo" hidden>
+        <a class="csa-exposicoes-edicao__voltar" href="editor-visitas.html" aria-label="Voltar para o editor administrativo">
+          <span><img src="../../assets/reservas/voltar.svg" width="24" height="24" alt=""></span>
+          <span>Voltar para Editor administrativo</span>
+        </a>
+        <div class="csa-exposicoes-edicao__cabecalho">
+          <h1 id="csa-exposicoes-edicao-titulo" tabindex="-1">Editor de exposição</h1>
+          <p class="csa-exposicoes-edicao__status" id="csa-exposicoes-status"></p>
+        </div>
+        <div class="csa-exposicoes-edicao__painel">
+          <section class="csa-exposicoes-edicao__salas" aria-labelledby="csa-exposicoes-salas-titulo">
+            <h2 id="csa-exposicoes-salas-titulo">Selecione a sala</h2>
+            <div id="csa-exposicoes-salas"></div>
+          </section>
+          <form class="csa-exposicoes-edicao__campos" id="csa-exposicoes-form">
+            <div class="csa-exposicoes-edicao__titulo">
+              <h2>Editar a exposição</h2>
+              <p id="csa-exposicoes-sala"></p>
+            </div>
+            <div class="csa-exposicoes-edicao__entradas">
+              <label>Nome da exposição <input name="nome" type="text" maxlength="120" required></label>
+              <label class="csa-exposicoes-edicao__sobre"><span>Sobre a exposição <output>0/500</output></span><textarea name="descricao" maxlength="500"></textarea></label>
+              <p>Esse texto será exibido na página pública da exposição</p>
+              <label>Classificação indicativa <input name="classificacao" type="text" maxlength="40"></label>
+            </div>
+            <div class="csa-exposicoes-edicao__acoes">
+              <section>
+                <h3 id="csa-exposicoes-alternar-titulo"></h3>
+                <button class="csa-visitas-botao" id="csa-exposicoes-alternar" type="button"></button>
+              </section>
+              <section>
+                <h3>Deseja salvar as alterações?</h3>
+                <button class="csa-visitas-botao" type="submit">Salvar</button>
+              </section>
+            </div>
+            <p class="csa-visitas-aviso" id="csa-exposicoes-aviso" role="status" hidden></p>
+          </form>
+        </div>
+      </section>
+
+      <section class="csa-exposicoes-sucesso" id="csa-exposicoes-sucesso" aria-labelledby="csa-exposicoes-sucesso-titulo" hidden>
+        <div>
+          <h1 id="csa-exposicoes-sucesso-titulo" tabindex="-1">Suas alterações foram salvas!</h1>
+          <span class="csa-exposicoes-sucesso__icone" aria-hidden="true"></span>
+          <a class="csa-visitas-botao" href="editor-visitas.html">Voltar ao início</a>
+        </div>
+      </section>
+    </main>
+  </div>
+</body>
+</html>

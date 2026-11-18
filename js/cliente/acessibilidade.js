@@ -1,7 +1,7 @@
 document.addEventListener("DOMContentLoaded", () => {
   const botaoMenu = document.querySelector(".csa-acessibilidade-btn");
   const painel = document.querySelector(".csa-acessibilidade-painel");
-  const conteudo = document.querySelector(".csa-agenda-cliente");
+  const conteudo = document.querySelector(".csa-agenda-cliente, .csa-vp-vitrine");
   const raiz = document.documentElement;
 
   const chaveSalva = "csa-acessibilidade";

@@ -190,6 +190,20 @@ const csaDetalhes = (() => {
     grade.setAttribute('aria-busy', 'true');
 
     try {
+      if (tipo === 'visita' && (parametros.has('exposicao') || parametros.get('demo') === '1')) {
+        const indice = Number(parametros.get('exposicao') || '1') - 1;
+        const exposicao = csaVisitasModelo.exposicoes()[indice];
+        if (!exposicao || exposicao.pausada) {
+          mostrarMensagem('Esta exposição não está em cartaz.', true);
+          return false;
+        }
+        const sala = csaVisitasModelo.salas[indice];
+        const espaco = indice < 2 ? 'Sala expositiva' : sala;
+        return apresentar(csaDetalhesModelo.prepararVisita({
+          titulo: exposicao.nome, categoria: espaco, descricaoTitulo: 'Sobre a exposição',
+          descricao: exposicao.descricao, classificacao: exposicao.classificacao
+        }, { nome: espaco }));
+      }
       // Modo demonstrativo: permite testar as páginas sem backend.
       if (parametros.get('demo') === '1') {
         const exemplo = csaDadosDetalhes.consultarExemplo(tipo);

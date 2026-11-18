@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Formulário de Visita | Casa dos Saberes</title>
+  <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../../css/base.css">
+  <link rel="stylesheet" href="../../css/admin/visitas.css">
+  <script src="../../js/visitas-modelo.js" defer></script>
+  <script src="../../js/admin/formulario-visita.js" defer></script>
+</head>
+<body class="csa-visitas csa-visitas--formulario">
+  <header class="csa-visitas-header">
+    <div class="csa-visitas-header__topo">
+      <a href="agenda.html" aria-label="Casa dos Saberes — agenda administrativa">
+        <img src="../../assets/reservas/csca-gov.png" width="214" height="31" alt="Casa dos Saberes Cego Aderaldo e Governo do Ceará">
+      </a>
+      <details class="csa-visitas-menu">
+        <summary aria-label="Abrir menu">
+          <img src="../../assets/reservas/menu.svg" width="41" height="27" alt="">
+          <span class="csa-visitas-menu__admin"><span class="csa-visitas-menu__sigla">AD</span><span>Admin<small>Casa dos Saberes</small></span></span>
+        </summary>
+        <nav aria-label="Administração">
+          <a href="agenda.html">Agenda</a>
+          <a href="visitas.html">Visitas Mediadas</a>
+          <a href="editor-visitas.html">Editor Administrativo</a>
+          <a href="formulario-visita.html" aria-current="page">Formulário de Visita</a>
+        </nav>
+      </details>
+    </div>
+    <div class="csa-visitas-header__faixa" aria-hidden="true"></div>
+  </header>
+
+  <main class="csa-visitas-formulario">
+    <a class="csa-visitas-formulario__voltar" href="editor-visitas.html">
+      <span><img src="../../assets/reservas/voltar.svg" width="32" height="32" alt=""></span>
+      Voltar para o editor administrativo
+    </a>
+    <h1>Formulário de <span>visita</span></h1>
+    <p class="csa-visita-formulario__aviso"><strong>Importante:</strong> ao enviar sua solicitação, aguarde a confirmação da nossa equipe via telefone ou e-mail. O envio do formulário não significa que a reserva já foi confirmada.</p>
+    <div class="csa-visita-formulario__colunas">
+      <section class="csa-visita-formulario__termo csa-visita-formulario__termo--inicio" aria-labelledby="termo-analise">
+        <h2 id="termo-analise">Termo de Ciência sobre Análise e Aprovação da solicitação</h2>
+        <p><span class="csa-visita-formulario__marca csa-visita-formulario__marca--ativa" aria-hidden="true"></span>Declaro estar ciente de que esta solicitação não garante a visita, estando sua análise e aprovação sujeitas à avaliação da gestão do espaço cultural solicitado, que poderá autorizar, negar ou solicitar ajustes à proposta.</p>
+      </section>
+      <div class="csa-visita-formulario__campos" id="csa-visita-campos-principais"></div>
+      <div class="csa-visita-formulario__campos" id="csa-visita-campos-complementares"></div>
+      <section class="csa-visita-formulario__termo csa-visita-formulario__termo--fim" aria-labelledby="termo-logos">
+        <h2 id="termo-logos">Termo de Ciência sobre Uso da Régua de Logos Institucional</h2>
+        <p><span class="csa-visita-formulario__marca" aria-hidden="true"></span>Declaro estar ciente de que, em caso de aprovação da presente solicitação, deverá ser utilizado em todos os materiais de divulgação (como cards, flyers, pôsteres e/ou publicações) o uso obrigatório da régua de logos padrão do equipamento cultural, conforme disponibilizado.</p>
+      </section>
+      <button class="csa-visitas-botao csa-visita-formulario__adicionar" id="csa-visita-adicionar" type="button">Adicionar campo</button>
+    </div>
+    <p class="csa-visitas-aviso" id="csa-visita-formulario-aviso" role="status" hidden></p>
+  </main>
+
+  <dialog class="csa-visita-editor" aria-labelledby="csa-visita-editor-titulo" id="csa-visita-editor">
+    <form id="csa-visita-editor-form">
+      <button class="csa-visitas-botao csa-visita-editor__fechar" type="button" aria-label="Fechar editor">X</button>
+      <div class="csa-visita-editor__conteudo" id="csa-visita-editor-conteudo"></div>
+      <button class="csa-visitas-botao csa-visita-editor__salvar" type="submit">Salvar</button>
+    </form>
+  </dialog>
+</body>
+</html>

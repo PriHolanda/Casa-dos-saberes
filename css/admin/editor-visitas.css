@@ -1,0 +1,119 @@
+.csa-exposicoes { min-width: 0; padding: 30px 10px 115px; }
+.csa-exposicoes h1, .csa-exposicoes h2, .csa-exposicoes h3 { font-weight: 800; line-height: 1.08; }
+.csa-exposicoes h1 { text-align: center; font-size: 32px; }
+.csa-exposicoes a.csa-visitas-botao { display: inline-block; text-decoration: none; }
+.csa-exposicoes__cabecalho { margin: 37px 0 17px; text-align: center; }
+.csa-exposicoes__cabecalho h2 { margin-bottom: 16px; font-size: 30px; }
+.csa-exposicoes__legenda { display: flex; justify-content: center; gap: 18px; list-style: none; font-size: 22px; font-weight: 750; }
+.csa-exposicoes__legenda li:first-child { color: var(--csa-verde); }
+.csa-exposicoes__legenda li:last-child { color: var(--csa-vermelho); }
+.csa-exposicoes__indicador--pausado { background: var(--csa-vermelho); }
+.csa-exposicoes__lista { display: grid; gap: 12px; padding: 16px 11px 22px; border: 1px solid #c5c5c5; border-radius: 5px; }
+.csa-exposicoes-cartao {
+  --csa-cor-exposicao: var(--csa-vermelho);
+  --csa-fundo-exposicao: #efd5d5;
+  --csa-texto-botao: #fff;
+  display: block;
+  position: relative;
+  min-width: 0;
+  min-height: 140px;
+  padding: 18px 17px 8px 15px;
+  border: 2px solid var(--csa-cor-exposicao);
+  border-left-width: 61px;
+  border-radius: 0;
+  background: #fff;
+  text-align: left;
+  overflow-wrap: anywhere;
+}
+[data-sala="1"] { --csa-cor-exposicao: var(--csa-visitas-verde); --csa-fundo-exposicao: #d9e1d6; }
+[data-sala="2"] { --csa-cor-exposicao: #dc9a3a; --csa-fundo-exposicao: #f6e5cb; --csa-texto-botao: #000; }
+[data-sala="3"] { --csa-cor-exposicao: var(--csa-visitas-azul); --csa-fundo-exposicao: #d5e3ee; }
+.csa-exposicoes-cartao__sala { color: var(--csa-cor-exposicao); font-size: 18px; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; }
+.csa-exposicoes-cartao strong { display: block; margin: 5px 0 18px; font-size: 23px; font-weight: 800; }
+.csa-exposicoes-cartao__rodape { display: flex; justify-content: space-between; align-items: baseline; gap: 4px; }
+.csa-exposicoes-cartao__rodape .csa-visitas-botao { align-self: flex-end; padding: 2px 14px; background: var(--csa-cor-exposicao); color: var(--csa-texto-botao); font-size: 23px; line-height: 1.05; }
+.csa-exposicoes-cartao__status { color: var(--csa-verde); font-size: 22px; font-weight: 750; }
+.csa-exposicoes-cartao__status--pausado { color: var(--csa-vermelho); }
+.csa-exposicoes-cartao--pausado { border-left-color: color-mix(in srgb, var(--csa-cor-exposicao), white 56%); }
+.csa-exposicoes-cartao--pausado > :is(.csa-exposicoes-cartao__sala, strong) { opacity: .4; }
+.csa-exposicoes__formulario { margin: 106px 8px 75px; text-align: center; }
+.csa-exposicoes__formulario h2 { margin-bottom: 21px; font-size: 24px; }
+.csa-exposicoes__formulario > div { padding: 30px 8px 21px; border: 1px solid #999; border-radius: 5px; }
+.csa-exposicoes__formulario h3 { margin-bottom: 23px; font-size: 25px; }
+.csa-exposicoes__formulario .csa-visitas-botao { padding: 5px 10px; font-size: 20px; }
+
+.csa-exposicoes-edicao__voltar { display: inline-flex; align-items: center; gap: 16px; margin: -4px 0 10px 12px; color: #535353; font-size: 24px; text-decoration: none; }
+.csa-exposicoes-edicao__voltar span:first-child { display: grid; place-items: center; width: 45px; height: 42px; background: var(--csa-fundo-nav); }
+.csa-exposicoes-edicao__voltar span:last-child { display: none; }
+.csa-exposicoes-edicao__cabecalho { text-align: center; }
+.csa-exposicoes-edicao__status { display: inline-block; min-width: 155px; margin: 10px 0 20px; padding: 8px 14px; border: 1px solid var(--csa-visitas-verde); background: #d3dfca; color: var(--csa-visitas-verde); font-size: 20px; font-weight: 800; }
+.csa-exposicoes-edicao__status--pausado { border-color: var(--csa-vermelho); background: #efd5d5; color: var(--csa-vermelho); }
+.csa-exposicoes-edicao__painel { display: grid; gap: 62px; margin-inline: 5px 19px; padding: 45px 15px; border: 1px solid #d1cbb1; border-radius: 2px; background: var(--csa-fundo-nav); }
+.csa-exposicoes-edicao__salas { padding: 32px 12px 82px; background: #fff; }
+.csa-exposicoes-edicao h2 { text-align: center; font-size: 32px; }
+#csa-exposicoes-salas { display: grid; justify-items: center; gap: 15px; margin-top: 30px; }
+#csa-exposicoes-salas .csa-exposicoes-cartao { width: min(100%, 197px); min-height: 100px; padding: 7px 4px 28px; border-left-width: 34px; }
+#csa-exposicoes-salas .csa-exposicoes-cartao::after { content: ''; position: absolute; bottom: 7px; right: 9px; width: 18px; height: 18px; border: 1px solid #777; border-radius: 50%; }
+#csa-exposicoes-salas .csa-exposicoes-cartao[aria-pressed="true"] { background: var(--csa-fundo-exposicao); }
+#csa-exposicoes-salas .csa-exposicoes-cartao[aria-pressed="true"]::after { border-color: var(--csa-cor-exposicao); background: var(--csa-cor-exposicao); }
+#csa-exposicoes-salas .csa-exposicoes-cartao__sala { display: block; font-size: 14px; }
+#csa-exposicoes-salas .csa-exposicoes-cartao strong { margin: 2px 0 0; font-size: 22px; }
+.csa-exposicoes-edicao__campos { padding: 34px 15px 47px; background: #fff; }
+.csa-exposicoes-edicao__titulo p { margin: 15px 0 24px; text-align: center; color: var(--csa-cor-exposicao, var(--csa-vermelho)); font-size: 15px; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; }
+.csa-exposicoes-edicao__entradas label { display: block; font-size: 20px; font-weight: 800; }
+.csa-exposicoes-edicao__entradas :is(input, textarea) { display: block; padding: 7px; background: #e8e8e8; color: #000; border: 1px solid #999; border-radius: 0; font: 500 16px Urbanist, sans-serif; }
+.csa-exposicoes-edicao__entradas input { width: min(100%, 206px); margin: 5px 0 26px; }
+.csa-exposicoes-edicao__sobre span { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
+.csa-exposicoes-edicao__sobre output { font-size: 14px; font-weight: 500; }
+.csa-exposicoes-edicao__entradas textarea { width: 100%; height: 142px; margin-top: 5px; resize: vertical; }
+.csa-exposicoes-edicao__entradas p { margin: 4px 0 13px; color: #555; font-size: 14px; }
+.csa-exposicoes-edicao__acoes { display: grid; justify-items: center; gap: 34px; margin-top: 60px; }
+.csa-exposicoes-edicao__acoes section { width: min(100%, 236px); padding: 9px 16px 16px; border: 1px solid #aaa; text-align: center; }
+.csa-exposicoes-edicao__acoes h3 { font-size: 20px; line-height: 1.16; }
+.csa-exposicoes-edicao__acoes button { width: min(100%, 152px); min-height: 51px; margin-top: 12px; font-size: 20px; }
+.csa-exposicoes-edicao__acoes .csa-exposicoes-edicao__reativar { background: var(--csa-visitas-azul); }
+.csa-exposicoes-edicao__acoes button[type="submit"], .csa-exposicoes-sucesso .csa-visitas-botao { background: var(--csa-visitas-verde); }
+.csa-exposicoes-sucesso { margin: 122px 12px 40px; padding: 28px 16px; background: var(--csa-fundo-nav); border: 1px solid #d1cbb1; border-radius: 2px; }
+.csa-exposicoes-sucesso > div { display: grid; justify-items: center; gap: 65px; padding: 90px 14px 110px; background: #fff; }
+.csa-exposicoes-sucesso .csa-visitas-botao { font-size: 28px; }
+.csa-exposicoes-sucesso__icone { display: grid; place-items: center; width: min(80%, 172px); aspect-ratio: 1; border-radius: 50%; background: #00a000; }
+.csa-exposicoes-sucesso__icone::before { content: ''; width: 49%; height: 23%; margin-top: -8%; border: solid #fff; border-width: 0 0 15px 15px; border-radius: 7px; transform: rotate(-45deg); }
+
+@media (max-width: 375px) {
+  .csa-exposicoes-cartao { border-left-width: 36px; padding-inline: 11px; }
+  .csa-exposicoes-cartao__rodape .csa-visitas-botao { padding-inline: 7px; }
+  .csa-exposicoes h1, .csa-exposicoes-edicao h2 { font-size: 28px; }
+}
+
+@media (min-width: 761px) and (not (pointer: coarse)) {
+  .csa-exposicoes { padding: 34px 4% 120px; }
+  .csa-exposicoes h1 { text-align: left; font-size: 38px; }
+  .csa-exposicoes__secoes { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 30px; margin-top: 36px; max-width: 930px; }
+  .csa-exposicoes__cabecalho { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; margin: 0 0 10px; }
+  .csa-exposicoes__cabecalho h2, .csa-exposicoes__formulario h2 { margin: 0; font-size: 24px; }
+  .csa-exposicoes__legenda { font-size: 18px; gap: 7px; }
+  .csa-exposicoes__formulario { margin: 0; }
+  .csa-exposicoes__formulario h2 { margin-bottom: 10px; text-align: left; }
+  .csa-exposicoes__formulario > div { padding: 30px 8px 21px; }
+  .csa-exposicoes-edicao__voltar { margin: -12px 0 23px; }
+  .csa-exposicoes-edicao__voltar span:last-child { display: inline; }
+  .csa-exposicoes-edicao__cabecalho, .csa-exposicoes-edicao__painel { width: min(100%, 1028px); margin-inline: auto; }
+  .csa-exposicoes-edicao__cabecalho { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; padding-right: 42px; margin-bottom: 22px; }
+  .csa-exposicoes-edicao__status { margin: 0; text-align: center; }
+  .csa-exposicoes-edicao__painel { gap: 27px; padding: 29px 25px 25px; }
+  .csa-exposicoes-edicao__salas { padding: 18px 19px 36px; }
+  .csa-exposicoes-edicao h2 { text-align: left; font-size: 32px; }
+  #csa-exposicoes-salas { grid-template-columns: repeat(4, minmax(0, 1fr)); margin-top: 17px; }
+  .csa-exposicoes-edicao__campos { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: start; column-gap: 20px; padding: 18px 42px 60px; }
+  .csa-exposicoes-edicao__titulo { grid-column: 1 / -1; display: flex; justify-content: space-between; align-items: start; gap: 10px; margin-bottom: 58px; }
+  .csa-exposicoes-edicao__titulo p { margin: 5px 0 0; }
+  .csa-exposicoes-edicao__entradas { max-width: 357px; }
+  .csa-exposicoes-edicao__acoes { margin-top: 10px; gap: 15px; }
+  .csa-exposicoes-edicao__acoes section { width: min(100%, 357px); }
+  .csa-exposicoes-edicao__acoes button { width: min(100%, 230px); }
+  .csa-exposicoes-sucesso { width: min(100%, 1028px); margin: 147px auto 0; padding: 23px 31px; }
+  .csa-exposicoes-sucesso > div { padding: 185px 12px 120px; gap: 30px; }
+  .csa-exposicoes-sucesso h1 { order: 1; text-align: center; }
+  .csa-exposicoes-sucesso .csa-visitas-botao { order: 2; margin-top: 106px; }
+  .csa-exposicoes-sucesso__icone { width: min(80%, 240px); }
+}
