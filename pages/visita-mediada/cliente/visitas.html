@@ -4,28 +4,28 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Agenda Casa de Saberes | Visita Mediada</title>
-  <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="../../css/base.css">
-  <link rel="stylesheet" href="../../css/cliente/visita.css">
+  <link rel="icon" href="../../../assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../../../css/base.css">
+  <link rel="stylesheet" href="../../../css/visita-mediada/cliente/visita.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.3.1/css/all.min.css" media="(min-width: 761px)">
-  <script src="../../js/config.js" defer></script>
-  <script src="../../js/api.js" defer></script>
-  <script src="../../js/visitas-modelo.js" defer></script>
-  <script src="../../js/cliente/visita.js" defer></script>
-  <script src="../../js/cliente/acessibilidade.js" defer></script>
+  <script src="../../../js/config.js" defer></script>
+  <script src="../../../js/api.js" defer></script>
+  <script src="../../../js/visita-mediada/modelo.js" defer></script>
+  <script src="../../../js/visita-mediada/cliente/visita.js" defer></script>
+  <script src="../../../js/cliente/acessibilidade.js" defer></script>
 </head>
 <body class="csa-visita-publica" data-visita-pagina="agenda">
   <header class="csa-vp-header">
     <div class="csa-vp-topo">
-      <a href="agenda-cliente.html" aria-label="Casa dos Saberes — agenda">
-        <img src="../../assets/reservas/csca-gov.png" width="214" height="31" alt="Casa dos Saberes Cego Aderaldo e Governo do Ceará">
+      <a href="../../cliente/agenda-cliente.html" aria-label="Casa dos Saberes — agenda">
+        <img src="../../../assets/reservas/csca-gov.png" width="214" height="31" alt="Casa dos Saberes Cego Aderaldo e Governo do Ceará">
       </a>
       <details class="csa-vp-menu">
-        <summary aria-label="Abrir menu"><img src="../../assets/reservas/menu.svg" width="41" height="27" alt=""></summary>
+        <summary aria-label="Abrir menu"><img src="../../../assets/reservas/menu.svg" width="41" height="27" alt=""></summary>
         <nav aria-label="Navegação principal">
-          <a href="agenda-cliente.html">Agenda</a>
+          <a href="../../cliente/agenda-cliente.html">Agenda</a>
           <a href="visitas.html" data-visita-retorno>Visita Mediada</a>
-          <a href="reservas.html">Formulário de reserva</a>
+          <a href="../../cliente/reservas.html">Formulário de reserva</a>
         </nav>
       </details>
     </div>
@@ -58,9 +58,9 @@
       <button class="csa-vp-botao" id="csa-vp-escolher-dia" type="button"><span>Selecionar data</span><span>Escolher data</span></button>
       <input type="date" id="csa-vp-dia" aria-label="Selecionar data da visita">
       <div class="csa-vp-data__periodo">
-        <button type="button" data-vp-dia="-1" aria-label="Dia anterior"><img src="../../assets/reservas/voltar.svg" width="24" height="24" alt=""></button>
+        <button type="button" data-vp-dia="-1" aria-label="Dia anterior"><img src="../../../assets/reservas/voltar.svg" width="24" height="24" alt=""></button>
         <time id="csa-vp-data-texto" aria-live="polite"></time>
-        <button type="button" data-vp-dia="1" aria-label="Próximo dia"><img src="../../assets/reservas/voltar.svg" width="24" height="24" alt=""></button>
+        <button type="button" data-vp-dia="1" aria-label="Próximo dia"><img src="../../../assets/reservas/voltar.svg" width="24" height="24" alt=""></button>
       </div>
     </div>
     <div class="csa-vp-vitrine__corpo">

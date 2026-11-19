@@ -5,7 +5,7 @@
 // INTEGRAÇÃO COM A AGENDA PÚBLICA:
 // - Sobre o evento: detalhes-reserva.html?eventoId=ID
 // - Espaço livre: a agenda encaminha diretamente para reservas.html
-// - Visitas: detalhes-visita.html?espacoId=ID
+// - Visitas: pages/visita-mediada/cliente/detalhes-visita.html?espacoId=ID
 //
 // O parâmetro ?demo=1 é destinado aos testes das interfaces.
 // As páginas de detalhes não encaminham para formulários.

@@ -49,19 +49,24 @@ agenda-casa-saberes/
 │   ├── cliente/
 │   │   ├── agenda-cliente.html   agenda do cliente
 │   │   ├── reservas.html         formulário de reserva
-│   │   ├── detalhes-*.html       detalhes de eventos e visitas
-│   │   └── confirmacao-*.html    confirmações de reservas e visitas
+│   │   ├── detalhes-reserva.html
+│   │   └── confirmacao-reserva.html
+│   ├── visita-mediada/
+│   │   ├── cliente/              agenda, horários, formulário e confirmação
+│   │   └── admin/                agenda e editores de visita mediada
 │   ├── login.html                autenticação compartilhada
 │   └── componentes.html          catálogo compartilhado
 ├── css/
 │   ├── admin/                    estilos da tela administrativa
 │   ├── cliente/                  estilos das telas do cliente
+│   ├── visita-mediada/           estilos específicos do fluxo de visita mediada
 │   ├── base.css                  estilos globais compartilhados
 │   ├── componentes.css           componentes compartilhados
 │   └── auth.css                  autenticação compartilhada
 ├── js/
 │   ├── admin/                    scripts da tela administrativa
 │   ├── cliente/                  scripts das telas do cliente
+│   ├── visita-mediada/           scripts e modelo do fluxo de visita mediada
 │   ├── config.js                 endereço público da API
 │   ├── api.js                    sessão e requisições HTTP ao FastAPI
 │   ├── auth.js                   autenticação compartilhada

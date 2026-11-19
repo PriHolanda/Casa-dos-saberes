@@ -1,6 +1,6 @@
 @font-face {
   font-family: Urbanist;
-  src: url("../../assets/reservas/urbanist-variable.ttf") format("truetype");
+  src: url("../../../assets/reservas/urbanist-variable.ttf") format("truetype");
   font-weight: 100 900;
   font-display: swap;
 }
@@ -30,7 +30,7 @@
 .csa-visitas-header__topo img { display: block; }
 .csa-visitas-header__faixa {
   height: 31px;
-  background: url("../../assets/reservas/faixa-mobile.png") repeat-x left center / 402px 31px;
+  background: url("../../../assets/reservas/faixa-mobile.png") repeat-x left center / 402px 31px;
 }
 .csa-visitas-menu { position: relative; }
 .csa-visitas-menu summary { list-style: none; }
@@ -270,13 +270,13 @@
   .csa-visitas-menu__admin::after { content: '⌄'; align-self: flex-start; margin-left: 4px; }
   .csa-visitas-header__faixa {
     height: 43px;
-    background: url("../../assets/barra1.svg") no-repeat left top / 621px 43px,
-                url("../../assets/barra2.svg") no-repeat 621px top / 445px 43px,
-                url("../../assets/barra3.svg") repeat-x 1066px top / 374px 43px;
+    background: url("../../../assets/barra1.svg") no-repeat left top / 621px 43px,
+                url("../../../assets/barra2.svg") no-repeat 621px top / 445px 43px,
+                url("../../../assets/barra3.svg") repeat-x 1066px top / 374px 43px;
   }
   .csa-visitas--formulario .csa-visitas-header__faixa {
     height: 56px;
-    background: url("../../assets/barra1.svg#svgView(viewBox(151,0,333,43))") repeat-x left top / 402px 56px;
+    background: url("../../../assets/barra1.svg#svgView(viewBox(151,0,333,43))") repeat-x left top / 402px 56px;
   }
   .csa-visitas-formulario { width: 83.6%; max-width: 1292px; margin: 0 auto; padding: 14px 0 180px; }
   .csa-visitas-formulario h1 { margin: 28px 0 32px; text-align: left; font-size: 52px; }

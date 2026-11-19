@@ -1,6 +1,6 @@
 @font-face {
   font-family: Urbanist;
-  src: url("../../assets/reservas/urbanist-variable.ttf") format("truetype");
+  src: url("../../../assets/reservas/urbanist-variable.ttf") format("truetype");
   font-style: normal;
   font-weight: 100 900;
   font-display: swap;
@@ -14,7 +14,7 @@
 .csa-vp-header { background: #e8e2c9; }
 .csa-vp-topo { display: flex; align-items: center; justify-content: space-between; min-height: 74px; padding: 0 29px; }
 .csa-vp-topo img { display: block; }
-.csa-vp-faixa { height: 31px; background: url("../../assets/reservas/faixa-mobile.png") repeat-x left center / 402px 31px; }
+.csa-vp-faixa { height: 31px; background: url("../../../assets/reservas/faixa-mobile.png") repeat-x left center / 402px 31px; }
 .csa-vp-menu { position: relative; }
 .csa-vp-menu summary { display: block; list-style: none; }
 .csa-vp-menu summary::-webkit-details-marker { display: none; }
@@ -28,10 +28,10 @@
 .csa-vp-aviso { margin-top: 20px; color: #a22d2e; font-weight: 750; }
 
 /* Vitrine das exposições */
-.csa-vp-hero > div:first-child { display: grid; align-content: center; gap: 8px; min-height: 242px; padding: 25px 29px; background: linear-gradient(#35232a82, #35232a82), url("../../assets/csa-agenda.png") center 58% / cover; color: #fff; }
+.csa-vp-hero > div:first-child { display: grid; align-content: center; gap: 8px; min-height: 242px; padding: 25px 29px; background: linear-gradient(#35232a82, #35232a82), url("../../../assets/csa-agenda.png") center 58% / cover; color: #fff; }
 .csa-vp-hero h1 { max-width: 410px; font-size: 40px; font-weight: 820; line-height: .98; }
 .csa-vp-hero p { max-width: 340px; font-size: 17px; line-height: 1.4; }
-.csa-vp-vitrine { min-height: 610px; padding: 20px 22px 26px; background: url("../../assets/cegoaderaldo-boneco.png") left 332px no-repeat, url("../../assets/nave.png") right bottom -135px no-repeat; }
+.csa-vp-vitrine { min-height: 610px; padding: 20px 22px 26px; background: url("../../../assets/cegoaderaldo-boneco.png") left 332px no-repeat, url("../../../assets/nave.png") right bottom -135px no-repeat; }
 .csa-vp-vitrine > h2, .csa-vp-vitrine__rotulo, .csa-vp-acessibilidade, .csa-visita-publica .csa-vp-libras[vw] { display: none; }
 .csa-vp-acessibilidade { position: absolute; right: 12px; top: 443px; z-index: 4; }
 .csa-vp-acessibilidade .csa-acessibilidade-btn { display: grid; place-items: center; width: 44px; height: 44px; border: 0; border-radius: 50%; color: #fff; background: #087db6; font-size: 28px; }
@@ -63,7 +63,7 @@
 .csa-vp-vitrine__corpo > .csa-vp-botao { width: 100%; min-height: 65px; margin-top: 26px; font-size: 29px; }
 
 /* Horários e formulário público */
-.csa-vp-horarios { min-height: 770px; padding: 19px 21px 16px; background: url("../../assets/cegoaderaldo-boneco.png") left bottom 38px no-repeat, url("../../assets/nave.png") right bottom -313px no-repeat; }
+.csa-vp-horarios { min-height: 770px; padding: 19px 21px 16px; background: url("../../../assets/cegoaderaldo-boneco.png") left bottom 38px no-repeat, url("../../../assets/nave.png") right bottom -313px no-repeat; }
 .csa-vp-horarios > .csa-vp-voltar { margin-left: 3px; }
 .csa-vp-horarios__painel { display: flex; flex-direction: column; min-height: 689px; margin-top: 12px; border: 1px solid #f2dfde; background: #faf9f7; }
 .csa-vp-horarios__topo { padding: 11px 16px 10px; border-bottom: 4px solid #a22d2e; }
@@ -113,7 +113,7 @@
 
 /* Detalhes e revisão da visita */
 .csa-detalhes--visita.csa-visita-publica { background: #fbf4eb; }
-.csa-detalhes--visita .csa-detalhes__conteudo { width: auto; margin: 0; padding: 18px 22px 108px; min-height: 810px; max-width: none; background: url("../../assets/cegoaderaldo-boneco.png") left bottom 82px no-repeat, url("../../assets/nave.png") right bottom -275px no-repeat; }
+.csa-detalhes--visita .csa-detalhes__conteudo { width: auto; margin: 0; padding: 18px 22px 108px; min-height: 810px; max-width: none; background: url("../../../assets/cegoaderaldo-boneco.png") left bottom 82px no-repeat, url("../../../assets/nave.png") right bottom -275px no-repeat; }
 .csa-detalhes--visita .csa-detalhes__voltar { margin: 0 0 13px 3px; }
 .csa-detalhes--visita .csa-detalhes-card { padding: 11px 15px 54px; border: 0; }
 .csa-detalhes--visita .csa-detalhes-card__categoria { margin-bottom: 4px; color: #080808; font-size: 16px; text-transform: none; }
@@ -143,7 +143,7 @@
 .csa-confirmacao--visita .csa-confirmacao-acoes { grid-area: auto; margin: 0; }
 .csa-confirmacao--visita .csa-confirmacao-botao { min-height: 50px; font-size: 20px; font-weight: 800; }
 .csa-visita-publica--sucesso { background: #fff !important; }
-.csa-vp-sucesso { min-height: 770px; padding: 122px 21px 0; background: url("../../assets/cegoaderaldo-boneco.png") left bottom 38px no-repeat, url("../../assets/nave.png") right bottom -315px no-repeat; }
+.csa-vp-sucesso { min-height: 770px; padding: 122px 21px 0; background: url("../../../assets/cegoaderaldo-boneco.png") left bottom 38px no-repeat, url("../../../assets/nave.png") right bottom -315px no-repeat; }
 .csa-vp-sucesso > div { display: grid; justify-items: center; align-content: start; min-height: 643px; padding: 54px 12px 26px; background: #faf9f7; }
 .csa-vp-sucesso__icone { display: grid; place-items: center; width: 146px; aspect-ratio: 1; border-radius: 50%; background: #00a000; }
 .csa-vp-sucesso__icone::before { content: ''; width: 50%; height: 24%; margin-top: -7%; border: solid #fff; border-width: 0 0 13px 13px; border-radius: 7px; rotate: -45deg; }
@@ -164,9 +164,9 @@
 @media (min-width: 761px) and (not (pointer: coarse)) {
   .csa-vp-topo { padding-inline: 4% 3.6%; }
   .csa-vp-faixa {
-    background: url("../../assets/barra1.svg") no-repeat left top / 448px 31px,
-                url("../../assets/barra2.svg") no-repeat 448px top / 321px 31px,
-                url("../../assets/barra3.svg") repeat-x 769px top / 270px 31px;
+    background: url("../../../assets/barra1.svg") no-repeat left top / 448px 31px,
+                url("../../../assets/barra2.svg") no-repeat 448px top / 321px 31px,
+                url("../../../assets/barra3.svg") repeat-x 769px top / 270px 31px;
   }
   .csa-vp-hero > div:first-child { min-height: 315px; padding-inline: 7%; background-position: center 51%; }
   .csa-vp-hero h1 { max-width: none; font-size: clamp(46px, 5vw, 74px); }

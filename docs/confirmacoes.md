@@ -3,7 +3,7 @@
 Abra com Live Server:
 
 - `pages/cliente/confirmacao-reserva.html?demo=1`
-- `pages/cliente/confirmacao-visita.html?demo=1`
+- `pages/visita-mediada/cliente/confirmacao-visita.html?demo=1`
 - `pages/cliente/reservas.html?demo=1` para demonstrar preenchimento, revisão, edição e confirmação com os dados informados.
 
 Sem `?demo=1`, a confirmação de reserva recupera o rascunho do formulário, quando disponível. Sem rascunho ou entrada válida, aparece o estado sem solicitação. Os exemplos ficam em `js/cliente/confirmacao-dados.js`. Não há endpoint de envio configurado.
