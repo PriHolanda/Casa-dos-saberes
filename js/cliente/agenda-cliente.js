@@ -13,6 +13,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const periodos = document.querySelectorAll(".csa-period");
   const botoesReserva = document.querySelectorAll(".csa-event-reserve");
   const paginaFormularioReserva = "reservas.html";
+  
 
   let dataSelecionada = new Date(2026, 8, 21);
   let periodoSelecionado = "todos";

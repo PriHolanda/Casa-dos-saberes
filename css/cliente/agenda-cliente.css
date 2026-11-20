@@ -386,6 +386,10 @@ input[type="checkbox"] {
   color: #333333;
 }
 
+.csa-event-capacity i{
+  color: #6D8FAE;
+}
+
 /* Auditório */
 .csa-event-auditorio {
   border-color: #A22D2E;
@@ -447,76 +451,25 @@ input[type="checkbox"] {
 .csa-event-lateral .csa-event-space,
 .csa-event-lateral .csa-event-details,
 .csa-event-lateral .csa-event-message {
-  color: #0D3B63;
+  color: #584E4E;
 }
 
-/* Corredor */
-.csa-event-corredor {
-  border-color: #E8E2C9;
+/* Exposição */
+.csa-event-expo {
+  border-color: #584E4E;
 }
 
-.csa-event-corredor .csa-event-hour {
-  background-color: #E8E2C9;
-  color: #000000;
+.csa-event-expo .csa-event-hour,
+.csa-event-expo .csa-event-reserve {
+  background-color: #584E4E;
 }
 
-.csa-event-corredor .csa-event-reserve {
-  background-color: #6B5E2A;
+.csa-event-expo .csa-event-space,
+.csa-event-expo .csa-event-details,
+.csa-event-expo .csa-event-message {
+  color: #584E4E;
 }
 
-.csa-event-corredor .csa-event-space,
-.csa-event-corredor .csa-event-details,
-.csa-event-corredor .csa-event-message {
-  color: #6B5E2A;
-}
-
-/* Sala expositiva 1 */
-.csa-event-sala1 {
-  border-color: #6B3A12;
-}
-
-.csa-event-sala1 .csa-event-hour,
-.csa-event-sala1 .csa-event-reserve {
-  background-color: #6B3A12;
-}
-
-.csa-event-sala1 .csa-event-space,
-.csa-event-sala1 .csa-event-details,
-.csa-event-sala1 .csa-event-message {
-  color: #6B3A12;
-}
-
-/* Sala expositiva 2 */
-.csa-event-sala2 {
-  border-color: #5B5757;
-}
-
-.csa-event-sala2 .csa-event-hour,
-.csa-event-sala2 .csa-event-reserve {
-  background-color: #5B5757;
-}
-
-.csa-event-sala2 .csa-event-space,
-.csa-event-sala2 .csa-event-details,
-.csa-event-sala2 .csa-event-message {
-  color: #5B5757;
-}
-
-/* Varanda (para exposição) */
-.csa-event-varanda-expo {
-  border-color: #D9573F;
-}
-
-.csa-event-varanda-expo .csa-event-hour,
-.csa-event-varanda-expo .csa-event-reserve {
-  background-color: #D9573F;
-}
-
-.csa-event-varanda-expo .csa-event-space,
-.csa-event-varanda-expo .csa-event-details,
-.csa-event-varanda-expo .csa-event-message {
-  color: #D9573F;
-}
 
 /* Área externa */
 .csa-event-externa {
@@ -638,7 +591,7 @@ input[type="checkbox"] {
   }
 
   .csa-header-cliente i {
-    font-size: 24px;
+    font-size: 29px;
   }
 
   .csa-acessibilidade {
@@ -847,7 +800,6 @@ input[type="checkbox"] {
 }
 
 @media (min-width: 1440px) {
-
   .csa-header-cliente,
   .csa-hero-content,
   .csa-agenda {

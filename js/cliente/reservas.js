@@ -4,8 +4,7 @@ const csaReservas = (() => {
   const perguntas = document.getElementById('csa-reservas-perguntas');
   const mensagem = document.getElementById('csa-reservas-mensagem');
   const enviar = formulario.querySelector('[type="submit"]');
-  // A mesma condição está no CSS: telefones/tablets de toque usam mobile também na horizontal.
-  const visaoMobile = window.matchMedia('(max-width: 760px), (hover: none) and (pointer: coarse)');
+  const visaoMobile = window.matchMedia('(max-width: 760px)');
   let definicao;
   let tentouEnviar = false;
   let errosExibidos = {};
