@@ -4,7 +4,16 @@ const csaApi = (() => {
   function sessao() {
     try { return JSON.parse(sessionStorage.getItem(chave)); } catch { return null; }
   }
-  function sair() { sessionStorage.removeItem(chave); location.replace('/pages/login.html'); }
+  function sair() {
+    sessionStorage.removeItem(chave);
+    const paginaLogin = '/pages/login.html';
+    if (location.pathname === paginaLogin) {
+      location.replace(paginaLogin);
+      return;
+    }
+    const destino = `${location.pathname}${location.search}${location.hash}`;
+    location.replace(`${paginaLogin}?next=${encodeURIComponent(destino)}`);
+  }
   async function requisitar(caminho, { metodo = 'GET', dados, autenticado = true } = {}) {
     const atual = sessao();
     if (autenticado && (!atual || atual.expira <= Date.now())) { sair(); throw new Error('Sua sessão expirou. Entre novamente.'); }

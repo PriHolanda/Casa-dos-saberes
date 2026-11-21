@@ -1,6 +1,6 @@
 (() => {
   const parametros = new URLSearchParams(location.search);
-  const demonstracao = parametros.get('demo') === '1' && ['localhost', '127.0.0.1', '[::1]', ''].includes(location.hostname);
+  const demonstracao = location.protocol === 'file:' || (parametros.get('demo') === '1' && ['localhost', '127.0.0.1', '[::1]'].includes(location.hostname));
   const mobile = matchMedia('(max-width: 760px), (pointer: coarse)');
   const dataCompleta = new Intl.DateTimeFormat('pt-BR', { day: 'numeric', month: 'long', year: 'numeric' });
   const diaSemana = new Intl.DateTimeFormat('pt-BR', { weekday: 'short' });
