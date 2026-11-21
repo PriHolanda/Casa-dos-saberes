@@ -7,19 +7,22 @@
   <link rel="stylesheet" href="../../../css/base.css">
   <link rel="stylesheet" href="../../../css/cliente/confirmacao.css">
   <link rel="stylesheet" href="../../../css/visita-mediada/cliente/visita.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.3.1/css/all.min.css">
+  <link rel="stylesheet" href="../../../css/cliente/header-publico.css">
   <script src="../../../js/cliente/confirmacao-dados.js" defer></script>
   <script src="../../../js/cliente/confirmacao.js" defer></script>
   <script src="../../../js/visita-mediada/modelo.js" defer></script>
   <script src="../../../js/visita-mediada/cliente/visita.js" defer></script>
+  <script src="../../../js/cliente/acessibilidade.js" defer></script>
 </head>
 <body class="csa-confirmacao csa-confirmacao--visita csa-visita-publica" data-csa-tipo="visita" data-visita-pagina="revisao">
   <header class="csa-vp-header csa-confirmacao-cabecalho">
-    <div class="csa-vp-topo">
+    <div class="csa-vp-topo csa-header-publico">
       <a href="../../cliente/agenda-cliente.html" aria-label="Casa dos Saberes — agenda">
-        <img src="../../../assets/reservas/csca-gov.png" width="214" height="31" alt="Casa dos Saberes Cego Aderaldo e Governo do Ceará">
+        <img class="csa-logo-publico" src="../../../assets/csca-gov.svg" alt="Casa dos Saberes Cego Aderaldo e Governo do Ceará">
       </a>
-      <details class="csa-vp-menu csa-confirmacao-menu">
-        <summary aria-label="Abrir menu"><img src="../../../assets/reservas/menu.svg" width="41" height="27" alt=""></summary>
+      <details class="csa-vp-menu csa-confirmacao-menu csa-menu-publico">
+        <summary aria-label="Abrir menu"><i class="fa-solid fa-bars" aria-hidden="true"></i></summary>
         <nav aria-label="Navegação principal">
           <a href="../../cliente/agenda-cliente.html">Agenda</a>
           <a href="visitas.html" data-visita-retorno>Visita Mediada</a>
@@ -27,12 +30,37 @@
         </nav>
       </details>
     </div>
-    <div class="csa-vp-faixa" aria-hidden="true"></div>
+    <div class="csa-vp-faixa" aria-hidden="true">
+      <img src="../../../assets/barra1.svg" alt="">
+      <img src="../../../assets/barra2.svg" alt="">
+      <img src="../../../assets/barra3.svg" alt="">
+      <img src="../../../assets/barra3.svg" alt="">
+      <img src="../../../assets/barra3.svg" alt="">
+      <img src="../../../assets/barra3.svg" alt="">
+      <img src="../../../assets/barra3.svg" alt="">
+    </div>
   </header>
+
+  <aside class="csa-vp-acessibilidade">
+    <button class="csa-acessibilidade-btn" type="button" aria-label="Abrir menu de acessibilidade" aria-expanded="false" aria-controls="csa-acessibilidade-painel">
+      <i class="fa-solid fa-universal-access" aria-hidden="true"></i>
+    </button>
+    <div class="csa-acessibilidade-painel" id="csa-acessibilidade-painel" hidden>
+      <button type="button" data-acao="aumentar-fonte">A+ Aumentar fonte</button>
+      <button type="button" data-acao="diminuir-fonte">A- Diminuir fonte</button>
+      <button type="button" data-acao="contraste">Alto contraste</button>
+      <button type="button" data-acao="sublinhar">Sublinhar links</button>
+      <button type="button" data-acao="resetar">Restaurar padrão</button>
+    </div>
+  </aside>
+  <div vw class="enabled csa-vp-libras">
+    <div vw-access-button class="active"></div>
+    <div vw-plugin-wrapper><div class="vw-plugin-top-wrapper"></div></div>
+  </div>
 
   <main class="csa-confirmacao-conteudo">
     <button class="csa-confirmacao-voltar" type="button" data-csa-voltar>
-      <span class="csa-confirmacao-seta" aria-hidden="true"><img src="../../../assets/reservas/voltar.svg" width="24" height="24" alt=""></span>
+      <span class="csa-confirmacao-seta" aria-hidden="true"><img src="../../../assets/reservas/voltar.svg" width="28" height="28" alt=""></span>
       Voltar ao formulário
     </button>
     <h1 id="csa-confirmacao-titulo">Confirme as informações</h1>

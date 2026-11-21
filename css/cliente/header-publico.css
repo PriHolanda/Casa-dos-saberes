@@ -1,0 +1,89 @@
+.csa-header-publico {
+  box-sizing: border-box;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: auto;
+  min-height: 0;
+  padding: 12px 16px;
+}
+
+.csa-header-publico .csa-logo-publico {
+  display: block;
+  flex: 0 0 auto;
+  width: 150px;
+  height: auto;
+}
+
+.csa-header-publico .csa-menu-publico {
+  position: relative;
+  flex: 0 0 auto;
+}
+
+.csa-header-publico > button.csa-menu-publico,
+.csa-header-publico .csa-menu-publico > :is(summary, button) {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: auto;
+  min-width: 0;
+  min-height: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #080808;
+  font: inherit;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.csa-header-publico .csa-menu-publico > summary {
+  list-style: none;
+}
+
+.csa-header-publico .csa-menu-publico > summary::-webkit-details-marker {
+  display: none;
+}
+
+.csa-header-publico .csa-menu-publico i {
+  display: block;
+  color: #080808;
+  font-size: 22px;
+  line-height: 1;
+}
+
+@media (min-width: 760px) {
+  .csa-header-publico {
+    padding: 16px 48px;
+  }
+
+  .csa-header-publico .csa-logo-publico {
+    width: 200px;
+  }
+
+  .csa-header-publico .csa-menu-publico i {
+    font-size: 29px;
+  }
+}
+
+@media (min-width: 1020px) {
+  .csa-header-publico {
+    padding: 21px 99px;
+  }
+
+  .csa-header-publico .csa-logo-publico {
+    width: 250px;
+  }
+
+  .csa-header-publico .csa-menu-publico i {
+    font-size: 27px;
+  }
+}
+
+@media (min-width: 1440px) {
+  .csa-header-publico {
+    padding-left: 160px;
+    padding-right: 160px;
+  }
+}

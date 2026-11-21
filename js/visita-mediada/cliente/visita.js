@@ -37,6 +37,22 @@
     document.querySelectorAll('[data-visita-retorno]').forEach(a => { a.href = link('visitas.html'); });
   }
 
+  function carregarLibras() {
+    if (!document.querySelector('.csa-vp-libras') || document.getElementById('csa-vp-plugin-libras')) return;
+    const script = document.createElement('script');
+    script.id = 'csa-vp-plugin-libras';
+    script.src = 'https://vlibras.gov.br/app/vlibras-plugin.js';
+    script.onload = () => {
+      if (!window.VLibras?.Widget) {
+        console.error('Não foi possível inicializar o VLibras.');
+        return;
+      }
+      new window.VLibras.Widget('https://vlibras.gov.br/app');
+    };
+    script.onerror = () => console.error('Não foi possível carregar o VLibras.');
+    document.head.append(script);
+  }
+
   function rascunho() {
     try { return JSON.parse(sessionStorage.getItem(chave)); } catch { return null; }
   }
@@ -51,7 +67,7 @@
     const avancar = document.getElementById('csa-vp-agendar');
     const exposicoes = csaVisitasModelo.exposicoes();
     function atualizar() {
-      const formato = new Intl.DateTimeFormat('pt-BR', { weekday: 'short', day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' });
+      const formato = new Intl.DateTimeFormat('pt-BR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' });
       const data = formato.format(new Date(`${dia}T12:00:00Z`)).replace('.', '').replace(/ de (\p{L})/u, (_, letra) => ` de ${letra.toUpperCase()}`);
       calendario.value = dia;
       periodo.dateTime = dia;
@@ -87,19 +103,6 @@
       atualizar();
     }));
     atualizar();
-    const desktop = matchMedia('(min-width: 761px) and (not (pointer: coarse))');
-    function carregarLibras() {
-      if (!desktop.matches || document.getElementById('csa-vp-plugin-libras')) return;
-      const script = document.createElement('script');
-      script.id = 'csa-vp-plugin-libras';
-      script.src = 'https://vlibras.gov.br/app/vlibras-plugin.js';
-      script.onload = () => {
-        if (window.VLibras?.Widget) new window.VLibras.Widget('https://vlibras.gov.br/app');
-      };
-      document.head.append(script);
-    }
-    desktop.addEventListener('change', carregarLibras);
-    carregarLibras();
   }
 
   const fim = inicio => `${String(Number(inicio.slice(0, 2)) + 1).padStart(2, '0')}${inicio.slice(2)}`;
@@ -345,6 +348,7 @@
   }
 
   atualizarRetornos();
+  carregarLibras();
   if (pagina === 'agenda') mostrarAgenda();
   if (pagina === 'horarios') mostrarHorarios();
   if (pagina === 'formulario') mostrarFormulario();

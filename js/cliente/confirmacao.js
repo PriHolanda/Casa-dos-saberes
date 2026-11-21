@@ -85,7 +85,7 @@
     if (demonstracao || revisao) {
       estado.hidden = true;
       const termos = elemento('p', 'csa-confirmacao-termos', 'Ao confirmar, você declara que revisou as informações e está de acordo com os termos apresentados no formulário.');
-      if (tipo === 'visita') termos.prepend(elemento('span', '', 'Atenção:'), ' ');
+      termos.prepend(elemento('span', '', 'Atenção:'), ' ');
       const acoes = elemento('div', 'csa-confirmacao-acoes');
       const confirmar = elemento('button', 'csa-confirmacao-botao csa-confirmacao-botao--principal', 'Confirmar e enviar');
       confirmar.type = 'button';

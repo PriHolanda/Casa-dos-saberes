@@ -11,6 +11,7 @@
   <link rel="stylesheet" href="../../css/componentes.css">
   <link rel="stylesheet" href="../../css/cliente/reservas.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.3.1/css/all.min.css">
+  <link rel="stylesheet" href="../../css/cliente/header-publico.css">
   <script src="../../js/cliente/reservas-dados.js" defer></script>
   <script src="../../js/cliente/reservas-modelo.js" defer></script>
   <script src="../../js/cliente/reservas-perguntas/base.js" defer></script>
@@ -25,10 +26,10 @@
 
 <body class="csa-reservas">
   <header class="csa-reservas-header">
-    <div class="csa-reservas-header__conteudo">
-        <img src="../../assets/reservas/csca-gov.png" alt="Casa dos Saberes Cego Aderaldo e Governo do Ceará" class="csa-img-logo">
+    <div class="csa-reservas-header__conteudo csa-header-publico">
+        <img src="../../assets/csca-gov.svg" alt="Casa dos Saberes Cego Aderaldo e Governo do Ceará" class="csa-img-logo csa-logo-publico">
 
-      <button class="csa-reservas-menu__botao" type="button" aria-label="Abrir menu" aria-expanded="false" aria-controls="csa-reservas-menu">
+      <button class="csa-reservas-menu__botao csa-menu-publico" type="button" aria-label="Abrir menu" aria-expanded="false" aria-controls="csa-reservas-menu">
           <i class="fa-solid fa-bars" aria-hidden="true"></i>
       </button>
       <nav class="csa-reservas-menu" id="csa-reservas-menu" aria-label="Navegação principal" hidden>
@@ -41,7 +42,7 @@
 
   <main class="csa-reservas__conteudo" id="csa-reservas-conteudo">
     <a class="csa-reservas__voltar" href="agenda-cliente.html">
-      <span class="csa-reservas__seta"><img src="../../assets/reservas/voltar.svg" width="24" height="24" alt=""></span>
+      <span class="csa-reservas__seta"><img src="../../assets/reservas/voltar.svg" width="28" height="28" alt=""></span>
       <span>Voltar para agenda</span>
     </a>
     <h1 class="csa-reservas__titulo" id="csa-reservas-titulo">Formulário de reserva</h1>

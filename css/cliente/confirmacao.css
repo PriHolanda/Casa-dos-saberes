@@ -124,15 +124,16 @@
 }
 
 .csa-confirmacao-seta {
-  width: 44px;
-  height: 44px;
+  width: 42px;
+  height: 42px;
   background: var(--csa-confirmacao-bege);
   display: grid;
   place-items: center;
   color: black;
 }
 
-.csa-confirmacao-seta svg {
+.csa-confirmacao-seta img {
+  display: block;
   width: 28px;
   height: 28px;
 }
@@ -190,7 +191,11 @@
   grid-row: 2;
   margin: 0;
   font-size: 18px;
-  text-align: center;
+  text-align: left;
+}
+
+.csa-confirmacao-termos span {
+  color: var(--csa-confirmacao-vermelho);
 }
 
 .csa-confirmacao-acoes {
@@ -309,8 +314,8 @@
     margin: 18px 0;
   }
   .csa-confirmacao-seta {
-    width: 44px;
-    height: 44px;
+    width: 33px;
+    height: 33px;
   }
   .csa-confirmacao-grade {
     grid-template-columns: minmax(0, 1fr);
