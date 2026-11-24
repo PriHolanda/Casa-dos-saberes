@@ -147,44 +147,6 @@ const csaDetalhes = (() => {
     return true;
   }
 
-  function configurarMenu() {
-    const botao = document.querySelector('.csa-detalhes-menu__botao');
-    const menu = document.getElementById('csa-detalhes-menu');
-
-    function fechar() {
-      menu.hidden = true;
-      botao.setAttribute('aria-expanded', 'false');
-      botao.setAttribute('aria-label', 'Abrir menu');
-    }
-
-    botao.addEventListener('click', () => {
-      const aberto = !menu.hidden;
-
-      menu.hidden = aberto;
-      botao.setAttribute('aria-expanded', String(!aberto));
-      botao.setAttribute(
-        'aria-label',
-        aberto ? 'Abrir menu' : 'Fechar menu'
-      );
-    });
-
-    document.addEventListener('keydown', evento => {
-      if (evento.key === 'Escape' && !menu.hidden) {
-        fechar();
-        botao.focus();
-      }
-    });
-
-    document.addEventListener('click', evento => {
-      if (
-        !menu.contains(evento.target) &&
-        !botao.contains(evento.target)
-      ) {
-        fechar();
-      }
-    });
-  }
-
   async function carregar() {
     mostrarMensagem('Carregando informações…');
     grade.setAttribute('aria-busy', 'true');
@@ -193,7 +155,7 @@ const csaDetalhes = (() => {
       if (tipo === 'visita' && (parametros.has('exposicao') || parametros.get('demo') === '1')) {
         const indice = Number(parametros.get('exposicao') || '1') - 1;
         const exposicao = csaVisitasModelo.exposicoes()[indice];
-        if (!exposicao || exposicao.pausada) {
+        if (!exposicao || !exposicao.nome.trim() || exposicao.pausada) {
           mostrarMensagem('Esta exposição não está em cartaz.', true);
           return false;
         }
@@ -276,7 +238,6 @@ const csaDetalhes = (() => {
     }
   }
 
-  configurarMenu();
 
   const pronto = carregar();
 

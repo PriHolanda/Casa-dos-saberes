@@ -8,38 +8,17 @@
   <link rel="stylesheet" href="../../../css/base.css">
   <link rel="stylesheet" href="../../../css/visita-mediada/cliente/visita.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.3.1/css/all.min.css">
-  <link rel="stylesheet" href="../../../css/cliente/header-publico.css">
+  <script src="../../../js/navbar.js" defer></script>
   <script src="../../../js/config.js" defer></script>
   <script src="../../../js/api.js" defer></script>
   <script src="../../../js/visita-mediada/modelo.js" defer></script>
   <script src="../../../js/visita-mediada/cliente/visita.js" defer></script>
   <script src="../../../js/cliente/acessibilidade.js" defer></script>
+  <link rel="stylesheet" href="../../../css/padroes.css">
+  <link rel="stylesheet" href="../../../css/navbar.css">
 </head>
-<body class="csa-visita-publica" data-visita-pagina="formulario">
-  <header class="csa-vp-header">
-    <div class="csa-vp-topo csa-header-publico">
-      <a href="../../cliente/agenda-cliente.html" aria-label="Casa dos Saberes — agenda">
-        <img class="csa-logo-publico" src="../../../assets/csca-gov.svg" alt="Casa dos Saberes Cego Aderaldo e Governo do Ceará">
-      </a>
-      <details class="csa-vp-menu csa-menu-publico">
-        <summary aria-label="Abrir menu"><i class="fa-solid fa-bars" aria-hidden="true"></i></summary>
-        <nav aria-label="Navegação principal">
-          <a href="../../cliente/agenda-cliente.html">Agenda</a>
-          <a href="visitas.html" data-visita-retorno>Visita Mediada</a>
-          <a href="../../cliente/reservas.html">Formulário de reserva</a>
-        </nav>
-      </details>
-    </div>
-    <div class="csa-vp-faixa" aria-hidden="true">
-      <img src="../../../assets/barra1.svg" alt="">
-      <img src="../../../assets/barra2.svg" alt="">
-      <img src="../../../assets/barra3.svg" alt="">
-      <img src="../../../assets/barra3.svg" alt="">
-      <img src="../../../assets/barra3.svg" alt="">
-      <img src="../../../assets/barra3.svg" alt="">
-      <img src="../../../assets/barra3.svg" alt="">
-    </div>
-  </header>
+<body data-csa-interface class="csa-visita-publica" data-visita-pagina="formulario">
+  <csa-navbar area="usuario"></csa-navbar>
 
   <aside class="csa-vp-acessibilidade">
     <button class="csa-acessibilidade-btn" type="button" aria-label="Abrir menu de acessibilidade" aria-expanded="false" aria-controls="csa-acessibilidade-painel">

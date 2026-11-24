@@ -1,5 +1,6 @@
 // Rafael: abre e fecha os painéis e monta o conteúdo
 const csaPainel = (() => {
+  const somenteLeitura = document.body?.dataset?.somenteLeitura === 'true';
   const painel = document.getElementById('csa-painel');
   let ocupado = false;
   const escapar = valor => String(valor ?? '').replace(/[&<>"']/g, c => ({
@@ -34,7 +35,7 @@ const csaPainel = (() => {
     painel.dataset.eventoId = evento.id;
     const status = csaAgendaModelo.definirStatus(evento.status);
     const data = evento.inicio.slice(0, 10);
-    const acoes = evento.status === 'pendente' ? `<div class="csa-painel__acoes">
+    const acoes = somenteLeitura ? '' : evento.status === 'pendente' ? `<div class="csa-painel__acoes">
       <button type="button" class="csa-painel__botao csa-painel__botao--aprovar" data-acao="aprovar">Aprovar</button>
       <button type="button" class="csa-painel__botao csa-painel__botao--editar" data-acao="editar">Editar</button>
       <button type="button" class="csa-painel__botao csa-painel__botao--negar" data-acao="negar">Negar</button>
@@ -43,7 +44,7 @@ const csaPainel = (() => {
       <button type="button" class="csa-painel__botao csa-painel__botao--negar" data-acao="excluir">Deletar evento</button>
     </div>`;
     abrir(`<div class="csa-painel__cabecalho">
-      <h2 id="csa-painel-titulo">Detalhes do Evento</h2>
+      <h2 id="csa-painel-titulo">${evento.status === 'pendente' ? 'Detalhes da Solicitação' : 'Detalhes do Evento'}</h2>
       <button type="button" data-fechar-painel aria-label="Fechar painel">×</button>
     </div>
     <span class="csa-painel__status csa-painel__status--${escapar(status.visual)}">${escapar(status.rotulo)}</span>
@@ -52,8 +53,9 @@ const csaPainel = (() => {
       ${campo('Solicitante', evento.solicitante)}
       ${campo('Celular', evento.celular)}
       ${campo('Espaço', espacos.find(espaco => espaco.id === evento.espacoId)?.nome)}
+      <div class="csa-painel__metadados">${campo('Turno', Object.values(turnos).find(turno => evento.horarioInicio >= turno.minimo && evento.horarioInicio < turno.maximo)?.nome)}
       ${campo('Data', csaAgendaModelo.formatarDia(data))}
-      ${campo('Horário', `${evento.horarioInicio} às ${evento.horarioTermino}`)}
+      ${campo('Horário', `${evento.horarioInicio} às ${evento.horarioTermino}`)}</div>
       ${campo('Público estimado', evento.publico)}
       ${campo('Classificação indicativa', evento.classificacao)}
       ${campo('Descrição', evento.descricao)}
@@ -61,6 +63,7 @@ const csaPainel = (() => {
   }
 
   function mostrarCadastro(data, turnoId, evento = null) {
+    if (somenteLeitura) return;
     const turno = turnos[turnoId];
     if (ocupado || !turno || (!evento && csaAgendaModelo.lerDia(data) === null)) return;
     if (evento) painel.dataset.eventoId = evento.id;
@@ -119,6 +122,7 @@ const csaPainel = (() => {
   painel.addEventListener('click', async e => {
     if (ocupado) return;
     if (e.target.closest('[data-fechar-painel]')) { fechar(); return; }
+    if (somenteLeitura) return;
     const acao = e.target.closest('[data-acao]')?.dataset.acao;
     const eventoId = painel.dataset.eventoId;
     if (acao === 'editar') {
@@ -148,6 +152,7 @@ const csaPainel = (() => {
   painel.addEventListener('submit', async e => {
     if (e.target.id !== 'csa-form-evento') return;
     e.preventDefault();
+    if (somenteLeitura) return;
     if (ocupado) return;
     const valores = Object.fromEntries(new FormData(e.target).entries());
     if (valores.termino <= valores.inicio) {
@@ -171,13 +176,26 @@ const csaPainel = (() => {
         termino: `${valores.data}T${valores.termino}:00`,
         publico: quantidade ? quantidade[1] : '',
         classificacao: valores.classificacao, descricao: valores.descricao,
-        status: 'pendente'
-      });
+        status: valores.status || 'pendente', celular: valores.celular || ''
+      }, painel.dataset.eventoId || undefined);
       document.dispatchEvent(new CustomEvent('csa:evento-atualizado', { detail: { id: evento.id } }));
       bloquear(false);
       mostrarDetalhes(evento);
     } catch (erro) { mostrarErro(erro.message); }
     finally { bloquear(false); }
   });
-  return { fechar, mostrarDetalhes, mostrarCadastro };
+  function mostrarVisita(visita) {
+    if ((!somenteLeitura && !csaDadosAgenda.demonstracao) || ocupado || !visita) return;
+    delete painel.dataset.eventoId;
+    const status = csaVisitasModelo.status(visita.status);
+    abrir(`<div class="csa-painel__cabecalho"><h2>Detalhes da Visita Mediada</h2><button type="button" data-fechar-painel aria-label="Fechar painel">×</button></div>
+      <span class="csa-painel__status csa-painel__status--${escapar(status.valor)}">${escapar(status.rotulo)}</span>
+      <div class="csa-painel__dados"><h3 class="csa-painel__evento">${escapar(visita.instituicao)}</h3>
+      ${campo('Responsável', visita.nome_responsavel)}${campo('Telefone', visita.telefone)}${campo('E-mail', visita.email)}
+      ${campo('Instituição', visita.instituicao)}${campo('Espaço', visita.local)}
+      ${campo('Data', csaAgendaModelo.formatarDia(visita.data_inicio.slice(0, 10)))}
+      ${campo('Horário', `${visita.data_inicio.slice(11, 16)} às ${visita.data_fim.slice(11, 16)}`)}
+      ${campo('Quantidade de pessoas', visita.quantidade_pessoas)}${campo('Faixa etária', visita.faixa_etaria)}</div>`, 'Detalhes da visita mediada');
+  }
+  return { fechar, mostrarDetalhes, mostrarCadastro, mostrarVisita };
 })();

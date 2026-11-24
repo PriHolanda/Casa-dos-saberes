@@ -6,26 +6,16 @@
   <title>Confirmação de reserva de espaços — Casa dos Saberes</title>
   <link rel="stylesheet" href="../../css/cliente/confirmacao.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.3.1/css/all.min.css">
-  <link rel="stylesheet" href="../../css/cliente/header-publico.css">
+  <script src="../../js/navbar.js" defer></script>
   <script src="../../js/cliente/confirmacao-dados.js" defer></script>
   <script src="../../js/cliente/confirmacao.js" defer></script>
   <script src="../../js/cliente/reservas-dados.js" defer></script>
   <script src="../../js/cliente/reservas-confirmacao.js" defer></script>
+  <link rel="stylesheet" href="../../css/padroes.css">
+  <link rel="stylesheet" href="../../css/navbar.css">
 </head>
-<body class="csa-confirmacao csa-confirmacao--reserva" data-csa-tipo="reserva">
-  <header class="csa-confirmacao-cabecalho">
-    <div class="csa-confirmacao-topo csa-header-publico">
-      <img class="csa-confirmacao-logo csa-logo-publico" src="../../assets/csca-gov.svg" alt="Casa dos Saberes e Governo do Ceará">
-      <details class="csa-confirmacao-menu csa-menu-publico">
-        <summary aria-label="Abrir menu"><i class="fa-solid fa-bars" aria-hidden="true"></i></summary>
-        <nav aria-label="Demonstrações">
-          <a href="confirmacao-reserva.html?demo=1">Demonstração de reserva</a>
-          <a href="../visita-mediada/cliente/confirmacao-visita.html?demo=1">Demonstração de visita</a>
-        </nav>
-      </details>
-    </div>
-    <div class="csa-confirmacao-faixa" aria-hidden="true"></div>
-  </header>
+<body data-csa-interface class="csa-confirmacao csa-confirmacao--reserva" data-csa-tipo="reserva">
+  <csa-navbar area="usuario"></csa-navbar>
   <main class="csa-confirmacao-conteudo">
     <button class="csa-confirmacao-voltar" type="button" data-csa-voltar>
       <span class="csa-confirmacao-seta" aria-hidden="true"><img src="../../assets/reservas/voltar.svg" width="28" height="28" alt=""></span>
@@ -34,11 +24,10 @@
     <h1 id="csa-confirmacao-titulo">Confirme as Informações</h1>
     <section class="csa-confirmacao-estado" id="csa-confirmacao-estado" aria-live="polite" tabindex="-1">
       <h2>Nenhuma solicitação disponível</h2>
-      <p>Não foi possível localizar os dados de uma solicitação enviada. Nenhum envio foi confirmado nesta página.</p>
-      <a class="csa-confirmacao-exemplos" href="?demo=1">Visualizar demonstração com dados fictícios</a>
+      <p>Não foi possível localizar a solicitação. Retorne ao formulário para conferir suas informações.</p>
     </section>
     <div class="csa-confirmacao-grade" id="csa-confirmacao-grade" hidden></div>
-    <noscript><p>Ative o JavaScript para visualizar o resumo. Nenhum envio é realizado por esta página.</p></noscript>
+    <noscript><p>Ative o JavaScript para visualizar o resumo.</p></noscript>
   </main>
 </body>
 </html>

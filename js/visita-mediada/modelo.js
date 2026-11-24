@@ -1,13 +1,14 @@
 const csaVisitasModelo = (() => {
-  const chaveFormulario = 'csa:formulario-visita:1';
-  const chaveExposicoes = 'csa:exposicoes:1';
+  const demonstracao = new URLSearchParams(location.search).get('demo') === '1' && ['localhost', '127.0.0.1', '[::1]', ''].includes(location.hostname);
+  const chaveFormulario = demonstracao ? 'csa:formulario-visita:demo:1' : 'csa:formulario-visita:1';
+  const chaveExposicoes = demonstracao ? 'csa:exposicoes:demo:1' : 'csa:exposicoes:1';
   const salas = ['Sala expositiva 1', 'Sala expositiva 2', 'Corredor', 'Varanda'];
   const modelo = {
     nome: 'Exposição X', descricao: 'Uma exposição legal que vai trazer alegria alegria alegria alegria alegria e felicidade felicidade.',
     classificacao: '14 anos', pausada: false
   };
   const campos = [
-    { id: 'responsavel', titulo: 'Responsável pelo visita', dica: 'Nome' },
+    { id: 'responsavel', titulo: 'Responsável pela visita', dica: 'Nome' },
     { id: 'telefone', titulo: 'Telefone do responsável', dica: '(xx) x xxxx-xxxx' },
     { id: 'email', titulo: 'E-mail do responsável', dica: 'loremipsum@gmail.com', email: true },
     { id: 'formacao', titulo: 'Formação do responsável' },
@@ -36,12 +37,44 @@ const csaVisitasModelo = (() => {
   }
 
   function formulario() {
-    return lerLista(chaveFormulario, campos, dados => dados.every(campo => typeof campo?.id === 'string' && typeof campo.titulo === 'string'));
+    const lista = lerLista(chaveFormulario, campos, dados => dados.every(campo => typeof campo?.id === 'string' && typeof campo.titulo === 'string' && (!campo.opcoes || (Array.isArray(campo.opcoes) && campo.opcoes.every(opcao => typeof opcao === 'string')))));
+    for (const id of ['responsavel', 'telefone', 'email', 'quantidade']) {
+      if (!lista.some(campo => campo.id === id)) lista.push(structuredClone(campos.find(campo => campo.id === id)));
+    }
+    return lista;
   }
 
   function exposicoes() {
-    return lerLista(chaveExposicoes, salas.map(() => modelo), dados => dados.length === salas.length && dados.every(item => typeof item?.nome === 'string'));
+    const vazia = { nome: '', descricao: '', classificacao: '', pausada: true };
+    return lerLista(chaveExposicoes, salas.map(() => demonstracao ? modelo : vazia), dados => dados.length === salas.length && dados.every(item => typeof item?.nome === 'string')).map(item => !demonstracao && item.nome === modelo.nome && item.descricao === modelo.descricao ? { ...vazia } : item);
   }
 
-  return { chaveFormulario, chaveExposicoes, salas, campos, formulario, exposicoes };
+  function status(valor) {
+    if (valor === 'aprovada' || valor === 'aceito') return { valor: 'aceito', rotulo: 'Aceito' };
+    if (valor === 'pendente') return { valor: 'pendente', rotulo: 'Pendente' };
+    if (valor === 'negada') return { valor: 'negada', rotulo: 'Negada' };
+    if (valor === 'cancelada') return { valor: 'cancelada', rotulo: 'Cancelada' };
+    return { valor: 'desconhecido', rotulo: 'Status desconhecido' };
+  }
+
+  function dataCivil(valor) {
+    if (typeof valor !== 'string' || !/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(?::\d{2}(?:\.\d+)?)?(?:Z|[+-]\d{2}:\d{2})?$/.test(valor)) return null;
+    const civil = valor.slice(0, 19).padEnd(19, ':00');
+    const instante = new Date(`${civil}Z`);
+    if (!Number.isFinite(instante.getTime()) || instante.toISOString().slice(0, 19) !== civil) return null;
+    if (!/(Z|[+-]\d{2}:\d{2})$/.test(valor)) return civil;
+    const data = new Date(valor);
+    if (!Number.isFinite(data.getTime())) return null;
+    return new Intl.DateTimeFormat('sv-SE', { timeZone: 'America/Fortaleza', year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hourCycle: 'h23' }).format(data).replace(' ', 'T');
+  }
+
+  function normalizarVisita(visita) {
+    if (!visita || !['string', 'number'].includes(typeof visita.id) || !String(visita.id).trim()) throw new Error('A resposta contém uma visita sem identificador.');
+    const inicio = dataCivil(visita.data_inicio);
+    const fim = dataCivil(visita.data_fim);
+    if (!inicio || !fim || fim <= inicio) throw new Error('A resposta contém uma visita com datas ou horários inválidos.');
+    return { ...visita, id: String(visita.id), data_inicio: inicio, data_fim: fim };
+  }
+
+  return { chaveFormulario, chaveExposicoes, salas, campos, formulario, exposicoes, status, dataCivil, normalizarVisita, demonstracao };
 })();

@@ -30,7 +30,7 @@
     const exposicao = selecao && indice === selecionada ? rascunho : exposicoes[indice];
     const cartao = elemento(selecao ? 'button' : 'article', 'csa-exposicoes-cartao');
     cartao.dataset.sala = indice;
-    cartao.append(elemento('span', 'csa-exposicoes-cartao__sala', salas[indice]), elemento('strong', '', exposicao.nome));
+    cartao.append(elemento('span', 'csa-exposicoes-cartao__sala', salas[indice]), elemento('strong', '', exposicao.nome || 'Nenhuma exposição cadastrada'));
     if (selecao) {
       cartao.type = 'button';
       cartao.setAttribute('aria-pressed', String(indice === selecionada));

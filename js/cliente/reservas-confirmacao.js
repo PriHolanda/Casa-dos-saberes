@@ -106,13 +106,13 @@
         voltar: () => location.assign('reservas.html' + (demo ? '?demo=1' : '')),
         enviar: async () => {
           if (typeof window.csaEnviarReserva !== 'function') {
-            throw new Error('O envio ainda não está disponível. Nenhuma solicitação foi enviada. Suas informações foram preservadas; você pode voltar e alterá-las.');
+            throw new Error('Não foi possível enviar a solicitação. Suas informações foram preservadas; tente novamente mais tarde.');
           }
           return window.csaEnviarReserva(structuredClone(salvo));
         }
       });
     } catch {
-      avisar('Não foi possível recuperar os dados para revisão. Nenhuma solicitação foi enviada. Retorne ao formulário para tentar novamente.');
+      avisar('Não foi possível recuperar suas informações. Retorne ao formulário para tentar novamente.');
     }
   })();
 })();

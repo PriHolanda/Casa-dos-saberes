@@ -1,0 +1,60 @@
+@font-face {
+  font-family: Urbanist;
+  src: url('../assets/reservas/urbanist-variable.ttf') format('truetype');
+  font-weight: 100 900;
+  font-display: swap;
+}
+
+csa-navbar { display: block; position: relative; z-index: 30; width: 100%; min-width: 0; --csa-fonte: Urbanist, system-ui, sans-serif; }
+csa-navbar *, .csa-navbar-menu, .csa-navbar-menu * { box-sizing: border-box; margin: 0; padding: 0; font-family: Urbanist, system-ui, sans-serif; }
+csa-navbar [hidden], .csa-navbar-menu[hidden] { display: none !important; }
+.csa-navbar-header { width: 100%; background: #e8e2c9; color: #080808; }
+.csa-navbar-topo { display: flex; align-items: center; justify-content: space-between; height: 71px; padding: 12px 27px; gap: 16px; }
+.csa-navbar-marca { display: block; flex: none; }
+.csa-navbar-marca img { display: block; width: 317px; height: auto; max-width: 100%; }
+.csa-navbar-perfil { display: flex; align-items: center; gap: 9px; color: #080808; font-size: 16px; font-weight: 400; line-height: 1.35; text-align: left; }
+.csa-navbar-perfil small { display: block; font-size: 12px; font-weight: 400; }
+.csa-navbar-avatar { display: grid; place-items: center; width: 42px; height: 42px; border-radius: 50%; background: #a22d2e; color: #fff; }
+.csa-navbar-perfil > svg { width: 16px; height: 16px; margin-left: 24px; }
+.csa-navbar-header .csa-navbar-botao { display: flex; align-items: center; justify-content: center; flex: none; border: 0; border-radius: 0; background: transparent; padding: 0; color: #2b3f26; cursor: pointer; }
+.csa-navbar-hamburger { display: block; width: 41px; height: 28px; }
+.csa-navbar-botao:has(.csa-navbar-perfil) > .csa-navbar-hamburger { display: none; }
+.csa-navbar-com-lateral .csa-navbar-header .csa-navbar-botao { display: none; }
+.csa-navbar-faixa { display: flex; width: 100%; height: 44px; overflow: hidden; }
+.csa-navbar-faixa img { display: block; flex: none; width: auto; height: 100%; }
+.csa-navbar-menu { position: absolute; top: 100%; right: 27px; z-index: 35; display: grid; gap: 9px; width: 188px; min-width: 188px; max-width: calc(100vw - 32px); padding: 26px 13px 39px 7px; border: 0; background: #e8e2c9; box-shadow: 0 4px 10px #0002; }
+.csa-navbar-menu > a.csa-navbar-link { display: flex; align-items: center; justify-content: flex-start; gap: 12px; min-width: 0; height: 54px; padding: 8px 4px; border-radius: 0; color: #080808; text-decoration: none; font-size: 14px; font-weight: 700; line-height: 1.25; }
+.csa-navbar-link > svg { flex: none; width: 26px; height: 26px; }
+.csa-navbar-link > span { white-space: nowrap; }
+.csa-navbar-menu > a.csa-navbar-link:hover { background: #ffffff55; }
+.csa-navbar-menu > a.csa-navbar-link[aria-current] { background: #a22d2e; color: #fff; }
+csa-navbar :focus-visible, .csa-navbar-menu :focus-visible { outline: 3px solid #2d69a2; outline-offset: 3px; }
+body .csa-navbar-lateral.csa-sidebar, body .csa-navbar-lateral { display: flex; flex-direction: column; justify-content: space-between; width: 188px; flex-shrink: 0; padding: 0; background: #e8e2c9; }
+.csa-navbar-lateral > .csa-navbar-menu { position: static; min-width: 0; max-width: none; width: 100%; gap: 9px; padding: 26px 13px 39px 7px; box-shadow: none; }
+.csa-auth > csa-navbar { grid-column: 1 / -1; }
+.csa-auth:has(> csa-navbar) { grid-template-rows: auto 1fr; }
+
+@media (min-width: 769px) {
+  .csa-visitas-admin:has(> .csa-navbar-lateral) { display: grid; grid-template-columns: 188px minmax(0, 1fr); }
+}
+
+@media (max-width: 768px) {
+  .csa-navbar-topo { height: 75px; padding: 12px 24px; }
+  .csa-navbar-marca img { width: 214px; }
+  .csa-navbar-perfil { display: none; }
+  .csa-navbar-com-lateral .csa-navbar-header .csa-navbar-botao, .csa-navbar-botao:has(.csa-navbar-perfil) > .csa-navbar-hamburger { display: flex; }
+  .csa-navbar-faixa { height: 31px; }
+  .csa-navbar-menu { left: auto; right: 16px; }
+  body .csa-navbar-lateral.csa-sidebar, body .csa-navbar-lateral { display: none; position: absolute; top: var(--csa-navbar-topo, 106px); left: auto; right: 16px; width: 188px; max-width: calc(100vw - 32px); padding: 0; z-index: 35; box-shadow: 0 4px 10px #0002; }
+  body .csa-navbar-lateral.csa-navbar-lateral--aberta { display: flex; }
+  .csa-navbar-lateral > img { display: none !important; }
+  .csa-visitas-admin:has(> .csa-navbar-lateral) { display: block; }
+}
+
+@media (max-width: 350px) {
+  .csa-navbar-topo { padding-inline: 16px; gap: 12px; }
+}
+
+@media print {
+  csa-navbar, body .csa-navbar-lateral { display: none; }
+}

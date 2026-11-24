@@ -70,7 +70,7 @@ const csaDadosDetalhes = (() => {
         categoria: 'SALA EXPOSITIVA',
         descricaoTitulo: 'Sobre a exposição',
         descricao:
-          'Descrição demonstrativa da exposição. As informações reais devem ser fornecidas pela Casa dos Saberes.',
+          'Uma exposição dedicada à arte, à educação e à memória cultural da comunidade.',
         classificacao: '14 anos'
       },
       espaco: espacos[2]
@@ -192,7 +192,7 @@ const csaDadosDetalhes = (() => {
   // Exemplos isolados das consultas reais.
   function consultarExemplo(tipo) {
     if (!Object.hasOwn(exemplos, tipo)) {
-      throw new Error('Demonstração inexistente.');
+      throw new Error('Registro não encontrado.');
     }
 
     return structuredClone(exemplos[tipo]);

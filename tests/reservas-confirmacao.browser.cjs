@@ -95,7 +95,7 @@ let ws;
   await esperar(confirmar + ' !== null');
   assert.ok((await avaliar(resumo)).includes('Nome alterado'));
   await clicar(confirmar);
-  await esperar("document.getElementById('csa-confirmacao-estado').textContent.includes('ainda não está disponível')");
+  await esperar("document.getElementById('csa-confirmacao-estado').textContent.includes('Não foi possível enviar a solicitação')");
   assert.ok(!(await avaliar("document.querySelector('main').textContent")).includes('Solicitação enviada com sucesso!'));
   assert.equal(await avaliar(confirmar + '.disabled'),false);
   await avaliar(`window.csaEnviarReserva = async entrada => {
@@ -127,7 +127,7 @@ let ws;
   assert.equal(await avaliar("window.payloadRecebido.dados.respostas.responsavel"),'Nome alterado');
   await avaliar("window.csaEnviarReserva = async () => ({status:'pendente'})");
   await clicar(confirmar);
-  await esperar("document.getElementById('csa-confirmacao-estado').textContent.includes('não confirmou')");
+  await esperar("document.getElementById('csa-confirmacao-estado').textContent.includes('Não foi possível confirmar o envio')");
   await avaliar("window.csaEnviarReserva = async () => ({enviada:true,status:'pendente'})");
   await clicar(confirmar);
   await esperar("document.getElementById('csa-confirmacao-estado').textContent.includes('Solicitação enviada com sucesso!')");
@@ -173,7 +173,7 @@ let ws;
   await cmd('Page.navigate', { url: new URL('pages/cliente/confirmacao-reserva.html', base).href });
   await esperar("document.getElementById('csa-confirmacao-grade')?.textContent.includes('Nome alterado')");
   await clicar(confirmar);
-  await esperar("document.getElementById('csa-confirmacao-estado').textContent.includes('ainda não está disponível')");
+  await esperar("document.getElementById('csa-confirmacao-estado').textContent.includes('Não foi possível enviar a solicitação')");
   assert.deepEqual(erros, []);
   console.log('OK: fluxo real, PDF, edição, erros, contrato de backend, fundo padronizado e demonstração isolada sem chamadas de envio nem alteração do rascunho.');
 })().catch(erro => { console.error(erro); process.exitCode = 1; }).finally(() => {

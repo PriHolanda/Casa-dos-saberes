@@ -1,5 +1,6 @@
 (() => {
   const { chaveFormulario, formulario: lerFormulario } = csaVisitasModelo;
+  const essenciais = new Set(['responsavel', 'telefone', 'email', 'quantidade']);
   const principal = document.getElementById('csa-visita-campos-principais');
   const complementar = document.getElementById('csa-visita-campos-complementares');
   const editor = document.getElementById('csa-visita-editor');
@@ -64,11 +65,15 @@
       } else {
         linha.append(elemento('span', `csa-visita-campo__entrada${campo.email ? ' csa-visita-campo__entrada--email' : ''}${campo.dica ? ' csa-visita-campo__entrada--preenchida' : ''}`, campo.dica || 'Digite aqui'));
       }
-      linha.append(botao('csa-visitas-botao csa-visita-campo__remover', 'x', () => {
+      const remover = botao('csa-visitas-botao csa-visita-campo__remover', 'x', () => {
+        if (essenciais.has(campo.id)) return;
         if (!persistir(campos.filter((_, item) => item !== posicao))) return;
         renderizarCampos();
         (document.querySelectorAll('.csa-visita-campo__editar')[posicao] || adicionar).focus();
-      }, `Remover ${campo.titulo}`));
+      }, `Remover ${campo.titulo}`);
+      remover.disabled = essenciais.has(campo.id);
+      if (remover.disabled) remover.title = 'Campo obrigatório para solicitar uma visita.';
+      linha.append(remover);
       secao.append(titulo, linha);
       (campo.complementar ? complementar : principal).append(secao);
     });

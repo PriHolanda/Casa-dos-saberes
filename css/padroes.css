@@ -1,0 +1,261 @@
+:root {
+  --csa-ui-fonte: Urbanist, system-ui, sans-serif;
+  --csa-ui-titulo: 1.75rem;
+  --csa-ui-subtitulo: 1.25rem;
+  --csa-ui-secao: 1rem;
+  --csa-ui-texto: 1rem;
+  --csa-ui-rotulo: .875rem;
+  --csa-ui-secundario: .75rem;
+  --csa-ui-linha: 1.5;
+  --csa-ui-peso-titulo: 750;
+  --csa-ui-peso-controle: 600;
+  --csa-ui-controle: 2.625rem;
+  --csa-ui-espaco-1: .25rem;
+  --csa-ui-espaco-2: .5rem;
+  --csa-ui-espaco-3: .75rem;
+  --csa-ui-espaco-4: 1rem;
+  --csa-ui-espaco-6: 1.5rem;
+  --csa-ui-espaco-8: 2rem;
+  --csa-ui-card-altura: 72px;
+  --csa-ui-card-padding: 6px;
+  --csa-ui-card-raio: 2px;
+}
+
+@media (min-width: 1020px) {
+  body[data-csa-interface]:has(> .csa-agenda-cliente), body[data-csa-interface][data-visita-pagina="agenda"] {
+    --csa-ui-titulo: 3rem;
+    --csa-ui-subtitulo: 1.5rem;
+    --csa-ui-secao: 1.125rem;
+    --csa-ui-texto: 1.125rem;
+    --csa-ui-rotulo: 1rem;
+    --csa-ui-secundario: .875rem;
+  }
+  body[data-csa-interface] :is(.csa-hero .csa-hero-text, .csa-vp-hero p) { font-size: 1.25rem; }
+  body[data-csa-interface] .csa-agenda-cliente :is(.csa-event-space, .csa-event-space small, .csa-event-details, .csa-event-message, .csa-event-reserve, .csa-event-capacity) { font-size: 1rem; }
+  body[data-csa-interface][data-visita-pagina="agenda"] .csa-vp-exposicao a { font-size: 1rem; }
+  body[data-csa-interface] .csa-agenda-cliente .csa-date-current { font-size: 1.625rem; }
+}
+
+body[data-csa-interface] {
+  --csa-fonte: var(--csa-ui-fonte);
+  --csa-confirmacao-fonte: var(--csa-ui-fonte);
+  --csa-reserva-texto: var(--csa-ui-texto);
+  --csa-reserva-altura-campo: var(--csa-ui-controle);
+  --csa-reserva-gap: var(--csa-ui-espaco-4);
+  --csa-reserva-gap-campo: var(--csa-ui-espaco-2);
+  font-family: var(--csa-ui-fonte);
+  font-size: var(--csa-ui-texto);
+  line-height: var(--csa-ui-linha);
+}
+
+body[data-csa-interface] :is(h1, .csa-titulo, .csa-detalhes-card__titulo, .csa-auth__cartao h2) {
+  font-family: var(--csa-ui-fonte);
+  font-size: var(--csa-ui-titulo);
+  font-weight: var(--csa-ui-peso-titulo);
+  line-height: 1.2;
+  margin-block: 0 var(--csa-ui-espaco-4);
+}
+
+body[data-csa-interface] :is(h2, .csa-dashboard-subtitulo, .csa-agenda-title) {
+  font-family: var(--csa-ui-fonte);
+  font-size: var(--csa-ui-subtitulo);
+  font-weight: var(--csa-ui-peso-titulo);
+  line-height: 1.3;
+}
+
+body[data-csa-interface] :is(h3, .csa-confirmacao-card h2, .csa-detalhes-card h2, .csa-exposicoes-cartao strong, .csa-vp-exposicao p, .csa-period-title) {
+  font-size: var(--csa-ui-secao);
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+body[data-csa-interface] :is(main, section, dialog) p {
+  line-height: var(--csa-ui-linha);
+}
+
+body[data-csa-interface] :is(.csa-confirmacao-card dt, .csa-confirmacao-card dd, .csa-detalhes-card__campo dt, .csa-detalhes-card__campo dd, .csa-detalhes-card__secao p, .csa-detalhes-card__regras, .csa-visita-formulario__aviso, .csa-vp-formulario__aviso, .csa-vp-horarios__topo p, .csa-vp-hero p, .csa-hero-text, .csa-confirmacao-termos, .csa-visita-detalhe dd) {
+  font-family: var(--csa-ui-fonte);
+  font-size: var(--csa-ui-texto);
+  line-height: var(--csa-ui-linha);
+}
+
+body[data-csa-interface] :is(label, legend, .csa-rotulo, .csa-pergunta__titulo, .csa-visita-campo h2, .csa-visita-formulario__termo h2, .csa-exposicoes-edicao__entradas label, .csa-vp-campo__linha, .csa-vp-termo label, .csa-visita-formulario__opcoes) {
+  font-size: var(--csa-ui-rotulo);
+  font-weight: var(--csa-ui-peso-controle);
+  line-height: var(--csa-ui-linha);
+}
+
+body[data-csa-interface] :is(.csa-confirmacao-voltar, .csa-vp-voltar, .csa-reservas__voltar, .csa-exposicoes-edicao__voltar, .csa-visitas-formulario__voltar, .csa-legenda li, .csa-exposicoes__legenda, .csa-exposicoes-cartao__status, .csa-exposicoes-cartao__sala, .csa-vp-data__periodo time, .csa-visita-detalhe dt, .csa-painel__campo, .csa-painel__campo p) {
+  font-family: var(--csa-ui-fonte);
+  font-size: var(--csa-ui-rotulo);
+  line-height: var(--csa-ui-linha);
+}
+
+body[data-csa-interface] :is(.csa-botao, .csa-visitas-botao, .csa-vp-botao, .csa-confirmacao-botao, .csa-painel__botao, .csa-auth__principal, .csa-auth__alternar, .csa-reservas__enviar, .csa-btn-pdf, .csa-btn-diaria, .csa-btn-semanal, .csa-date-picker, .csa-filter-btn, .csa-visitas-controles button, .csa-exposicoes-edicao__acoes button) {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: var(--csa-ui-controle);
+  height: auto;
+  padding: var(--csa-ui-espaco-2) var(--csa-ui-espaco-4);
+  font-family: var(--csa-ui-fonte);
+  font-size: var(--csa-ui-rotulo);
+  font-weight: var(--csa-ui-peso-controle);
+  line-height: 1.4;
+}
+
+body[data-csa-interface] :is(.csa-data-seta, .csa-date-button, .csa-vp-data__periodo button, .csa-visita-editor__fechar, .csa-visita-detalhe__fechar, .csa-visita-campo__remover, .csa-visita-editor__remover) {
+  width: var(--csa-ui-controle);
+  min-width: var(--csa-ui-controle);
+  height: var(--csa-ui-controle);
+  min-height: var(--csa-ui-controle);
+  padding: 0;
+  font-size: var(--csa-ui-rotulo);
+}
+
+body[data-csa-interface] :is(main, dialog, #csa-painel) :is(input, select, textarea):where(:not([type="hidden"]):not([type="checkbox"]):not([type="radio"]):not([type="file"]):not(.csa-date-input):not(#csa-vp-dia)) {
+  box-sizing: border-box;
+  min-height: var(--csa-ui-controle);
+  height: var(--csa-ui-controle);
+  padding: 10px var(--csa-ui-espaco-3);
+  font-family: var(--csa-ui-fonte);
+  font-size: var(--csa-ui-rotulo);
+  font-weight: 400;
+  line-height: 1.4;
+}
+
+body[data-csa-interface] :is(main, dialog, #csa-painel) textarea {
+  height: auto;
+  min-height: 6rem;
+}
+body[data-csa-interface] :is(input, textarea)::placeholder { font-family: var(--csa-ui-fonte); font-size: var(--csa-ui-rotulo); font-weight: 400; }
+
+body[data-csa-interface] :is(main, dialog) input:is([type="checkbox"], [type="radio"]), body[data-csa-interface] .csa-visita-formulario__marca {
+  width: 20px;
+  height: 20px;
+  min-width: 20px;
+  flex: 0 0 20px;
+  border-width: 2px;
+}
+
+body[data-csa-interface] :is(.csa-confirmacao-card, .csa-detalhes-card, .csa-vp-horarios__topo, .csa-exposicoes-cartao, .csa-visita-editor__conteudo) {
+  padding: var(--csa-ui-espaco-4);
+  min-height: 0;
+}
+
+body[data-csa-interface] :is(.csa-confirmacao-grade, .csa-vp-perguntas, .csa-vp-coluna, .csa-reservas__coluna, .csa-visita-formulario__campos) {
+  gap: var(--csa-ui-espaco-4);
+}
+
+body[data-csa-interface] :is(.csa-exposicoes-edicao__painel, .csa-exposicoes-edicao__salas, .csa-exposicoes-edicao__campos) {
+  padding: var(--csa-ui-espaco-6);
+  gap: var(--csa-ui-espaco-6);
+}
+
+body[data-csa-interface] :is(.csa-visitas-formulario, .csa-exposicoes) { font-size: var(--csa-ui-texto); line-height: var(--csa-ui-linha); }
+body[data-csa-interface] .csa-visita-campo__entrada { min-height: var(--csa-ui-controle); padding: 10px var(--csa-ui-espaco-3); font-size: var(--csa-ui-rotulo); }
+body[data-csa-interface] .csa-confirmacao-acoes { margin-top: var(--csa-ui-espaco-6); gap: var(--csa-ui-espaco-2); }
+body[data-csa-interface] :is(.csa-dashboard-card h2, .csa-event-card__nome, .csa-visitas-card strong, .csa-event-name, .csa-dia__titulo strong, .csa-dia__turno-nome) { font-size: var(--csa-ui-rotulo); line-height: 1.4; }
+body[data-csa-interface] :is(.csa-event-card__espaco, .csa-event-card__horario, .csa-event-card__status, .csa-dia__titulo span, .csa-dashboard-card p, .csa-period-time) { font-size: var(--csa-ui-secundario); line-height: 1.4; }
+body[data-csa-interface] .csa-dashboard-card__valor { font-size: 1.375rem; }
+body[data-csa-interface] #csa-exposicoes-salas .csa-exposicoes-cartao strong { font-size: var(--csa-ui-secao); }
+body[data-csa-interface] .csa-vp-turno__opcao strong { font-size: var(--csa-ui-rotulo); }
+body[data-csa-interface] .csa-data { min-height: var(--csa-ui-controle); font-size: var(--csa-ui-rotulo); }
+body[data-csa-interface] :is(.csa-visitas-data, .csa-visitas-filtro) { min-height: var(--csa-ui-controle); font-size: var(--csa-ui-rotulo); }
+body[data-csa-interface] :is(.csa-vp-vitrine__rotulo, .csa-event-hour span, .csa-confirmacao-status) { font-size: var(--csa-ui-rotulo); line-height: 1.4; }
+body[data-csa-interface] .csa-auth__etiqueta { font-size: var(--csa-ui-secundario); }
+body[data-csa-interface] :is(.csa-visita-formulario__aviso, .csa-vp-formulario__aviso, .csa-visita-formulario__termo) { margin-bottom: var(--csa-ui-espaco-6); }
+body[data-csa-interface] :is(.csa-confirmacao-seta, .csa-reservas__seta, .csa-vp-voltar > span:first-child, .csa-exposicoes-edicao__voltar > span:first-child, .csa-visitas-formulario__voltar > span:first-child) { display: grid; place-items: center; width: var(--csa-ui-controle); height: var(--csa-ui-controle); flex: none; }
+
+body[data-csa-interface] .csa-exportar-pdf {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--csa-ui-espaco-2);
+  width: 142px;
+  max-width: 100%;
+  min-width: 0;
+  height: var(--csa-ui-controle);
+  min-height: var(--csa-ui-controle);
+  padding: var(--csa-ui-espaco-2) var(--csa-ui-espaco-3);
+  border: 1px solid var(--csa-vermelho);
+  border-radius: 0;
+  background: #fff;
+  color: var(--csa-vermelho);
+  font: var(--csa-ui-peso-controle) var(--csa-ui-rotulo)/1.4 var(--csa-ui-fonte);
+  cursor: pointer;
+  white-space: nowrap;
+}
+body[data-csa-interface] .csa-exportar-pdf svg { width: 18px; height: 20px; flex: none; }
+body[data-csa-interface] .csa-exportar-pdf:hover:not(:disabled) { background: #f4e6e6; }
+body[data-csa-interface] .csa-exportar-pdf:active:not(:disabled) { background: #ecd5d5; }
+body[data-csa-interface] .csa-exportar-pdf:focus-visible { outline: 3px solid var(--csa-vermelho); outline-offset: 3px; }
+body[data-csa-interface] .csa-exportar-pdf:disabled { opacity: .6; cursor: default; }
+
+body[data-csa-interface] :is(.csa-pautas .csa-event-card, .csa-visitas-card) {
+  box-sizing: border-box;
+  min-height: var(--csa-ui-card-altura);
+  padding: var(--csa-ui-card-padding);
+  border-width: 1px;
+  border-style: solid;
+  border-radius: var(--csa-ui-card-raio);
+  font-family: var(--csa-ui-fonte);
+  text-align: left;
+}
+body[data-csa-interface] :is(.csa-visitas-card__categoria, .csa-visitas-card time, .csa-visitas-card__status) { font-size: var(--csa-ui-secundario); line-height: 1.4; }
+body[data-csa-interface] .csa-visitas-card__categoria { margin: 2px 0; font-weight: 750; letter-spacing: .5px; text-transform: none; }
+body[data-csa-interface] .csa-visitas-card strong { margin: 0; font-weight: 680; }
+body[data-csa-interface] .csa-visitas-card time { font-weight: 500; }
+body[data-csa-interface] .csa-visitas-card__status { display: flex; align-items: center; gap: 3px; margin-top: 5px; font-weight: 500; }
+body[data-csa-interface] .csa-visitas-card__status .csa-visitas-indicador { width: 10px; height: 10px; margin: 0; flex: none; }
+
+body[data-csa-interface] :is(.csa-visitas-lista, .csa-visitas-formulario, .csa-exposicoes) { width: 100%; max-width: none; margin: 0; padding: 28px 32px 40px; }
+body[data-csa-interface] :is(.csa-visitas-lista, .csa-visitas-formulario, .csa-exposicoes) h1 { text-align: start; }
+body[data-csa-interface] .csa-visitas-lista > :is(.csa-visitas-controles, #csa-visitas-grade) { max-width: 1195px; }
+body[data-csa-interface] .csa-visitas-controles { display: flex; flex-wrap: wrap; gap: 10px; align-items: stretch; }
+body[data-csa-interface] .csa-visitas-controles__tipos { display: flex; gap: 0; }
+body[data-csa-interface] .csa-visitas-controles__tipos button { min-width: 0; border-radius: 0; background: #e7e7e7; color: #000; }
+body[data-csa-interface] .csa-visitas-controles__tipos [aria-pressed="true"] { background: var(--csa-vermelho); color: #fff; }
+body[data-csa-interface] .csa-visitas-controles__periodo { grid-template-columns: 42px minmax(0, 1fr) 42px; gap: 3px; }
+body[data-csa-interface] .csa-visitas-controles__periodo > button { width: 42px; padding: 0; border-color: var(--csa-cinza-texto); border-radius: 0; }
+body[data-csa-interface] :is(.csa-pautas .csa-data-seta, .csa-visitas-controles__periodo > button) svg { display: block; width: 14px; height: 14px; margin: auto; }
+body[data-csa-interface] .csa-visitas-controles__acoes { display: flex; gap: 10px; }
+body[data-csa-interface] :is(.csa-visitas-data, .csa-visitas-filtro) { padding: 8px 12px; border-color: var(--csa-cinza-texto); font-weight: 400; }
+body[data-csa-interface] .csa-visitas-legenda { justify-content: flex-start; gap: 24px; margin: 12px 0; font-size: var(--csa-ui-rotulo); }
+body[data-csa-interface] .csa-visitas-legenda .csa-visitas-indicador { width: 14px; height: 14px; }
+body[data-csa-interface] :is(.csa-visitas-semana, .csa-visitas-turnos) { max-width: none; }
+body[data-csa-interface] .csa-visitas-semana tbody th { font-size: var(--csa-ui-secao); }
+
+body[data-csa-interface] :is(.csa-painel__acoes, .csa-visita-detalhe__acoes) { display: flex; flex-wrap: wrap; justify-content: flex-start; gap: 8px; }
+body[data-csa-interface] .csa-visita-detalhe__acoes { margin-top: 16px; }
+body[data-csa-interface] :is(.csa-painel__botao, .csa-visitas-botao) { border: 0; border-radius: 4px; text-decoration: none; }
+body[data-csa-interface] .csa-visita-detalhe__acoes button { width: auto; flex: 1; }
+body[data-csa-interface] :is(.csa-visita-detalhe__acoes [data-acao="aprovar"], .csa-visita-editor__salvar, .csa-exposicoes-edicao__acoes button[type="submit"], .csa-exposicoes-sucesso .csa-visitas-botao) { background: var(--csa-verde); }
+body[data-csa-interface] :is(.csa-painel__botao, .csa-visitas-botao):hover:not(:disabled) { filter: brightness(.94); }
+body[data-csa-interface] :is(.csa-painel__botao, .csa-visitas-botao):active:not(:disabled) { filter: brightness(.86); }
+body[data-csa-interface] :is(.csa-painel__botao, .csa-visitas-botao):focus-visible { outline: 3px solid var(--csa-azul); outline-offset: 3px; }
+body[data-csa-interface] :is(.csa-painel__botao, .csa-visitas-botao):disabled { opacity: .6; cursor: default; }
+body[data-csa-interface] :is(.csa-visita-editor__fechar, .csa-visita-detalhe__fechar) { background: transparent; color: var(--csa-texto); border-radius: 0; }
+body[data-csa-interface] .csa-visita-editor__salvar { margin: 16px auto 0; width: min(100%, 206px); }
+body[data-csa-interface] .csa-visita-formulario__adicionar { width: auto; min-height: var(--csa-ui-controle); justify-self: start; }
+body[data-csa-interface] .csa-exposicoes-edicao__acoes { gap: 16px; margin-top: 16px; }
+body[data-csa-interface] .csa-visita-detalhe__painel { width: calc(100% - 252px); max-width: 1195px; margin: 145px 32px 40px 220px; padding: 16px; }
+body[data-csa-interface] .csa-visita-detalhe__cabecalho { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding-bottom: 12px; margin-bottom: 16px; border-bottom: 1px solid var(--csa-cinza-borda); }
+body[data-csa-interface] .csa-visita-detalhe__cabecalho h2 { margin: 0; text-align: left; }
+body[data-csa-interface] :is(.csa-painel__cabecalho button, .csa-visita-detalhe__fechar) { flex: none; width: 42px; height: 42px; padding: 0; margin: 0; font-size: 20px; line-height: 1; }
+body[data-csa-interface] .csa-visita-detalhe__dados { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+body[data-csa-interface] .csa-visita-detalhe__quadro:first-child { grid-column: auto; }
+body[data-csa-interface] .csa-visita-detalhe__quadro:last-child { grid-column: 1 / -1; }
+
+@media (max-width: 768px) {
+  :root { --csa-ui-titulo: 1.5rem; --csa-ui-subtitulo: 1.125rem; --csa-ui-card-altura: 82px; --csa-ui-card-padding: 8px 12px; }
+  body[data-csa-interface] :is(.csa-exposicoes-edicao__painel, .csa-exposicoes-edicao__salas, .csa-exposicoes-edicao__campos) { padding: var(--csa-ui-espaco-4); }
+  body[data-csa-interface] :is(.csa-visitas-lista, .csa-visitas-formulario, .csa-exposicoes) { padding: 22px 24px 40px; }
+  body[data-csa-interface] :is(.csa-visitas-lista, .csa-visitas-formulario, .csa-exposicoes) h1 { text-align: center; }
+  body[data-csa-interface] .csa-visitas-controles { display: grid; grid-template-columns: minmax(0, 1fr); gap: 8px; }
+  body[data-csa-interface] .csa-visitas-controles__tipos { display: grid; grid-template-columns: 1fr 1fr; gap: 3px; }
+  body[data-csa-interface] .csa-visitas-controles__acoes { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 8px; }
+  body[data-csa-interface] .csa-exportar-pdf { width: 100%; }
+  body[data-csa-interface] .csa-visita-detalhe__painel { width: calc(100% - 48px); margin: 128px 24px 40px; }
+  body[data-csa-interface] :is(.csa-visita-detalhe__dados, .csa-visita-detalhe__quadro:last-child .csa-visita-detalhe__colunas) { grid-template-columns: minmax(0, 1fr); }
+}

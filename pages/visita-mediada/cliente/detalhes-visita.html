@@ -15,8 +15,8 @@
   <link rel="stylesheet" href="../../../css/cliente/detalhes.css">
   <link rel="stylesheet" href="../../../css/visita-mediada/cliente/visita.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.3.1/css/all.min.css">
-  <link rel="stylesheet" href="../../../css/cliente/header-publico.css">
 
+  <script src="../../../js/navbar.js" defer></script>
   <script src="../../../js/config.js" defer></script>
   <script src="../../../js/api.js" defer></script>
   <script src="../../../js/agenda-modelo.js" defer></script>
@@ -26,55 +26,16 @@
   <script src="../../../js/cliente/detalhes.js" defer></script>
   <script src="../../../js/visita-mediada/cliente/visita.js" defer></script>
   <script src="../../../js/cliente/acessibilidade.js" defer></script>
+  <link rel="stylesheet" href="../../../css/padroes.css">
+  <link rel="stylesheet" href="../../../css/navbar.css">
 </head>
 
-<body class="csa-detalhes csa-detalhes--visita csa-visita-publica" data-csa-tipo="visita">
+<body data-csa-interface class="csa-detalhes csa-detalhes--visita csa-visita-publica" data-csa-tipo="visita">
   <a class="csa-detalhes__pular" href="#csa-detalhes-conteudo">
     Ir para o conteúdo
   </a>
 
-  <header class="csa-detalhes-header">
-    <div class="csa-detalhes-header__conteudo csa-vp-topo csa-header-publico">
-      <a href="../../cliente/agenda-cliente.html" aria-label="Casa dos Saberes — agenda">
-        <img
-          class="csa-logo-publico"
-          src="../../../assets/csca-gov.svg"
-          alt="Casa dos Saberes Cego Aderaldo e Governo do Ceará"
-        >
-      </a>
-
-      <button
-        class="csa-detalhes-menu__botao csa-menu-publico"
-        type="button"
-        aria-label="Abrir menu"
-        aria-expanded="false"
-        aria-controls="csa-detalhes-menu"
-      >
-        <i class="fa-solid fa-bars" aria-hidden="true"></i>
-      </button>
-
-      <nav
-        class="csa-detalhes-menu"
-        id="csa-detalhes-menu"
-        aria-label="Navegação principal"
-        hidden
-      >
-        <a href="../../cliente/agenda-cliente.html">Agenda</a>
-        <a href="visitas.html" data-visita-retorno>Visita Mediada</a>
-        <a href="../../cliente/reservas.html">Formulário de reserva</a>
-      </nav>
-    </div>
-
-    <div class="csa-vp-faixa" aria-hidden="true">
-      <img src="../../../assets/barra1.svg" alt="">
-      <img src="../../../assets/barra2.svg" alt="">
-      <img src="../../../assets/barra3.svg" alt="">
-      <img src="../../../assets/barra3.svg" alt="">
-      <img src="../../../assets/barra3.svg" alt="">
-      <img src="../../../assets/barra3.svg" alt="">
-      <img src="../../../assets/barra3.svg" alt="">
-    </div>
-  </header>
+  <csa-navbar area="usuario"></csa-navbar>
 
   <aside class="csa-vp-acessibilidade">
     <button class="csa-acessibilidade-btn" type="button" aria-label="Abrir menu de acessibilidade" aria-expanded="false" aria-controls="csa-acessibilidade-painel">

@@ -1,6 +1,6 @@
 (() => {
   const parametros = new URLSearchParams(location.search);
-  const demo = parametros.get('demo') === '1' && ['localhost', '127.0.0.1', '[::1]', ''].includes(location.hostname);
+  const demo = csaVisitasModelo.demonstracao;
   const chave = demo ? 'csa-visita-rascunho-demo' : 'csa-visita-rascunho';
   const pagina = document.body.dataset.visitaPagina;
   const turnos = [
@@ -76,7 +76,7 @@
       atualizarRetornos();
       lista.replaceChildren();
       exposicoes.forEach((exposicao, indice) => {
-        if (exposicao.pausada) return;
+        if (exposicao.pausada || !exposicao.nome.trim()) return;
         const cartao = elemento('article', 'csa-vp-exposicao');
         cartao.dataset.sala = indice;
         const detalhes = elemento('a', '', 'Ver detalhes');
@@ -119,6 +119,12 @@
     try {
       const registros = demo ? [] : (await csaApi.requisitar('/visitas/aceitas', { autenticado: false }))?.visitas;
       if (!Array.isArray(registros)) throw new Error('Horários indisponíveis no momento.');
+      const intervalos = registros.map(visita => {
+        const inicio = csaVisitasModelo.dataCivil(visita?.data_inicio);
+        const fim = csaVisitasModelo.dataCivil(visita?.data_fim);
+        if (!inicio || !fim || fim <= inicio) throw new Error('Não foi possível validar a disponibilidade. Tente novamente mais tarde.');
+        return { inicio, fim };
+      });
       turnos.forEach(turno => {
         const secao = elemento('fieldset', 'csa-vp-turno');
         const titulo = elemento('legend');
@@ -126,12 +132,8 @@
         const grade = elemento('div', 'csa-vp-turno__grade');
         turno.horas.forEach(inicio => {
           const termino = fim(inicio);
-          const comFuso = valor => /(?:Z|[+-]\d{2}:\d{2})$/.test(valor) ? valor : `${valor}-03:00`;
-          const bloqueado = demo ? inicio === '09:20' : registros.some(visita => {
-            const horarioInicio = Date.parse(`${dia}T${inicio}:00-03:00`);
-            const horarioFim = Date.parse(`${dia}T${termino}:00-03:00`);
-            return Date.parse(comFuso(visita.data_inicio)) < horarioFim && Date.parse(comFuso(visita.data_fim)) > horarioInicio;
-          });
+          const passado = !demo && Date.parse(`${dia}T${inicio}:00-03:00`) <= Date.now();
+          const bloqueado = demo ? inicio === '09:20' : passado || intervalos.some(visita => visita.inicio < `${dia}T${termino}:00` && visita.fim > `${dia}T${inicio}:00`);
           const label = elemento('label', 'csa-vp-turno__opcao');
           const input = elemento('input');
           input.type = 'radio'; input.name = 'horario'; input.value = inicio;
@@ -255,7 +257,7 @@
     const aviso = document.getElementById('csa-vp-aviso');
     const campos = csaVisitasModelo.formulario();
     const anterior = rascunho();
-    const salvo = anterior?.dia === dia && anterior?.hora === horario ? anterior.respostas || {} : {};
+    const salvo = anterior?.respostas || {};
     const esquerda = elemento('div', 'csa-vp-coluna');
     const direita = elemento('div', 'csa-vp-coluna');
     esquerda.append(termo(termos[0], salvo, 0));
@@ -283,6 +285,32 @@
     }
     mobile.addEventListener('change', organizar);
     organizar();
+    function respostasAtuais() {
+      const respostas = {};
+      const valores = new FormData(form);
+      for (const [id, valor] of valores) {
+        const campo = campos.find(item => item.id === id);
+        respostas[id] = campo?.multipla ? valores.getAll(id) : valor.trim();
+      }
+      return respostas;
+    }
+    function validarPessoas() {
+      const quantidade = form.elements.quantidade;
+      const pcd = form.elements.quantidadePcd;
+      const telefone = form.elements.telefone;
+      const digitos = telefone.value.replace(/\D/g, '');
+      telefone.setCustomValidity(digitos.length < 10 || digitos.length > 15 ? 'Informe um telefone com DDD, entre 10 e 15 dígitos.' : '');
+      if (pcd) pcd.setCustomValidity(pcd.value !== '' && Number(pcd.value) > Number(quantidade.value) ? 'A quantidade de pessoas com deficiência não pode superar o total do grupo.' : '');
+    }
+    form.addEventListener('input', () => {
+      validarPessoas();
+      try {
+        if (horario && dataValida(pedido)) guardar({ dia, hora: horario, respostas: respostasAtuais() });
+      } catch {
+        aviso.textContent = 'O navegador não conseguiu salvar o rascunho. Mantenha esta página aberta para preservar suas respostas.';
+        aviso.hidden = false;
+      }
+    });
     form.querySelector('[type="submit"]').disabled = false;
     form.addEventListener('submit', evento => {
       evento.preventDefault();
@@ -292,12 +320,14 @@
         aviso.focus();
         return;
       }
-      const respostas = {};
-      const valores = new FormData(form);
-      for (const [id, valor] of valores) {
-        const campo = campos.find(item => item.id === id);
-        respostas[id] = campo?.multipla ? valores.getAll(id) : valor.trim();
+      validarPessoas();
+      if (!form.reportValidity()) return;
+      if (!demo && Date.parse(`${dia}T${horario}:00-03:00`) <= Date.now()) {
+        aviso.textContent = 'O horário escolhido já passou. Suas respostas foram preservadas; escolha um novo horário.';
+        aviso.hidden = false;
+        return;
       }
+      const respostas = respostasAtuais();
       try {
         guardar({ dia, hora: horario, respostas });
         location.assign(link('confirmacao-visita.html', { fluxo: '1' }));
@@ -321,15 +351,18 @@
       const complemento = respostas[`${id}-outro`];
       dados[id] = [valor].flat().map(item => item === 'Outro' && complemento ? complemento : item).join(', ');
     }
-    const extras = campos.filter(campo => !ordem.includes(campo.id)).map(campo => [campo.id, campo.titulo]);
+    dados.dataVisita = new Intl.DateTimeFormat('pt-BR', { timeZone: 'UTC', dateStyle: 'long' }).format(new Date(`${dia}T12:00:00Z`));
+    dados.horarioVisita = `${salvo.hora} às ${fim(salvo.hora)}`;
+    const extras = [['dataVisita', 'Data da visita'], ['horarioVisita', 'Horário da visita'], ...campos.filter(campo => !ordem.includes(campo.id)).map(campo => [campo.id, campo.titulo])];
     for (const id of ['quantidade', 'quantidadePcd']) {
       if (dados[id]) dados[id] += Number(dados[id]) === 1 ? ' Pessoa' : ' Pessoas';
     }
     window.csaConfirmacao.revisar({ dados, extras }, {
       voltar: () => location.assign(link('formulario-visita.html', { hora: salvo.hora })),
       enviar: async () => {
+        if (Date.parse(`${dia}T${salvo.hora}:00-03:00`) <= Date.now()) throw new Error('O horário escolhido já passou. Volte ao formulário e escolha um novo horário.');
         if (typeof window.csaEnviarVisita !== 'function') {
-          throw new Error('O envio de visitas ainda não está disponível. Você pode voltar e alterar suas respostas.');
+          throw new Error('Não foi possível enviar a solicitação. Suas informações foram preservadas; tente novamente mais tarde.');
         }
         return window.csaEnviarVisita({
           data_inicio: `${dia}T${salvo.hora}:00`, data_fim: `${dia}T${fim(salvo.hora)}:00`,
