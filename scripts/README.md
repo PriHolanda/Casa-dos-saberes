@@ -23,7 +23,9 @@ cd ~/programing/AgendamentoCasaDosSaberes
 ./scripts/start-keycloak.sh
 ```
 
-Esse comando também inicia o banco do Keycloak; não é necessário executar `start-db.sh` separadamente. Aguarde a inicialização do Keycloak.
+Esse comando também inicia o banco do Keycloak. Aguarde a inicialização do serviço.
+
+Para usar os editores, atribua o papel de realm `administrador` aos usuários responsáveis. Em um realm existente, crie o papel se estiver ausente e inclua-o no escopo do client da API. Depois da atribuição, entre novamente para obter um token atualizado.
 
 No mesmo terminal, inicie a API e deixe-a em execução:
 
@@ -33,6 +35,7 @@ cd ~/programing/AgendamentoCasaDosSaberes
 ```
 
 A API usa a porta **8000** e o Keycloak usa **8080**. Se a API já estiver em outra porta, configure `API_URL` ao iniciar o frontend.
+O `start-back.sh` também inicia o PostgreSQL da aplicação. A API cria as tabelas novas de exposições e do formulário de visita na inicialização.
 
 ## 2. Iniciar o frontend
 
@@ -43,7 +46,7 @@ cd ~/programing/Casa-dos-saberes
 
 Abra **http://127.0.0.1:3000/**. A entrada leva ao login, com opção de criar conta. Após criar a conta, entre com e-mail e senha para acessar a agenda.
 
-Use um segundo terminal para o frontend. Na inicialização, o script verifica se o endereço da API contém as rotas esperadas e avisa quando ela não está disponível. A verificação não autentica no Keycloak. Para consultar os comandos novamente, execute `./scripts/iniciar.sh --help`.
+Use um segundo terminal para o frontend. O script consulta o OpenAPI e avisa quando o endereço está indisponível ou quando faltam operações de exposições e visitas mediadas. A checagem verifica apenas as rotas e os métodos HTTP publicados. Para consultar os comandos novamente, execute `./scripts/iniciar.sh --help`.
 
 O navegador chama o backend diretamente, sem proxy `/api`. O backend precisa permitir `http://127.0.0.1:3000` e `http://localhost:3000` em seu CORS. `API_URL` configura o endereço que o JavaScript usará; `PORT` configura a porta do frontend.
 

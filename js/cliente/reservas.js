@@ -1,9 +1,9 @@
-// Controlador da página. Não envia solicitações nem grava respostas nesta etapa.
 const csaReservas = (() => {
   const formulario = document.getElementById('csa-reservas-form');
   const perguntas = document.getElementById('csa-reservas-perguntas');
   const mensagem = document.getElementById('csa-reservas-mensagem');
   const enviar = formulario.querySelector('[type="submit"]');
+  const reserva = csaProgramacao.lerReserva(new URLSearchParams(location.search));
   // A mesma condição está no CSS: telefones/tablets de toque usam mobile também na horizontal.
   const visaoMobile = window.matchMedia('(max-width: 760px), (hover: none) and (pointer: coarse)');
   let definicao;
@@ -77,7 +77,7 @@ const csaReservas = (() => {
 
   async function carregar() {
     try {
-      definicao = csaReservasModelo.prepararDefinicao(await csaDadosReservas.consultarFormulario('reservas'));
+      definicao = csaReservasModelo.prepararDefinicao(await csaDadosReservas.consultarFormulario('reservas', Boolean(reserva)));
       perguntas.innerHTML = ['principal', 'complementar'].map(coluna => `<div class="csa-reservas__coluna csa-reservas__coluna--${coluna}">
         ${definicao.perguntas.filter(pergunta => pergunta.coluna === coluna).sort((a, b) => a.ordem - b.ordem)
           .map(pergunta => csaPerguntasReserva.renderizar(pergunta)).join('')}
@@ -95,6 +95,11 @@ const csaReservas = (() => {
     tentouEnviar = true;
     const respostas = coletarRespostas();
     const erros = csaReservasModelo.validar(definicao, respostas);
+    if (reserva) {
+      if (respostas.proposta) erros.proposta = 'O envio de PDF está indisponível. Remova o arquivo e informe o link da proposta.';
+      if (respostas.segmentos.length > 1) erros.segmentos = 'Selecione um segmento para enviar pela agenda.';
+      if (respostas.pautas.length > 1) erros.pautas = 'Selecione uma pauta para enviar pela agenda.';
+    }
     exibirErros(erros);
     if (Object.keys(erros).length) {
       avisar('Revise as perguntas indicadas para continuar.', true);
@@ -102,9 +107,7 @@ const csaReservas = (() => {
       return;
     }
     const detalhe = csaReservasModelo.prepararEnvio(definicao, respostas);
-    document.dispatchEvent(new CustomEvent('csa:reserva-preparada', { detail: detalhe }));
-    avisar('Suas respostas foram validadas. O envio estará disponível em breve; nenhuma solicitação foi enviada.');
-    mensagem.focus();
+    document.dispatchEvent(new CustomEvent('csa:reserva-preparada', { detail: { ...detalhe, ...(reserva && { reserva }) } }));
   });
 
   formulario.addEventListener('input', evento => {

@@ -243,7 +243,7 @@
 .csa-visita-detalhe__colunas { display: grid; gap: 10px; }
 .csa-visita-detalhe dl { display: grid; gap: 8px; font-size: 18px; line-height: 1.31; }
 .csa-visita-detalhe dt { color: #656565; font-weight: 600; }
-.csa-visita-detalhe dd { margin-top: 4px; font-weight: 700; }
+.csa-visita-detalhe dd { margin-top: 4px; font-weight: 700; white-space: pre-line; overflow-wrap: anywhere; }
 .csa-visita-detalhe__acoes { display: flex; justify-content: center; gap: 7px; margin-top: 36px; }
 .csa-visita-detalhe__acoes button { width: min(45%, 169px); min-height: 50px; font-size: 20px; }
 .csa-visita-detalhe__acoes [data-acao="aprovar"] { background: var(--csa-visitas-verde); }

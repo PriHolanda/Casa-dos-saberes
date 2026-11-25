@@ -1,11 +1,5 @@
 const csaDadosAgenda = (() => {
-  // A API aceita um identificador inteiro; o catálogo ainda não possui rota própria.
-  const espacos = [
-    { id: '1', nome: 'Auditório', visual: 'auditorio' },
-    { id: '2', nome: 'Quintal', visual: 'quintal' },
-    { id: '3', nome: 'Salas Expositivas', visual: 'salas' },
-    { id: '4', nome: 'Varanda', visual: 'varanda' }
-  ];
+  const { espacos, dataCivil } = csaAgendaModelo;
   const turnos = [
     { id: 'manha', nome: 'Manhã', inicio: 0, fim: 12 },
     { id: 'tarde', nome: 'Tarde', inicio: 12, fim: 18 },
@@ -13,12 +7,6 @@ const csaDadosAgenda = (() => {
   ];
   let eventos = [];
   const statusPersistidos = new Set();
-  function dataCivil(valor) {
-    if (!/(Z|[+-]\d\d:\d\d)$/.test(valor)) return valor.slice(0, 19);
-    const data = new Date(valor);
-    const partes = new Intl.DateTimeFormat('sv-SE', { timeZone: 'America/Fortaleza', year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hourCycle: 'h23' }).format(data);
-    return partes.replace(' ', 'T');
-  }
   function adaptar(item) {
     if (['aceito', 'pendente'].includes(item.status)) statusPersistidos.add(String(item.id));
     else statusPersistidos.delete(String(item.id));
@@ -33,10 +21,12 @@ const csaDadosAgenda = (() => {
       status: item.status || 'pendente'
     }, espacos);
     if (!evento) throw new Error(`O evento ${item.id} possui datas ou dados inválidos. Corrija-o no backend.`);
-    return evento;
+    const { email, entidade, segmento, pauta, periodicidade, link_complementar, arquivo_pdf_id } = item;
+    return { ...evento, complemento: { email, entidade, segmento, pauta, periodicidade, link_complementar, arquivo_pdf_id } };
   }
-  function payload(evento) {
-    return { status: evento.status || 'pendente', celular: evento.celular || null, titulo: evento.nome, descricao: evento.descricao, data_inicio: evento.inicio, data_fim: evento.termino,
+  function payload(evento, id) {
+    const complemento = eventos.find(registro => registro.id === String(id))?.complemento;
+    return { ...complemento, status: evento.status || 'pendente', celular: evento.celular || null, titulo: evento.nome, descricao: evento.descricao, data_inicio: evento.inicio, data_fim: evento.termino,
       espaco_id: Number(evento.espacoId), responsavel: evento.solicitante || null,
       publico_estimado: evento.publico === '' ? null : Number(evento.publico), classificacao_indicativa: evento.classificacao || null };
   }
@@ -46,7 +36,7 @@ const csaDadosAgenda = (() => {
     eventos = novos;
   }
   async function salvar(evento, id) {
-    const novo = adaptar(await csaApi.requisitar(id ? `/eventos/${encodeURIComponent(id)}` : '/eventos/', { metodo: id ? 'PUT' : 'POST', dados: payload(evento) }));
+    const novo = adaptar(await csaApi.requisitar(id ? `/eventos/${encodeURIComponent(id)}` : '/eventos/', { metodo: id ? 'PUT' : 'POST', dados: payload(evento, id) }));
     eventos = eventos.filter(e => e.id !== novo.id).concat(novo);
     return novo;
   }
@@ -62,7 +52,7 @@ const csaDadosAgenda = (() => {
         throw new Error('A API ainda não salva o status do evento. Aplique o ajuste de status no backend e recarregue a página para aprovar.');
       }
       const resposta = await csaApi.requisitar(`/eventos/${encodeURIComponent(id)}`, {
-        metodo: 'PUT', dados: payload({ ...evento, status })
+        metodo: 'PUT', dados: payload({ ...evento, status }, id)
       });
       if (resposta.status !== status) throw new Error('A API não confirmou a alteração de status. Recarregue a página.');
       const atualizado = adaptar(resposta);

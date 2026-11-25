@@ -10,7 +10,7 @@
   const comum = [['responsavel', tipo === 'reserva' ? 'Responsável pelo agendamento' : 'Responsável pela visita'], ['telefone', 'Telefone'], ['email', 'E-mail']];
   const secoes = tipo === 'reserva' ? [
     ['Dados do responsável', [...comum, ['instituicao', 'Instituição, grupo ou coletivo']]],
-    ['Sobre a proposta', [['segmento', 'Segmento'], ['pauta', 'Pauta'], ['classificacao', 'Classificação indicativa'], ['periodicidade', 'Periodicidade'], ['publico', 'Público estimado']]],
+    ['Sobre a proposta', [['titulo', 'Título do evento'], ['descricao-evento', 'Descrição do evento'], ['horarioReserva', 'Espaço e horário'], ['segmento', 'Segmento'], ['pauta', 'Pauta'], ['classificacao', 'Classificação indicativa'], ['periodicidade', 'Periodicidade'], ['publico', 'Público estimado']]],
     ['Anexos da proposta', [['arquivo', 'Arquivo anexado'], ['link', 'Link complementar']]]
   ] : [
     ['Dados do responsável', [...comum, ['formacao', 'Formação do responsável'], ['disciplina', 'Disciplina que ministra']]],
@@ -72,10 +72,12 @@
       const lista = elemento('dl');
       const extras = tipo === 'visita' && indice === 2 && Array.isArray(entrada.extras) ? entrada.extras : [];
       for (const [chave, rotulo] of [...campos, ...extras]) {
+        if (entrada.rotulos && !Object.hasOwn(entrada.rotulos, chave)) continue;
+        if (['titulo', 'descricao-evento', 'horarioReserva'].includes(chave) && !dados[chave]) continue;
         const campo = elemento('div', 'csa-confirmacao-campo');
         const valor = dados[chave];
         const temValor = (typeof valor === 'string' && valor.trim()) || Number.isFinite(valor);
-        campo.append(elemento('dt', '', rotulo), elemento('dd', '', temValor ? String(valor) : 'Não informado'));
+        campo.append(elemento('dt', '', entrada.rotulos?.[chave] ?? rotulo), elemento('dd', '', temValor ? String(valor) : 'Não informado'));
         lista.append(campo);
       }
       card.append(lista);

@@ -367,10 +367,20 @@ input[type="checkbox"] {
   border: none;
   background-color: #999999;
   color: #FFFFFF;
+  text-decoration: none;
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
   transition: opacity 0.2s ease;
+}
+
+.csa-event-salas {
+  border-color: var(--csa-cor-salas, #786d89);
+}
+
+.csa-event-salas .csa-event-hour,
+.csa-event-salas .csa-event-reserve {
+  background-color: var(--csa-cor-salas, #786d89);
 }
 
 .csa-event-reserve:hover {

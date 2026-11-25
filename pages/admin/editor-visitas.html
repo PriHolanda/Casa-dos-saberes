@@ -8,7 +8,10 @@
   <link rel="stylesheet" href="../../css/base.css">
   <link rel="stylesheet" href="../../css/admin/visitas.css">
   <link rel="stylesheet" href="../../css/admin/editor-visitas.css">
+  <script src="../../js/config.js" defer></script>
+  <script src="../../js/api.js" defer></script>
   <script src="../../js/visitas-modelo.js" defer></script>
+  <script src="../../js/visitas-api.js" defer></script>
   <script src="../../js/admin/editor-visitas.js" defer></script>
 </head>
 <body class="csa-visitas">
@@ -45,6 +48,7 @@
     </aside>
 
     <main class="csa-exposicoes">
+      <p class="csa-visitas-aviso" id="csa-exposicoes-carregamento" role="status">Carregando exposições…</p>
       <section id="csa-exposicoes-inicio" aria-labelledby="csa-exposicoes-titulo">
         <h1 id="csa-exposicoes-titulo">Editor Administrativo</h1>
         <div class="csa-exposicoes__secoes">
@@ -86,6 +90,7 @@
             <div class="csa-exposicoes-edicao__titulo">
               <h2>Editar a exposição</h2>
               <p id="csa-exposicoes-sala"></p>
+              <button class="csa-visitas-botao" id="csa-exposicoes-importar" type="button" hidden>Preencher com dados deste navegador</button>
             </div>
             <div class="csa-exposicoes-edicao__entradas">
               <label>Nome da exposição <input name="nome" type="text" maxlength="120" required></label>

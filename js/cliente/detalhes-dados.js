@@ -12,38 +12,7 @@
 // disponibilizados pela Casa dos Saberes.
 
 const csaDadosDetalhes = (() => {
-  // Catálogo de espaços utilizado para identificar os locais.
-  // Os identificadores seguem o catálogo atual da agenda.
-  const espacos = [
-    {
-      id: '1',
-      nome: 'Auditório',
-      descricao: '',
-      orientacoes: '',
-      regras: []
-    },
-    {
-      id: '2',
-      nome: 'Quintal',
-      descricao: '',
-      orientacoes: '',
-      regras: []
-    },
-    {
-      id: '3',
-      nome: 'Salas Expositivas',
-      descricao: '',
-      orientacoes: '',
-      regras: []
-    },
-    {
-      id: '4',
-      nome: 'Varanda',
-      descricao: '',
-      orientacoes: '',
-      regras: []
-    }
-  ];
+  const { espacos } = csaAgendaModelo;
 
   // Exemplos utilizados exclusivamente quando ?demo=1.
   const exemplos = {
@@ -95,98 +64,16 @@ const csaDadosDetalhes = (() => {
     return structuredClone(espaco);
   }
 
-  // Consulta um evento público pelo identificador.
-  //
-  // A API disponibiliza GET /eventos/.
-  // A busca por ID é feita sobre a listagem retornada.
-  //
-  // Apenas registros com status 'aceito' podem ser apresentados
-  // como eventos confirmados na programação pública.
   async function consultarEvento(id) {
-    if (
-      typeof id !== 'string' ||
-      !id.trim() ||
-      id.length > 100
-    ) {
+    if (typeof id !== 'string' || !/^\d+$/.test(id)) {
       throw new Error('Identificador de evento inválido.');
     }
 
-    const resposta = await csaApi.requisitar('/eventos/', {
-      autenticado: false
-    });
+    const eventos = await csaProgramacao.consultarEventos();
+    const evento = eventos.find(item => item.id === id);
+    if (!evento) throw new Error('O evento não está disponível para consulta pública.');
 
-    if (!Array.isArray(resposta?.eventos)) {
-      throw new Error(
-        'A resposta da agenda não contém uma lista de eventos.'
-      );
-    }
-
-    const registro = resposta.eventos.find(
-      item => String(item?.id) === id
-    );
-
-    if (!registro || registro.status !== 'aceito') {
-      throw new Error(
-        'O evento não está disponível para consulta pública.'
-      );
-    }
-
-    const espaco = encontrarEspaco(registro.espaco_id);
-
-    if (!espaco) {
-      throw new Error('O espaço do evento não foi encontrado.');
-    }
-
-    // Reaproveita a normalização do modelo da agenda.
-    const evento = csaAgendaModelo.normalizarEvento({
-      id: registro.id,
-      nome: registro.titulo,
-      descricao: registro.descricao,
-      espacoId: registro.espaco_id,
-      inicio: dataCivil(registro.data_inicio),
-      termino: dataCivil(registro.data_fim),
-      status: registro.status,
-      classificacao: registro.classificacao_indicativa || '',
-      publico: registro.publico_estimado == null
-        ? ''
-        : String(registro.publico_estimado)
-    }, espacos);
-
-    if (!evento) {
-      throw new Error(
-        'Os dados deste evento estão incompletos ou inválidos.'
-      );
-    }
-
-    return {
-      evento,
-      espaco: structuredClone(espaco)
-    };
-  }
-
-  // Converte datas recebidas da API para a convenção civil
-  // utilizada pelo modelo da agenda, no fuso de Fortaleza.
-  function dataCivil(valor) {
-    if (typeof valor !== 'string') return '';
-
-    if (!/(Z|[+-]\d\d:\d\d)$/.test(valor)) {
-      return valor.slice(0, 19);
-    }
-
-    const data = new Date(valor);
-
-    if (!Number.isFinite(data.getTime())) return '';
-
-    return new Intl.DateTimeFormat('sv-SE', {
-      timeZone: 'America/Fortaleza',
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit',
-      hour: '2-digit',
-      minute: '2-digit',
-      second: '2-digit',
-      hourCycle: 'h23'
-    }).format(data).replace(' ', 'T');
+    return { evento, espaco: await consultarEspaco(evento.espacoId) };
   }
 
   // Exemplos isolados das consultas reais.

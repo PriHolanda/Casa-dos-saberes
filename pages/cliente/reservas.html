@@ -10,6 +10,8 @@
   <link rel="stylesheet" href="../../css/base.css">
   <link rel="stylesheet" href="../../css/componentes.css">
   <link rel="stylesheet" href="../../css/cliente/reservas.css">
+  <script src="../../js/agenda-modelo.js" defer></script>
+  <script src="../../js/cliente/programacao.js" defer></script>
   <script src="../../js/cliente/reservas-dados.js" defer></script>
   <script src="../../js/cliente/reservas-modelo.js" defer></script>
   <script src="../../js/cliente/reservas-perguntas/base.js" defer></script>
@@ -45,6 +47,7 @@
       <span>Voltar para agenda</span>
     </a>
     <h1 class="csa-reservas__titulo" id="csa-reservas-titulo">Formulário de reserva</h1>
+    <p class="csa-reservas__aviso" id="csa-reservas-horario" hidden></p>
     <p class="csa-reservas__aviso" id="csa-reservas-aviso"><strong>Importante:</strong> ao enviar sua solicitação, aguarde a confirmação da nossa equipe via telefone ou e-mail. O envio do formulário não significa que a reserva já foi confirmada.</p>
 
     <form id="csa-reservas-form" aria-labelledby="csa-reservas-titulo" aria-describedby="csa-reservas-aviso" novalidate>

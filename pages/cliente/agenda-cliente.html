@@ -82,13 +82,13 @@
 
           <label class="csa-available-filter">
             <input type="checkbox" class="csa-available-checkbox">
-            Somente disponíveis
+            Somente horários para solicitar
           </label>
         </div>
 
         <div class="csa-date">
           <button class="csa-date-button" type="button"><i class="fa-solid fa-arrow-left"></i></button>
-          <span class="csa-date-current">Seg, 21 de Setembro de 2026</span>
+          <span class="csa-date-current"></span>
           <button class="csa-date-button" type="button"><i class="fa-solid fa-arrow-right"></i></button>
         </div>
       </div>
@@ -101,194 +101,36 @@
       </div>
 
       <div class="csa-schedule">
+        <p id="csa-programacao-mensagem" role="status">Carregando programação…</p>
 
         <!-- ================= MANHÃ ================= -->
         <section class="csa-period csa-period-morning">
           <header class="csa-period-header">
             <h3 class="csa-period-title">Manhã</h3>
-            <span class="csa-period-time">9:00 às 12:00</span>
+            <span class="csa-period-time">Até 12:00</span>
           </header>
 
-          <div class="csa-events">
-            <article class="csa-event csa-event-occupied csa-event-auditorio">
-              <div class="csa-event-hour"><span>9H<br>00</span></div>
-              <div class="csa-event-info">
-                <span class="csa-event-space">Auditório</span>
-                <h4 class="csa-event-name">Campeonato de Farmar Aura</h4>
-                <a href="detalhes-reserva.html" class="csa-event-details">Ver detalhes</a>
-              </div>
-            </article>
-
-            <article class="csa-event csa-event-occupied csa-event-quintal">
-              <div class="csa-event-hour"><span>9H<br>30</span></div>
-              <div class="csa-event-info">
-                <span class="csa-event-space">Quintal</span>
-                <h4 class="csa-event-name">Exibição de Filme</h4>
-                <a href="detalhes-reserva.html" class="csa-event-details">Ver detalhes</a>
-              </div>
-            </article>
-
-            <article class="csa-event csa-event-occupied csa-event-varanda">
-              <div class="csa-event-hour"><span>9H<br>00</span></div>
-              <div class="csa-event-info">
-                <span class="csa-event-space">Varanda</span>
-                <h4 class="csa-event-name">Feira de artesanato</h4>
-                <a href="detalhes-reserva.html" class="csa-event-details">Ver detalhes</a>
-              </div>
-            </article>
-
-            <article class="csa-event csa-event-occupied csa-event-lateral">
-              <div class="csa-event-hour"><span>9H<br>00</span></div>
-              <div class="csa-event-info">
-                <span class="csa-event-space">Lateral</span>
-                <h4 class="csa-event-name">Oficina de crochê</h4>
-                <a href="detalhes-reserva.html" class="csa-event-details">Ver detalhes</a>
-              </div>
-            </article>
-
-            <article class="csa-event csa-event-occupied csa-event-corredor">
-              <div class="csa-event-hour"><span>9H<br>00</span></div>
-              <div class="csa-event-info">
-                <span class="csa-event-space">Corredor <small>(para exposição)</small></span>
-                <h4 class="csa-event-name">Campeonato de Farmar Aura</h4>
-                <a href="detalhes-reserva.html" class="csa-event-details">Ver detalhes</a>
-              </div>
-            </article>
-
-            <article class="csa-event csa-event-occupied csa-event-sala1">
-              <div class="csa-event-hour"><span>9H<br>00</span></div>
-              <div class="csa-event-info">
-                <span class="csa-event-space">Sala expositiva 1</span>
-                <h4 class="csa-event-name">Campeonato de Farmar Aura</h4>
-                <a href="detalhes-reserva.html" class="csa-event-details">Ver detalhes</a>
-              </div>
-            </article>
-
-            <article class="csa-event csa-event-occupied csa-event-sala2">
-              <div class="csa-event-hour"><span>9H<br>00</span></div>
-              <div class="csa-event-info">
-                <span class="csa-event-space">Sala expositiva 2</span>
-                <h4 class="csa-event-name">Campeonato de Farmar Aura</h4>
-                <a href="detalhes-reserva.html" class="csa-event-details">Ver detalhes</a>
-              </div>
-            </article>
-
-            <article class="csa-event csa-event-occupied csa-event-varanda-expo">
-              <div class="csa-event-hour"><span>9H<br>00</span></div>
-              <div class="csa-event-info">
-                <span class="csa-event-space">Varanda <small>(para exposição)</small></span>
-                <h4 class="csa-event-name">Campeonato de Farmar Aura</h4>
-                <a href="detalhes-reserva.html" class="csa-event-details">Ver detalhes</a>
-              </div>
-            </article>
-          </div>
+          <div class="csa-events"></div>
         </section>
 
         <!-- ================= TARDE ================= -->
         <section class="csa-period csa-period-afternoon">
           <header class="csa-period-header">
             <h3 class="csa-period-title">Tarde</h3>
-            <span class="csa-period-time">14:00 às 17:00</span>
+            <span class="csa-period-time">12:00 às 18:00</span>
           </header>
 
-          <div class="csa-events">
-            <article class="csa-event csa-event-available csa-event-auditorio">
-              <div class="csa-event-hour"></div>
-              <div class="csa-event-info">
-                <span class="csa-event-space">Auditório</span>
-                <h4 class="csa-event-name">Livre</h4>
-                <div class="csa-event-actions">
-                  <button class="csa-event-reserve" type="button">Solicitar reserva</button>
-                  <span class="csa-event-capacity"><i class="fa-solid fa-users"></i> 30</span>
-                </div>
-              </div>
-            </article>
-
-            <article class="csa-event csa-event-available csa-event-quintal">
-              <div class="csa-event-hour"></div>
-              <div class="csa-event-info">
-                <span class="csa-event-space">Quintal</span>
-                <h4 class="csa-event-name">Livre</h4>
-                <div class="csa-event-actions">
-                  <button class="csa-event-reserve" type="button">Solicitar reserva</button>
-                  <span class="csa-event-capacity"><i class="fa-solid fa-users"></i> 1000</span>
-                </div>
-              </div>
-            </article>
-
-             <article class="csa-event csa-event-occupied csa-event-varanda">
-              <div class="csa-event-hour"><span>9H<br>00</span></div>
-              <div class="csa-event-info">
-                <span class="csa-event-space">Varanda</span>
-                <h4 class="csa-event-name">Feira de artesanato</h4>
-                <a href="detalhes-reserva.html" class="csa-event-details">Ver detalhes</a>
-              </div>
-            </article>
-
-            <article class="csa-event csa-event-occupied csa-event-lateral">
-              <div class="csa-event-hour"><span>9H<br>00</span></div>
-              <div class="csa-event-info">
-                <span class="csa-event-space">Lateral</span>
-                <h4 class="csa-event-name">Oficina de crochê</h4>
-                <a href="detalhes-reserva.html" class="csa-event-details">Ver detalhes</a>
-              </div>
-            </article>
-
-            <article class="csa-event csa-event-occupied csa-event-corredor">
-              <div class="csa-event-hour"><span>9H<br>00</span></div>
-              <div class="csa-event-info">
-                <span class="csa-event-space">Corredor <small>(para exposição)</small></span>
-                <h4 class="csa-event-name">Campeonato de Farmar Aura</h4>
-                <a href="detalhes-reserva.html" class="csa-event-details">Ver detalhes</a>
-              </div>
-            </article>
-
-            <article class="csa-event csa-event-occupied csa-event-sala1">
-              <div class="csa-event-hour"><span>9H<br>00</span></div>
-              <div class="csa-event-info">
-                <span class="csa-event-space">Sala expositiva 1</span>
-                <h4 class="csa-event-name">Campeonato de Farmar Aura</h4>
-                <a href="detalhes-reserva.html" class="csa-event-details">Ver detalhes</a>
-              </div>
-            </article>
-
-            <article class="csa-event csa-event-occupied csa-event-sala2">
-              <div class="csa-event-hour"><span>9H<br>00</span></div>
-              <div class="csa-event-info">
-                <span class="csa-event-space">Sala expositiva 2</span>
-                <h4 class="csa-event-name">Campeonato de Farmar Aura</h4>
-                <a href="detalhes-reserva.html" class="csa-event-details">Ver detalhes</a>
-              </div>
-            </article>
-
-            <article class="csa-event csa-event-occupied csa-event-varanda-expo">
-              <div class="csa-event-hour"><span>9H<br>00</span></div>
-              <div class="csa-event-info">
-                <span class="csa-event-space">Varanda <small>(para exposição)</small></span>
-                <h4 class="csa-event-name">Campeonato de Farmar Aura</h4>
-                <a href="detalhes-reserva.html" class="csa-event-details">Ver detalhes</a>
-              </div>
-            </article>
-          </div>
+          <div class="csa-events"></div>
         </section>
 
         <!-- ================= NOITE ================= -->
         <section class="csa-period csa-period-night">
           <header class="csa-period-header">
             <h3 class="csa-period-title">Noite</h3>
-            <span class="csa-period-time">18:00 às --:--</span>
+            <span class="csa-period-time">A partir das 18:00</span>
           </header>
 
-          <div class="csa-events">
-            <article class="csa-event csa-event-unavailable csa-event-externa">
-              <div class="csa-event-hour"></div>
-              <div class="csa-event-info">
-                <span class="csa-event-space">Área externa</span>
-                <h4 class="csa-event-name">Nenhum evento</h4>
-                <span class="csa-event-message">Impossível reservar</span>
-              </div>
-            </article>
-          </div>
+          <div class="csa-events"></div>
         </section>
 
       </div>
@@ -308,6 +150,10 @@
 </script>
 
 <script src="../../js/cliente/acessibilidade.js"></script>
+<script src="../../js/config.js"></script>
+<script src="../../js/api.js"></script>
+<script src="../../js/agenda-modelo.js"></script>
+<script src="../../js/cliente/programacao.js"></script>
 <script src="../../js/cliente/agenda-cliente.js"></script>
 
 </body>

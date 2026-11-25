@@ -16,6 +16,10 @@ const csaDetalhes = (() => {
   if (!['reserva', 'visita'].includes(tipo)) return null;
 
   const parametros = new URLSearchParams(location.search);
+  const diaAgenda = parametros.get('data');
+  if (tipo === 'reserva' && csaAgendaModelo.lerDia(diaAgenda) !== null) {
+    document.querySelector('.csa-detalhes__voltar').href = `agenda-cliente.html?data=${diaAgenda}`;
+  }
 
   const grade = document.getElementById('csa-detalhes-grade');
   const mensagem = document.getElementById('csa-detalhes-mensagem');
@@ -191,14 +195,16 @@ const csaDetalhes = (() => {
 
     try {
       if (tipo === 'visita' && (parametros.has('exposicao') || parametros.get('demo') === '1')) {
-        const indice = Number(parametros.get('exposicao') || '1') - 1;
-        const exposicao = csaVisitasModelo.exposicoes()[indice];
+        const salaId = Number(parametros.get('exposicao') || '1');
+        const demo = parametros.get('demo') === '1'
+          && (['localhost', '127.0.0.1', '[::1]'].includes(location.hostname) || location.protocol === 'file:');
+        const exposicoes = demo ? csaVisitasModelo.exposicoesDemo() : await csaVisitasApi.exposicoes();
+        const exposicao = exposicoes.find(item => item.sala_id === salaId);
         if (!exposicao || exposicao.pausada) {
           mostrarMensagem('Esta exposição não está em cartaz.', true);
           return false;
         }
-        const sala = csaVisitasModelo.salas[indice];
-        const espaco = indice < 2 ? 'Sala expositiva' : sala;
+        const espaco = exposicao.sala;
         return apresentar(csaDetalhesModelo.prepararVisita({
           titulo: exposicao.nome, categoria: espaco, descricaoTitulo: 'Sobre a exposição',
           descricao: exposicao.descricao, classificacao: exposicao.classificacao

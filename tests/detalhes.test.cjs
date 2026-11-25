@@ -15,7 +15,7 @@ const contexto = vm.createContext({
 
   csaApi: {
     async requisitar(caminho, opcoes) {
-      assert.equal(caminho, '/eventos/');
+      assert.equal(caminho, '/eventos/aceitos');
       assert.equal(opcoes.autenticado, false);
 
       return {
@@ -48,6 +48,7 @@ const contexto = vm.createContext({
 // Carrega os módulos no mesmo contexto, sem depender do navegador.
 for (const arquivo of [
   'agenda-modelo.js',
+  'cliente/programacao.js',
   'cliente/detalhes-dados.js',
   'cliente/detalhes-modelo.js'
 ]) {

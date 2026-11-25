@@ -88,6 +88,9 @@ const csaReservasModelo = (() => {
     if (typeof valor !== 'string' && typeof valor !== 'number') return 'Informe uma resposta válida.';
     const texto = String(valor).trim();
     if (pergunta.limite && texto.length > pergunta.limite) return `Use até ${pergunta.limite} caracteres.`;
+    if (['text', 'textarea'].includes(pergunta.campo) && texto.length < (pergunta.minimo ?? 0)) {
+      return `Use ao menos ${pergunta.minimo} caracteres.`;
+    }
     if (pergunta.campo === 'email' && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(texto)) return 'Informe um e-mail válido.';
     if (pergunta.campo === 'tel') {
       const digitos = texto.replace(/\D/g, '');

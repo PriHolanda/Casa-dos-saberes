@@ -27,21 +27,37 @@ const csaVisitasModelo = (() => {
     { id: 'preparacao', titulo: 'Foi realizada alguma atividade de preparação da turma para a visitação ao equipamento? Se sim, descreva', complementar: true }
   ];
 
-  function lerLista(chave, padrao, validar) {
+  const obrigatorios = ['responsavel', 'telefone', 'email', 'quantidade'];
+
+  function lerLegado(chave) {
     try {
       const dados = JSON.parse(localStorage.getItem(chave));
-      if (Array.isArray(dados) && validar(dados)) return dados;
-    } catch { /* Usa o conteúdo inicial quando o armazenamento está indisponível. */ }
-    return structuredClone(padrao);
+      return Array.isArray(dados) ? dados : null;
+    } catch { return null; }
   }
 
-  function formulario() {
-    return lerLista(chaveFormulario, campos, dados => dados.every(campo => typeof campo?.id === 'string' && typeof campo.titulo === 'string'));
+  function formularioLocal() {
+    const dados = lerLegado(chaveFormulario);
+    return dados?.every(campo => typeof campo?.id === 'string' && typeof campo.titulo === 'string') ? dados : null;
   }
 
-  function exposicoes() {
-    return lerLista(chaveExposicoes, salas.map(() => modelo), dados => dados.length === salas.length && dados.every(item => typeof item?.nome === 'string'));
+  function exposicaoLocal(salaId) {
+    const dados = lerLegado(chaveExposicoes);
+    const exposicao = dados?.[salaId - 1];
+    return typeof exposicao?.nome === 'string' ? exposicao : null;
   }
 
-  return { chaveFormulario, chaveExposicoes, salas, campos, formulario, exposicoes };
+  function exposicoesDemo() {
+    return salas.map((sala, indice) => ({ ...modelo, sala, sala_id: indice + 1 }));
+  }
+
+  function completarFormulario(definicao) {
+    const necessarios = definicao.some(campo => campo.id === 'acessibilidade')
+      ? [...obrigatorios, 'quantidadePcd']
+      : obrigatorios;
+    const ids = new Set(definicao.map(campo => campo.id));
+    return [...definicao, ...necessarios.filter(id => !ids.has(id)).map(id => campos.find(campo => campo.id === id))];
+  }
+
+  return { salas, campos, obrigatorios, formularioLocal, exposicaoLocal, exposicoesDemo, completarFormulario };
 })();

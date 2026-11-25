@@ -1,200 +1,126 @@
-document.addEventListener("DOMContentLoaded", () => {
-  const dataAtualElemento = document.querySelector(".csa-date-current");
-  const formatoDataMobile = window.matchMedia("(max-width: 759px)");
+document.addEventListener('DOMContentLoaded', async () => {
+  const { espacos, lerDia, somarDias, intervalo, lerDataHora } = csaAgendaModelo;
+  const { turnos, consultarEventos, parametrosReserva } = csaProgramacao;
+  const parametros = new URLSearchParams(location.search);
+  const dataAtual = document.querySelector('.csa-date-current');
+  const mobile = matchMedia('(max-width: 759px)');
+  const [anterior, proxima] = document.querySelectorAll('.csa-date-button');
+  const escolher = document.querySelector('.csa-date-picker');
+  const seletor = document.querySelector('.csa-date-input');
+  const disponibilidade = document.querySelector('.csa-available-checkbox');
+  const botoes = document.querySelectorAll('.csa-filter-btn');
+  const mensagem = document.getElementById('csa-programacao-mensagem');
+  const periodos = [
+    { id: 'morning', inicio: 0, fim: 12 },
+    { id: 'afternoon', inicio: 12, fim: 18 },
+    { id: 'night', inicio: 18, fim: 24 }
+  ];
+  const hoje = new Intl.DateTimeFormat('sv-SE', { timeZone: 'America/Fortaleza', dateStyle: 'short' }).format(new Date());
+  let dia = lerDia(parametros.get('data')) === null ? hoje : parametros.get('data');
+  let filtro = 'todos';
+  let eventos;
+  let erro;
 
-  const botoesData = document.querySelectorAll(".csa-date-button");
-  const botaoDataAnterior = botoesData[0];
-  const botaoDataProxima = botoesData[1];
-
-  const botaoEscolherData = document.querySelector(".csa-date-picker");
-  const seletorData = document.querySelector(".csa-date-input");
-  const filtroDisponibilidade = document.querySelector(".csa-available-checkbox");
-  const botoesPeriodo = document.querySelectorAll(".csa-filter-btn");
-  const periodos = document.querySelectorAll(".csa-period");
-  const botoesReserva = document.querySelectorAll(".csa-event-reserve");
-  const paginaFormularioReserva = "reservas.html";
-
-  let dataSelecionada = new Date(2026, 8, 21);
-  let periodoSelecionado = "todos";
-
-  const mapaPeriodos = {
-    "Todos": "todos",
-    "Manhã": "morning",
-    "Tarde": "afternoon",
-    "Noite": "night"
-  };
-
-  function capitalizar(texto) {
-    return texto.charAt(0).toUpperCase() + texto.slice(1);
+  function elemento(tag, classe = '', texto = '') {
+    const no = document.createElement(tag);
+    no.className = classe;
+    no.textContent = texto;
+    return no;
   }
 
-  function formatarData(data) {
-    return data.toLocaleDateString("pt-BR", {
-      weekday: "long",
-      day: "numeric",
-      month: "long"
-    });
-  }
-
-  function formatarDataMobileCompacta(data) {
-    const semana = data.toLocaleDateString("pt-BR", { weekday: "short" }).replace(".", "");
-    const mes = data.toLocaleDateString("pt-BR", { month: "long" });
-
-    return `${capitalizar(semana)}, ${data.getDate()} de ${capitalizar(mes)} de ${data.getFullYear()}`;
-  }
-
-  function formatarDataISO(data) {
-    const ano = data.getFullYear();
-    const mes = String(data.getMonth() + 1).padStart(2, "0");
-    const dia = String(data.getDate()).padStart(2, "0");
-
-    return `${ano}-${mes}-${dia}`;
-  }
-
-  function atualizarData() {
-    dataAtualElemento.textContent = formatoDataMobile.matches
-      ? formatarDataMobileCompacta(dataSelecionada)
-      : capitalizar(formatarData(dataSelecionada));
-  }
-
-  function alterarData(dias) {
-    dataSelecionada.setDate(dataSelecionada.getDate() + dias);
-    atualizarData();
-    console.log("Data selecionada:", formatarDataISO(dataSelecionada));
-  }
-
-  function aplicarFiltros() {
-    periodos.forEach(periodo => {
-      const periodoVisivel =
-        periodoSelecionado === "todos" ||
-        periodo.classList.contains(`csa-period-${periodoSelecionado}`);
-
-      const eventos = periodo.querySelectorAll(".csa-event");
-      let possuiEventoVisivel = false;
-
-      eventos.forEach(evento => {
-        const estaDisponivel = evento.classList.contains("csa-event-available");
-        const deveMostrar = !filtroDisponibilidade.checked || estaDisponivel;
-
-        evento.style.display = deveMostrar ? "flex" : "none";
-
-        if (deveMostrar) {
-          possuiEventoVisivel = true;
-        }
-      });
-
-      periodo.style.display = periodoVisivel && possuiEventoVisivel ? "" : "none";
-    });
-  }
-
-  atualizarData();
-  formatoDataMobile.addEventListener("change", atualizarData);
-
-  botaoDataAnterior.addEventListener("click", () => {
-    alterarData(-1);
-  });
-
-  botaoDataProxima.addEventListener("click", () => {
-    alterarData(1);
-  });
-
-  botaoEscolherData.addEventListener("click", () => {
-    seletorData.value = formatarDataISO(dataSelecionada);
-
-    const posicaoBotao = botaoEscolherData.getBoundingClientRect();
-    seletorData.style.left = `${posicaoBotao.left}px`;
-    seletorData.style.top = `${posicaoBotao.top}px`;
-    seletorData.style.width = `${posicaoBotao.width}px`;
-    seletorData.style.height = `${posicaoBotao.height}px`;
-
-    if (typeof seletorData.showPicker === "function") {
-      seletorData.showPicker();
-    } else {
-      seletorData.click();
+  function cartao(espaco, evento, periodo) {
+    const estado = evento ? 'occupied' : 'available';
+    const card = elemento('article', `csa-event csa-event-${estado} csa-event-${espaco.visual}`);
+    const hora = elemento('div', 'csa-event-hour');
+    if (evento) {
+      const inicio = intervalo(dia, periodo).inicio;
+      const horario = elemento('span');
+      if (evento.inicioMs < inicio) horario.append('Em', document.createElement('br'), 'curso');
+      else horario.append(evento.horarioInicio.slice(0, 2) + 'H', document.createElement('br'), evento.horarioInicio.slice(3));
+      hora.append(horario);
     }
-  });
+    const info = elemento('div', 'csa-event-info');
+    info.append(elemento('span', 'csa-event-space', espaco.nome));
+    info.append(elemento('h4', 'csa-event-name', evento ? evento.nome : 'Sem evento publicado'));
+    if (evento) {
+      const detalhes = elemento('a', 'csa-event-details', 'Ver detalhes');
+      detalhes.href = `detalhes-reserva.html?${new URLSearchParams({ eventoId: evento.id, data: dia })}`;
+      info.append(detalhes);
+    } else {
+      const acoes = elemento('div', 'csa-event-actions');
+      const reservar = elemento('a', 'csa-event-reserve', 'Solicitar reserva');
+      reservar.href = `reservas.html?${parametrosReserva({ espacoId: espaco.id, data: dia, turno: periodo.id })}`;
+      acoes.append(reservar);
+      info.append(acoes);
+    }
+    card.append(hora, info);
+    return card;
+  }
 
-  seletorData.addEventListener("change", () => {
-    if (!seletorData.value) return;
+  function atualizar() {
+    const formato = { weekday: mobile.matches ? 'short' : 'long', day: 'numeric', month: 'long', timeZone: 'UTC' };
+    if (mobile.matches) formato.year = 'numeric';
+    const rotulo = new Intl.DateTimeFormat('pt-BR', formato).format(lerDia(dia));
+    dataAtual.textContent = rotulo[0].toUpperCase() + rotulo.slice(1);
+    seletor.value = dia;
 
-    const [ano, mes, dia] = seletorData.value.split("-").map(Number);
+    let quantidade = 0;
+    periodos.forEach(periodo => {
+      const secao = document.querySelector(`.csa-period-${periodo.id}`);
+      const lista = secao.querySelector('.csa-events');
+      secao.hidden = true;
+      lista.replaceChildren();
+      if (!eventos || (filtro !== 'todos' && filtro !== periodo.id)) return;
 
-    dataSelecionada = new Date(ano, mes - 1, dia);
-    atualizarData();
-  });
-
-  botoesPeriodo.forEach(botao => {
-    botao.addEventListener("click", () => {
-      botoesPeriodo.forEach(item => {
-        item.classList.remove("csa-filter-active");
-      });
-
-      botao.classList.add("csa-filter-active");
-
-      const nomePeriodo = botao.textContent.trim();
-      periodoSelecionado = mapaPeriodos[nomePeriodo];
-
-      aplicarFiltros();
-    });
-  });
-
-  filtroDisponibilidade.addEventListener("change", () => {
-    aplicarFiltros();
-  });
-
-  botoesReserva.forEach(botao => {
-    botao.addEventListener("click", () => {
-      const evento = botao.closest(".csa-event");
-      const espaco = evento.querySelector(".csa-event-space").textContent.trim();
-      const periodo = evento.closest(".csa-period");
-
-      let nomePeriodo = "";
-
-      if (periodo.classList.contains("csa-period-morning")) {
-        nomePeriodo = "Manhã";
-      } else if (periodo.classList.contains("csa-period-afternoon")) {
-        nomePeriodo = "Tarde";
-      } else if (periodo.classList.contains("csa-period-night")) {
-        nomePeriodo = "Noite";
+      const janela = intervalo(dia, periodo);
+      const publicados = eventos.filter(evento => evento.inicioMs < janela.fim && evento.terminoMs > janela.inicio);
+      if (!disponibilidade.checked) {
+        publicados.forEach(evento => lista.append(cartao(espacos.find(item => item.id === evento.espacoId), evento, periodo)));
       }
-
-      const reserva = {
-        espaco: espaco,
-        periodo: nomePeriodo,
-        data: formatarData(dataSelecionada),
-        dataISO: formatarDataISO(dataSelecionada)
-      };
-
-      document.dispatchEvent(
-        new CustomEvent("csa:solicitar-reserva", {
-          detail: reserva
-        })
-      );
+      const turno = turnos[periodo.id];
+      if (turno && dia >= hoje) {
+        const inicio = lerDataHora(`${dia}T${turno.inicio}`);
+        const fim = lerDataHora(`${dia}T${turno.fim}`);
+        espacos.filter(espaco => !publicados.some(evento =>
+          evento.espacoId === espaco.id && evento.inicioMs < fim && evento.terminoMs > inicio
+        )).forEach(espaco => lista.append(cartao(espaco, null, periodo)));
+      }
+      secao.hidden = !lista.childElementCount;
+      quantidade += lista.childElementCount;
     });
+    mensagem.textContent = erro || (eventos ? 'Nenhuma opção para este dia e filtro.' : 'Carregando programação…');
+    mensagem.hidden = quantidade > 0;
+  }
+
+  anterior.addEventListener('click', () => { dia = somarDias(dia, -1); atualizar(); });
+  proxima.addEventListener('click', () => { dia = somarDias(dia, 1); atualizar(); });
+  mobile.addEventListener('change', atualizar);
+  disponibilidade.addEventListener('change', atualizar);
+  escolher.addEventListener('click', () => {
+    const posicao = escolher.getBoundingClientRect();
+    seletor.style.left = `${posicao.left}px`;
+    seletor.style.top = `${posicao.top}px`;
+    seletor.style.width = `${posicao.width}px`;
+    seletor.style.height = `${posicao.height}px`;
+    if (typeof seletor.showPicker === 'function') seletor.showPicker();
+    else seletor.click();
   });
-
-  document.addEventListener("csa:solicitar-reserva", (event) => {
-    const reserva = event.detail;
-
-    const parametros = new URLSearchParams({
-      espaco: reserva.espaco,
-      periodo: reserva.periodo,
-      data: reserva.dataISO
-    });
-
-    window.location.href = `${paginaFormularioReserva}?${parametros.toString()}`;
+  seletor.addEventListener('change', () => {
+    if (lerDia(seletor.value) === null) return;
+    dia = seletor.value;
+    atualizar();
   });
+  botoes.forEach((botao, indice) => botao.addEventListener('click', () => {
+    filtro = indice === 0 ? 'todos' : periodos[indice - 1].id;
+    botoes.forEach(item => item.classList.toggle('csa-filter-active', item === botao));
+    atualizar();
+  }));
 
-  document.querySelectorAll(".csa-event-details").forEach(link => {
-    link.addEventListener("click", (evento) => {
-      evento.preventDefault();
-
-      const url = new URL(link.getAttribute("href"), window.location.href);
-      url.searchParams.set("data", formatarDataISO(dataSelecionada));
-
-      window.location.href = url.toString();
-    });
-  });
-
-  aplicarFiltros();
+  atualizar();
+  try {
+    eventos = await consultarEventos();
+  } catch (falha) {
+    erro = falha.message;
+  }
+  atualizar();
 });

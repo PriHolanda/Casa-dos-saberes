@@ -1,6 +1,24 @@
 // Datas civis da API: YYYY-MM-DDTHH:mm[:ss], sem Z ou offset.
 // UTC é usado apenas como calendário para evitar depender do fuso do navegador.
 const csaAgendaModelo = (() => {
+  const espacos = [
+    { id: '1', nome: 'Auditório', visual: 'auditorio' },
+    { id: '2', nome: 'Quintal', visual: 'quintal' },
+    { id: '3', nome: 'Salas Expositivas', visual: 'salas' },
+    { id: '4', nome: 'Varanda', visual: 'varanda' },
+    { id: '5', nome: 'Área Externa', visual: 'externa' }
+  ];
+  const formatoCivil = new Intl.DateTimeFormat('sv-SE', {
+    timeZone: 'America/Fortaleza', year: 'numeric', month: '2-digit', day: '2-digit',
+    hour: '2-digit', minute: '2-digit', second: '2-digit', hourCycle: 'h23'
+  });
+
+  function dataCivil(valor) {
+    if (typeof valor !== 'string') return '';
+    if (!/(Z|[+-]\d\d:\d\d)$/.test(valor)) return valor.slice(0, 19);
+    const data = new Date(valor);
+    return Number.isFinite(data.getTime()) ? formatoCivil.format(data).replace(' ', 'T') : '';
+  }
   const status = {
     aceito: { rotulo: 'Aceito', visual: 'aceito' },
     pendente: { rotulo: 'Pendente', visual: 'pendente' }
@@ -49,5 +67,5 @@ const csaAgendaModelo = (() => {
   function formatarDia(data) {
     return new Intl.DateTimeFormat('pt-BR', { timeZone: 'UTC', day: 'numeric', month: 'long', year: 'numeric' }).format(lerDia(data));
   }
-  return { lerDia, somarDias, intervalo, definirStatus, normalizarEvento, formatarDia };
+  return { espacos, dataCivil, lerDia, lerDataHora, somarDias, intervalo, definirStatus, normalizarEvento, formatarDia };
 })();

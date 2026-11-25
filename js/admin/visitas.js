@@ -16,12 +16,14 @@
   const aviso = document.getElementById('csa-visita-detalhe-aviso');
   const acoes = dialogo.querySelectorAll('[data-acao]');
   const turnos = ['Manhã', 'Tarde'];
-  let data = demonstracao ? new Date(2026, 8, 21) : new Date();
+  const hoje = new Intl.DateTimeFormat('sv-SE', { timeZone: 'America/Fortaleza', dateStyle: 'short' }).format(new Date());
+  let data = demonstracao ? new Date(2026, 8, 21) : new Date(`${hoje}T12:00:00`);
   let visao = mobile.matches ? 'diaria' : 'semanal';
   let visaoEscolhida = false;
   let visitas;
   let ativa;
   let gatilho;
+  let cancelando = false;
 
   function elemento(tag, classe, texto) {
     const el = document.createElement(tag);
@@ -197,7 +199,10 @@
           ['Foi realizada alguma atividade de preparação para a visitação do equipamento?', visita.preparacao], ['Observações', visita.observacoes]]
       ])
     );
-    acoes.forEach(botaoAcao => { botaoAcao.hidden = pendente === (botaoAcao.dataset.acao === 'cancelar'); });
+    acoes.forEach(botaoAcao => {
+      botaoAcao.hidden = pendente === (botaoAcao.dataset.acao === 'cancelar');
+      botaoAcao.disabled = cancelando;
+    });
     aviso.hidden = true;
     dialogo.showModal();
     dialogo.scrollTop = 0;
@@ -220,20 +225,45 @@
   filtro.addEventListener('change', atualizar);
   document.getElementById('csa-visitas-exportar').addEventListener('click', () => window.print());
   dialogo.querySelector('.csa-visita-detalhe__fechar').addEventListener('click', () => dialogo.close());
+  dialogo.addEventListener('cancel', evento => {
+    if (cancelando) evento.preventDefault();
+  });
   dialogo.addEventListener('close', () => {
     const novoGatilho = [...grade.querySelectorAll('[data-visita-id]')].find(botao => botao.dataset.visitaId === String(ativa.id));
     (gatilho.isConnected ? gatilho : novoGatilho || botoesVisao[visao === 'diaria' ? 0 : 1]).focus();
   });
-  acoes.forEach(botao => botao.addEventListener('click', () => {
-    if (!demonstracao) {
-      aviso.textContent = 'A alteração de status de visitas ainda não está disponível no servidor.';
+  acoes.forEach(botao => botao.addEventListener('click', async () => {
+    if (cancelando) return;
+    const acao = botao.dataset.acao;
+    if (demonstracao) {
+      if (acao === 'aprovar') ativa.status = 'aprovada';
+      else visitas = visitas.filter(visita => visita !== ativa);
+      atualizar();
+      dialogo.close();
+      return;
+    }
+    if (acao !== 'cancelar') {
+      aviso.textContent = 'A aprovação e a negativa de visitas ainda não estão disponíveis no servidor.';
       aviso.hidden = false;
       return;
     }
-    if (botao.dataset.acao === 'aprovar') ativa.status = 'aprovada';
-    else visitas = visitas.filter(visita => visita !== ativa);
-    atualizar();
-    dialogo.close();
+    if (!window.confirm('Cancelar esta visita? O registro será excluído.')) return;
+    cancelando = true;
+    const fechar = dialogo.querySelector('.csa-visita-detalhe__fechar');
+    fechar.disabled = botao.disabled = true;
+    aviso.textContent = 'Cancelando visita…';
+    aviso.hidden = false;
+    try {
+      await csaApi.requisitar(`/visitas/${encodeURIComponent(ativa.id)}`, { metodo: 'DELETE' });
+      visitas = visitas.filter(visita => visita.id !== ativa.id);
+      atualizar();
+      dialogo.close();
+    } catch (erro) {
+      aviso.textContent = erro.message;
+    } finally {
+      fechar.disabled = botao.disabled = false;
+      cancelando = false;
+    }
   }));
 
   async function carregar() {
@@ -241,7 +271,17 @@
     try {
       const dados = demonstracao ? dadosDemonstrativos() : (await csaApi.requisitar('/visitas/'))?.visitas;
       if (!Array.isArray(dados)) throw new Error('Não foi possível carregar as visitas.');
-      visitas = dados.slice().sort((a, b) => String(a.data_inicio).localeCompare(String(b.data_inicio)));
+      const naturezas = { publica: 'Pública', privada: 'Privada', outra: 'Outra' };
+      visitas = dados.map(visita => demonstracao ? visita : {
+        ...visita,
+        data_inicio: csaAgendaModelo.dataCivil(visita.data_inicio),
+        data_fim: csaAgendaModelo.dataCivil(visita.data_fim),
+        natureza: naturezas[visita.natureza_instituicao],
+        escolaridade: visita.grau_escolaridade,
+        curso: visita.curso_semestre,
+        grupo: visita.composicao_grupo,
+        acessibilidade: visita.possui_pcd ? visita.tipos_deficiencia || 'Sim' : 'Não'
+      }).sort((a, b) => a.data_inicio.localeCompare(b.data_inicio));
       mensagem.hidden = true;
       atualizar();
     } catch (erro) {

@@ -1,5 +1,5 @@
 (() => {
-  const { chaveFormulario, formulario: lerFormulario } = csaVisitasModelo;
+  const { formularioLocal, completarFormulario, obrigatorios } = csaVisitasModelo;
   const principal = document.getElementById('csa-visita-campos-principais');
   const complementar = document.getElementById('csa-visita-campos-complementares');
   const editor = document.getElementById('csa-visita-editor');
@@ -7,21 +7,39 @@
   const formulario = document.getElementById('csa-visita-editor-form');
   const aviso = document.getElementById('csa-visita-formulario-aviso');
   const adicionar = document.getElementById('csa-visita-adicionar');
-  let campos = lerFormulario();
+  const importar = document.getElementById('csa-visita-importar');
+  const avisoEditor = document.getElementById('csa-visita-editor-aviso');
+  const fechar = editor.querySelector('.csa-visita-editor__fechar');
+  const salvar = formulario.querySelector('[type="submit"]');
+  let campos = [];
+  let salvando = false;
   let indice = -1;
   let rascunho;
   let origem;
 
-  function persistir(proximos) {
+  async function persistir(proximos, mensagem = aviso) {
+    if (salvando) return false;
+    salvando = true;
+    [principal, complementar, corpo].forEach(secao => { secao.inert = true; });
+    [adicionar, importar, fechar, salvar].forEach(controle => { controle.disabled = true; });
+    mensagem.textContent = 'Salvando perguntas…';
+    mensagem.hidden = false;
     try {
-      localStorage.setItem(chaveFormulario, JSON.stringify(proximos));
-      aviso.hidden = true;
-      campos = proximos;
+      campos = await csaVisitasApi.salvarFormulario(completarFormulario(proximos));
+      renderizarCampos();
+      mensagem.textContent = 'Perguntas salvas.';
+      if (mensagem !== aviso) {
+        aviso.textContent = mensagem.textContent;
+        aviso.hidden = false;
+      }
       return true;
-    } catch {
-      aviso.textContent = 'Não foi possível guardar as alterações neste navegador.';
-      aviso.hidden = false;
+    } catch (erro) {
+      mensagem.textContent = erro.message;
       return false;
+    } finally {
+      salvando = false;
+      [principal, complementar, corpo].forEach(secao => { secao.inert = false; });
+      [adicionar, importar, fechar, salvar].forEach(controle => { controle.disabled = false; });
     }
   }
 
@@ -64,11 +82,16 @@
       } else {
         linha.append(elemento('span', `csa-visita-campo__entrada${campo.email ? ' csa-visita-campo__entrada--email' : ''}${campo.dica ? ' csa-visita-campo__entrada--preenchida' : ''}`, campo.dica || 'Digite aqui'));
       }
-      linha.append(botao('csa-visitas-botao csa-visita-campo__remover', 'x', () => {
-        if (!persistir(campos.filter((_, item) => item !== posicao))) return;
-        renderizarCampos();
-        (document.querySelectorAll('.csa-visita-campo__editar')[posicao] || adicionar).focus();
-      }, `Remover ${campo.titulo}`));
+      const necessario = obrigatorios.includes(campo.id)
+        || (campo.id === 'quantidadePcd' && campos.some(item => item.id === 'acessibilidade'));
+      if (!necessario) {
+        linha.append(botao('csa-visitas-botao csa-visita-campo__remover', 'x', async evento => {
+          const botaoRemover = evento.currentTarget;
+          const guardado = await persistir(campos.filter((_, item) => item !== posicao));
+          if (guardado) (document.querySelectorAll('.csa-visita-campo__editar')[posicao] || adicionar).focus();
+          else botaoRemover.focus();
+        }, `Remover ${campo.titulo}`));
+      }
       secao.append(titulo, linha);
       (campo.complementar ? complementar : principal).append(secao);
     });
@@ -153,6 +176,8 @@
   }
 
   function abrir(posicao, gatilho) {
+    if (salvando) return;
+    avisoEditor.hidden = true;
     indice = posicao;
     origem = gatilho;
     rascunho = posicao < 0
@@ -165,13 +190,17 @@
   }
 
   adicionar.addEventListener('click', () => abrir(-1, adicionar));
-  editor.querySelector('.csa-visita-editor__fechar').addEventListener('click', () => editor.close());
+  fechar.addEventListener('click', () => editor.close());
+  editor.addEventListener('cancel', evento => {
+    if (salvando) evento.preventDefault();
+  });
   editor.addEventListener('close', () => {
     if (origem?.isConnected) origem.focus();
     else (document.querySelectorAll('.csa-visita-campo__editar')[indice] || adicionar).focus();
   });
-  formulario.addEventListener('submit', evento => {
+  formulario.addEventListener('submit', async evento => {
     evento.preventDefault();
+    if (salvando) return;
     rascunho.titulo = rascunho.titulo.trim();
     if (!rascunho.titulo || (rascunho.opcoes && !rascunho.opcoes.some(opcao => opcao.trim()))) {
       const campo = !rascunho.titulo ? '.csa-visita-editor__titulo' : '.csa-visita-editor__opcoes';
@@ -184,9 +213,27 @@
     const proximos = campos.slice();
     if (indice < 0) proximos.push(rascunho);
     else proximos[indice] = rascunho;
-    const guardado = persistir(proximos);
-    if (guardado) renderizarCampos();
-    editor.close();
+    if (await persistir(proximos, avisoEditor)) editor.close();
+    else salvar.focus();
   });
-  renderizarCampos();
+  importar.addEventListener('click', async () => {
+    const local = formularioLocal();
+    if (!local || salvando || !window.confirm('Substituir as perguntas publicadas pelas perguntas deste navegador?')) return;
+    if (await persistir(local)) adicionar.focus();
+    else importar.focus();
+  });
+
+  async function carregar() {
+    try {
+      campos = completarFormulario(await csaVisitasApi.formulario());
+      renderizarCampos();
+      adicionar.disabled = false;
+      importar.hidden = !formularioLocal();
+      aviso.hidden = true;
+    } catch (erro) {
+      aviso.textContent = erro.message;
+    }
+  }
+
+  carregar();
 })();

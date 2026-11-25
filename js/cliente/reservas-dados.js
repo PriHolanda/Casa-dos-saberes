@@ -71,9 +71,21 @@ const csaDadosReservas = (() => {
     alternativasObrigatorias: [{ ids: ['proposta', 'link-proposta'], mensagem: 'Adicione a proposta em PDF ou informe um link para ela.' }]
   };
 
-  async function consultarFormulario(id = 'reservas') {
+  async function consultarFormulario(id = 'reservas', comReserva = false) {
     if (id !== formulario.id) throw new Error('Formulário não encontrado.');
-    return structuredClone(formulario);
+    const definicao = structuredClone(formulario);
+    if (comReserva) {
+      const limites = { responsavel: { minimo: 3, limite: 150 }, instituicao: { minimo: 3, limite: 150 },
+        'link-proposta': { limite: 500 } };
+      definicao.perguntas.forEach(pergunta => Object.assign(pergunta, limites[pergunta.id]));
+      definicao.perguntas.unshift(
+        { id: 'titulo', tipo: 'aberta', titulo: 'Título do evento', campo: 'text',
+          obrigatoria: true, minimo: 3, limite: 150, coluna: 'principal', ordem: 1 },
+        { id: 'descricao-evento', tipo: 'aberta', titulo: 'Descrição do evento', campo: 'textarea',
+          obrigatoria: true, minimo: 10, limite: 2000, coluna: 'principal', ordem: 2 }
+      );
+    }
+    return definicao;
   }
 
   async function consultarPergunta(formularioId, perguntaId) {

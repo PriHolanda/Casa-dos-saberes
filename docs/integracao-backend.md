@@ -20,6 +20,21 @@ A agenda real usa os sete dias da semana e não carrega `js/admin/dados-exemplo.
 
 O token de acesso fica no `sessionStorage` da aba, sem persistir a senha ou o refresh token. A expiração ou uma resposta 401 exige novo login. O botão Sair que havia sido acrescentado foi removido para preservar o protótipo. Não há rota de logout no backend.
 
+## Exposições e visitas mediadas
+
+| Operação | Rota |
+| --- | --- |
+| Listar as salas e exposições no editor | `GET /exposicoes/administracao` |
+| Publicar, editar, pausar ou reativar uma exposição | `PUT /exposicoes/{sala_id}` |
+| Consultar a vitrine e os detalhes públicos | `GET /exposicoes/` |
+| Ler e salvar as perguntas | `GET /visitas/formulario` e `PUT /visitas/formulario` |
+| Verificar horários de visita | `GET /visitas/disponibilidade?data=AAAA-MM-DD` |
+| Enviar a solicitação revisada | `POST /visitas/` |
+
+A listagem administrativa de exposições e as gravações dos editores exigem um token do Keycloak com o papel de realm `administrador`. As alterações de conteúdo e status da exposição são salvas juntas. Os editores oferecem importação explícita quando encontram dados antigos em `localStorage`.
+
+Na visita pública, cada opção de uma hora precisa caber integralmente em uma janela disponível. A confirmação envia o pedido sem token e mostra sucesso quando a API devolve o ID e o status `pendente`. Os campos necessários ao envio (responsável, telefone, e-mail e quantidade) continuam disponíveis mesmo quando faltam na configuração publicada. A quantidade de pessoas com deficiência também fica disponível quando a pergunta de acessibilidade está presente. Respostas sem campo próprio na API seguem com seus rótulos em `observacoes`, respeitando o limite de 1.000 caracteres.
+
 ## Autenticação das rotas
 
 `PUT` e `DELETE /eventos/{id}` exigem `get_current_user_claims`, assim como o perfil. O frontend já envia `Authorization: Bearer <access_token>` diretamente ao backend. Se o backend recusar o token, a sessão local é removida e o navegador volta ao login, sem aplicar a alteração recusada ao cache.

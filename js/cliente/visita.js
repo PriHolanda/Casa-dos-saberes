@@ -44,12 +44,11 @@
   function guardar(valor) { sessionStorage.setItem(chave, JSON.stringify(valor)); }
   function limpar() { sessionStorage.removeItem(chave); }
 
-  function mostrarAgenda() {
+  async function mostrarAgenda() {
     const lista = document.getElementById('csa-vp-exposicoes');
     const calendario = document.getElementById('csa-vp-dia');
     const periodo = document.getElementById('csa-vp-data-texto');
     const avancar = document.getElementById('csa-vp-agendar');
-    const exposicoes = csaVisitasModelo.exposicoes();
     function atualizar() {
       const formato = new Intl.DateTimeFormat('pt-BR', { weekday: 'short', day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' });
       const data = formato.format(new Date(`${dia}T12:00:00Z`)).replace('.', '').replace(/ de (\p{L})/u, (_, letra) => ` de ${letra.toUpperCase()}`);
@@ -58,18 +57,6 @@
       periodo.textContent = data[0].toUpperCase() + data.slice(1);
       avancar.href = link('horarios-visita.html');
       atualizarRetornos();
-      lista.replaceChildren();
-      exposicoes.forEach((exposicao, indice) => {
-        if (exposicao.pausada) return;
-        const cartao = elemento('article', 'csa-vp-exposicao');
-        cartao.dataset.sala = indice;
-        const detalhes = elemento('a', '', 'Ver detalhes');
-        detalhes.href = link('detalhes-visita.html', { exposicao: indice + 1 });
-        detalhes.setAttribute('aria-label', `Ver detalhes de ${exposicao.nome} em ${csaVisitasModelo.salas[indice]}`);
-        cartao.append(elemento('h3', '', csaVisitasModelo.salas[indice]), elemento('p', '', exposicao.nome), detalhes);
-        lista.append(cartao);
-      });
-      if (!lista.childElementCount) lista.append(elemento('p', '', 'Nenhuma exposição em cartaz.'));
     }
     document.getElementById('csa-vp-escolher-dia').addEventListener('click', () => {
       if (typeof calendario.showPicker === 'function') calendario.showPicker();
@@ -100,9 +87,30 @@
     }
     desktop.addEventListener('change', carregarLibras);
     carregarLibras();
+
+    lista.setAttribute('aria-busy', 'true');
+    lista.append(elemento('p', '', 'Carregando exposições…'));
+    try {
+      const exposicoes = demo ? csaVisitasModelo.exposicoesDemo() : await csaVisitasApi.exposicoes();
+      lista.replaceChildren();
+      for (const exposicao of exposicoes) {
+        if (exposicao.pausada) continue;
+        const cartao = elemento('article', 'csa-vp-exposicao');
+        cartao.dataset.sala = exposicao.sala_id - 1;
+        const detalhes = elemento('a', '', 'Ver detalhes');
+        detalhes.href = link('detalhes-visita.html', { exposicao: exposicao.sala_id });
+        detalhes.setAttribute('aria-label', `Ver detalhes de ${exposicao.nome} em ${exposicao.sala}`);
+        cartao.append(elemento('h3', '', exposicao.sala), elemento('p', '', exposicao.nome), detalhes);
+        lista.append(cartao);
+      }
+      if (!lista.childElementCount) lista.append(elemento('p', '', 'Nenhuma exposição em cartaz.'));
+    } catch (erro) {
+      lista.replaceChildren(elemento('p', 'csa-vp-aviso', erro.message));
+    } finally {
+      lista.removeAttribute('aria-busy');
+    }
   }
 
-  const fim = inicio => `${String(Number(inicio.slice(0, 2)) + 1).padStart(2, '0')}${inicio.slice(2)}`;
   const rotuloHorario = horario => horario.replace(':', 'H').replace(/^0/, '');
 
   async function mostrarHorarios() {
@@ -114,21 +122,17 @@
     const pedidoAnterior = rascunhoAtual?.dia === dia ? rascunhoAtual.hora : '';
     opcoes.setAttribute('aria-busy', 'true');
     try {
-      const registros = demo ? [] : (await csaApi.requisitar('/visitas/aceitas', { autenticado: false }))?.visitas;
-      if (!Array.isArray(registros)) throw new Error('Horários indisponíveis no momento.');
+      const janelas = demo ? [] : await csaVisitasApi.disponibilidade(dia);
+      let temHorario = false;
       turnos.forEach(turno => {
         const secao = elemento('fieldset', 'csa-vp-turno');
         const titulo = elemento('legend');
         titulo.append(elemento('span', '', turno.nome), elemento('span', '', turno.faixa));
         const grade = elemento('div', 'csa-vp-turno__grade');
         turno.horas.forEach(inicio => {
-          const termino = fim(inicio);
-          const comFuso = valor => /(?:Z|[+-]\d{2}:\d{2})$/.test(valor) ? valor : `${valor}-03:00`;
-          const bloqueado = demo ? inicio === '09:20' : registros.some(visita => {
-            const horarioInicio = Date.parse(`${dia}T${inicio}:00-03:00`);
-            const horarioFim = Date.parse(`${dia}T${termino}:00-03:00`);
-            return Date.parse(comFuso(visita.data_inicio)) < horarioFim && Date.parse(comFuso(visita.data_fim)) > horarioInicio;
-          });
+          const termino = csaVisitaSolicitacao.termino(inicio);
+          const bloqueado = demo ? inicio === '09:20' : !csaVisitaSolicitacao.horarioDisponivel(janelas, dia, inicio);
+          if (!bloqueado) temHorario = true;
           const label = elemento('label', 'csa-vp-turno__opcao');
           const input = elemento('input');
           input.type = 'radio'; input.name = 'horario'; input.value = inicio;
@@ -141,19 +145,23 @@
         opcoes.append(secao);
       });
       enviar.disabled = !form.elements.horario.value;
+      if (!temHorario) {
+        aviso.textContent = 'Não há horários de visita disponíveis nesta data.';
+        aviso.hidden = false;
+      }
     } catch (erro) {
       aviso.textContent = erro.message;
       aviso.hidden = false;
     } finally { opcoes.removeAttribute('aria-busy'); }
-    form.addEventListener('change', () => { enviar.disabled = !form.elements.horario.value; });
+    form.addEventListener('change', () => { enviar.disabled = !form.elements.horario?.value; });
     form.addEventListener('submit', evento => {
       evento.preventDefault();
-      const escolhido = form.elements.horario.value;
+      const escolhido = form.elements.horario?.value;
       if (horas.includes(escolhido)) location.assign(link('formulario-visita.html', { hora: escolhido }));
     });
   }
 
-  const ordem = ['responsavel', 'telefone', 'email', 'formacao', 'disciplina', 'instituicao', 'endereco', 'natureza', 'escolaridade', 'curso', 'quantidade', 'faixaEtaria', 'objetivo', 'primeiraVisita', 'trabalho', 'preparacao', 'grupo', 'acessibilidade', 'quantidadePcd'];
+  const camposDoResumo = ['responsavel', 'telefone', 'email', 'formacao', 'disciplina', 'instituicao', 'endereco', 'natureza', 'escolaridade', 'curso', 'quantidade', 'faixaEtaria', 'objetivo', 'primeiraVisita', 'trabalho', 'preparacao', 'grupo', 'acessibilidade', 'quantidadePcd'];
   const titulos = {
     responsavel: 'Responsável pela visita', instituicao: 'Nome da instituição ou organização social', natureza: 'Natureza da instituição',
     objetivo: 'Qual o objetivo da visita à Casa de Saberes Cego Aderaldo, bem como à exposição?',
@@ -162,29 +170,38 @@
   };
   const dicas = { responsavel: 'Digite o nome', telefone: '(XX) X XXXX-XXXX', email: 'exemplo@gmail.com' };
   const tipos = { telefone: 'tel', email: 'email', quantidade: 'number', quantidadePcd: 'number' };
-  const necessarios = ['responsavel', 'telefone', 'email', 'quantidade'];
+  const { obrigatorios, completarFormulario } = csaVisitasModelo;
+  const limitesTexto = {
+    responsavel: [3, 120], telefone: [8, 20], formacao: [0, 150], disciplina: [0, 150],
+    instituicao: [2, 150], escolaridade: [0, 100], curso: [0, 150], faixaEtaria: [0, 100]
+  };
   const termos = [
     { id: 'ciencia', titulo: 'Termo de Ciência sobre Análise e Aprovação da solicitação', texto: 'Declaro estar ciente de que esta solicitação não confirma a visita, estando sua análise e aprovação sujeitas à avaliação da gestão do espaço cultural solicitado, que poderá autorizar ou negar a solicitação.', obrigatorio: true },
     { id: 'imagem', titulo: 'Autorizo em definitivo e de maneira irretratável a Casa de Saberes Cego Aderaldo a gravação do áudio e realização de fotografias e filmagens durante a atividade, de acordo com a lei 13.709/2018. Para utilização em materiais institucionais do equipamento, podendo depositar o referido material em seu banco de dados, podendo usá-lo, publicá-lo e reproduzi-lo livremente, desde que para fins institucionais e/ou para divulgação da produção cultural local.', texto: 'Sim, concordo com os termos.' },
     { id: 'logos', titulo: 'Termo de Ciência sobre Uso da Régua de Logos Institucional', texto: 'Declaro estar ciente de que, em caso de aprovação da presente solicitação, deverá ser utilizado em todos os materiais de divulgação (como cards, flyers, pôsteres e/ou publicações) o uso obrigatório da régua de logos padrão do equipamento cultural, conforme disponibilizado.', obrigatorio: true }
   ];
 
+  function tituloPergunta(campo) {
+    const padrao = csaVisitasModelo.campos.find(item => item.id === campo.id);
+    return campo.titulo === padrao?.titulo ? titulos[campo.id] || campo.titulo : campo.titulo;
+  }
+
   function pergunta(campo, salvo) {
     const padrao = csaVisitasModelo.campos.find(item => item.id === campo.id);
-    const titulo = campo.titulo === padrao?.titulo ? titulos[campo.id] || campo.titulo : campo.titulo;
+    const titulo = tituloPergunta(campo);
+    const obrigatorio = obrigatorios.includes(campo.id) || (!padrao && campo.id !== 'endereco' && !campo.opcional);
     const bloco = elemento(campo.opcoes ? 'fieldset' : 'div', 'csa-vp-campo');
     const rotulo = elemento(campo.opcoes ? 'legend' : 'label', '', titulo);
     if (campo.opcional) rotulo.append(' ', elemento('small', '', '*opcional'));
     bloco.append(rotulo);
-    const posicao = ordem.indexOf(campo.id);
-    bloco.dataset.ordem = posicao < 0 ? 30 : posicao + 1;
     if (!campo.opcoes) {
       const input = elemento('input');
       input.id = `visita-${campo.id}`;
       input.name = campo.id;
-      input.type = tipos[campo.id] || 'text';
+      input.type = Object.hasOwn(tipos, campo.id) ? tipos[campo.id] : campo.email ? 'email' : 'text';
       input.placeholder = campo.dica === padrao?.dica ? dicas[campo.id] || campo.dica || 'Digite aqui' : campo.dica || 'Digite aqui';
-      input.required = necessarios.includes(campo.id);
+      input.required = obrigatorio;
+      if (Object.hasOwn(limitesTexto, campo.id)) [input.minLength, input.maxLength] = limitesTexto[campo.id];
       input.value = salvo[campo.id] ?? '';
       const completar = { responsavel: 'name', telefone: 'tel', email: 'email', instituicao: 'organization' }[campo.id];
       if (completar) input.autocomplete = completar;
@@ -201,6 +218,7 @@
       const label = elemento('label');
       const input = elemento('input');
       input.type = campo.multipla ? 'checkbox' : 'radio';
+      input.required = obrigatorio && !campo.multipla;
       input.name = campo.id; input.value = opcao; input.checked = valores.includes(opcao);
       const detalhar = opcao === 'Outro' && (campo.outro || campo.id === 'acessibilidade');
       label.append(input, detalhar ? 'Outro:' : opcao);
@@ -214,6 +232,12 @@
       }
       opcoes.append(linha);
     });
+    function validarSelecao() {
+      if (!obrigatorio || !campo.multipla) return;
+      opcoes.querySelector('input[type="checkbox"]').setCustomValidity(
+        opcoes.querySelector('input[type="checkbox"]:checked') ? '' : 'Selecione ao menos uma opção.'
+      );
+    }
     function definirOutro() {
       if (!outro) return;
       const marcado = Boolean(opcoes.querySelector('input[value="Outro"]:checked'));
@@ -228,53 +252,68 @@
         });
       }
       definirOutro();
+      validarSelecao();
     });
     definirOutro();
+    validarSelecao();
     bloco.append(opcoes);
     return bloco;
   }
 
-  function termo(dados, salvo, posicao) {
+  function termo(dados, salvo) {
     const grupo = elemento('fieldset', 'csa-vp-termo');
     const texto = elemento('label');
     const controle = elemento('input');
     controle.type = 'checkbox'; controle.name = dados.id; controle.required = Boolean(dados.obrigatorio);
     controle.checked = Boolean(salvo[dados.id]);
-    grupo.dataset.ordem = posicao;
     texto.append(controle, elemento('span', '', dados.texto));
     grupo.append(elemento('legend', '', dados.titulo), texto);
     return grupo;
   }
 
-  function mostrarFormulario() {
+  async function mostrarFormulario() {
     const form = document.getElementById('csa-vp-formulario');
     const perguntas = document.getElementById('csa-vp-perguntas');
     const aviso = document.getElementById('csa-vp-aviso');
-    const campos = csaVisitasModelo.formulario();
+    let campos;
+    perguntas.setAttribute('aria-busy', 'true');
+    perguntas.textContent = 'Carregando perguntas…';
+    try {
+      const definicao = demo ? csaVisitasModelo.campos : await csaVisitasApi.formulario();
+      campos = completarFormulario(definicao);
+      const posicaoInstituicao = campos.findIndex(campo => campo.id === 'instituicao');
+      if (posicaoInstituicao >= 0 && !campos.some(campo => campo.id === 'endereco')) {
+        campos.splice(posicaoInstituicao + 1, 0, { id: 'endereco', titulo: 'Endereço da instituição', opcional: true });
+      }
+    } catch (erro) {
+      perguntas.textContent = '';
+      aviso.textContent = erro.message;
+      aviso.hidden = false;
+      return;
+    } finally {
+      perguntas.removeAttribute('aria-busy');
+    }
     const anterior = rascunho();
     const salvo = anterior?.dia === dia && anterior?.hora === horario ? anterior.respostas || {} : {};
     const esquerda = elemento('div', 'csa-vp-coluna');
     const direita = elemento('div', 'csa-vp-coluna');
-    esquerda.append(termo(termos[0], salvo, 0));
-    campos.forEach(campo => {
-      const coluna = campo.id === 'trabalho' || (campo.complementar && !['quantidade', 'faixaEtaria'].includes(campo.id)) ? direita : esquerda;
-      if (campo.id === 'instituicao') coluna.append(pergunta(campo, salvo), pergunta({ id: 'endereco', titulo: 'Endereço da instituição' }, salvo));
-      else coluna.append(pergunta(campo, salvo));
-    });
-    direita.append(termo(termos[1], salvo, 50), termo(termos[2], salvo, 51));
-    const colunas = [esquerda, direita];
-    const blocos = colunas.map(coluna => [...coluna.children]);
+    const ciencia = termo(termos[0], salvo);
+    const termosFinais = termos.slice(1).map(item => termo(item, salvo));
+    const blocos = campos.map(campo => ({
+      no: pergunta(campo, salvo),
+      complementar: campo.id === 'trabalho' || (campo.complementar && !['quantidade', 'faixaEtaria'].includes(campo.id))
+    }));
     const mobile = matchMedia('(max-width: 760px), (pointer: coarse)');
     const blocoInicial = elemento('div', 'csa-vp-perguntas__inicio');
     function organizar() {
       const foco = document.activeElement;
       if (mobile.matches) {
-        const ordenados = blocos.flat().sort((a, b) => Number(a.dataset.ordem) - Number(b.dataset.ordem));
-        blocoInicial.replaceChildren(...ordenados.filter(bloco => Number(bloco.dataset.ordem) <= 6));
-        perguntas.replaceChildren(blocoInicial, ...ordenados.filter(bloco => Number(bloco.dataset.ordem) > 6));
+        blocoInicial.replaceChildren(ciencia, ...blocos.slice(0, 6).map(bloco => bloco.no));
+        perguntas.replaceChildren(blocoInicial, ...blocos.slice(6).map(bloco => bloco.no), ...termosFinais);
       } else {
-        colunas.forEach((coluna, indice) => coluna.replaceChildren(...blocos[indice]));
-        perguntas.replaceChildren(...colunas);
+        esquerda.replaceChildren(ciencia, ...blocos.filter(bloco => !bloco.complementar).map(bloco => bloco.no));
+        direita.replaceChildren(...blocos.filter(bloco => bloco.complementar).map(bloco => bloco.no), ...termosFinais);
+        perguntas.replaceChildren(esquerda, direita);
       }
       if (perguntas.contains(foco)) foco.focus({ preventScroll: true });
     }
@@ -289,14 +328,24 @@
         aviso.focus();
         return;
       }
-      const respostas = {};
       const valores = new FormData(form);
-      for (const [id, valor] of valores) {
-        const campo = campos.find(item => item.id === id);
-        respostas[id] = campo?.multipla ? valores.getAll(id) : valor.trim();
+      const multiplos = new Set(campos.filter(campo => campo.multipla && campo.opcoes).map(campo => campo.id));
+      const respostas = Object.fromEntries([...valores].map(([id, valor]) => [
+        id, multiplos.has(id) ? valores.getAll(id) : valor.trim()
+      ]));
+      const solicitacao = { dia, hora: horario, respostas, campos };
+      if (!demo) {
+        try {
+          csaVisitaSolicitacao.montar(solicitacao);
+        } catch (erro) {
+          aviso.textContent = erro.message;
+          aviso.hidden = false;
+          aviso.focus();
+          return;
+        }
       }
       try {
-        guardar({ dia, hora: horario, respostas });
+        guardar(solicitacao);
         location.assign(link('confirmacao-visita.html', { fluxo: '1' }));
       } catch {
         aviso.textContent = 'Não foi possível guardar as respostas para revisão. Tente novamente.';
@@ -306,35 +355,42 @@
     });
   }
 
-  function mostrarRevisao() {
+  async function mostrarRevisao() {
     if (!parametros.has('fluxo')) return;
     const salvo = rascunho();
     const respostas = salvo?.respostas;
     if (salvo?.dia !== dia || !horas.includes(salvo?.hora) || !respostas) return;
-    const campos = csaVisitasModelo.formulario();
-    const dados = {};
-    for (const [id, valor] of Object.entries(respostas)) {
-      if (id.endsWith('-outro')) continue;
-      const complemento = respostas[`${id}-outro`];
-      dados[id] = [valor].flat().map(item => item === 'Outro' && complemento ? complemento : item).join(', ');
+    let campos = salvo.campos;
+    if (!Array.isArray(campos)) {
+      try {
+        campos = completarFormulario(demo ? csaVisitasModelo.campos : await csaVisitasApi.formulario());
+        if (respostas.endereco && !campos.some(campo => campo.id === 'endereco')) {
+          campos.push({ id: 'endereco', titulo: 'Endereço da instituição' });
+        }
+      } catch (erro) {
+        const estado = document.getElementById('csa-confirmacao-estado');
+        estado.replaceChildren(elemento('p', '', erro.message), Object.assign(elemento('a', '', 'Voltar ao formulário'), {
+          href: link('formulario-visita.html', { hora: salvo.hora })
+        }));
+        return;
+      }
     }
-    const extras = campos.filter(campo => !ordem.includes(campo.id)).map(campo => [campo.id, campo.titulo]);
+    const dados = Object.fromEntries(campos.map(campo => [
+      campo.id, csaVisitaSolicitacao.valores(respostas, campo.id).join(', ')
+    ]));
+    const rotulos = Object.fromEntries(campos.map(campo => [campo.id, tituloPergunta(campo)]));
+    const extras = campos.filter(campo => !camposDoResumo.includes(campo.id)).map(campo => [campo.id, rotulos[campo.id]]);
     for (const id of ['quantidade', 'quantidadePcd']) {
       if (dados[id]) dados[id] += Number(dados[id]) === 1 ? ' Pessoa' : ' Pessoas';
     }
-    window.csaConfirmacao.revisar({ dados, extras }, {
+    const solicitacao = { ...salvo, campos };
+    window.csaConfirmacao.revisar({ dados, extras, rotulos }, {
       voltar: () => location.assign(link('formulario-visita.html', { hora: salvo.hora })),
-      enviar: async () => {
-        if (typeof window.csaEnviarVisita !== 'function') {
-          throw new Error('O envio de visitas ainda não está disponível. Você pode voltar e alterar suas respostas.');
-        }
-        return window.csaEnviarVisita({
-          data_inicio: `${dia}T${salvo.hora}:00`, data_fim: `${dia}T${fim(salvo.hora)}:00`,
-          respostas: structuredClone(respostas)
-        });
-      },
+      enviar: () => csaVisitasApi.enviar(csaVisitaSolicitacao.montar(solicitacao)),
       sucesso: () => {
-        if (!demo) limpar();
+        if (!demo) {
+          try { limpar(); } catch { /* O servidor já confirmou o recebimento. */ }
+        }
         document.querySelector('.csa-confirmacao-conteudo').hidden = true;
         document.body.classList.add('csa-visita-publica--sucesso');
         document.getElementById('csa-vp-sucesso').hidden = false;

@@ -34,6 +34,11 @@ const csaPainel = (() => {
     painel.dataset.eventoId = evento.id;
     const status = csaAgendaModelo.definirStatus(evento.status);
     const data = evento.inicio.slice(0, 10);
+    const { email, entidade, segmento, pauta, periodicidade, link_complementar } = evento.complemento || {};
+    const proposta = [
+      ['E-mail', email], ['Instituição, grupo ou coletivo', entidade], ['Segmento', segmento],
+      ['Pauta', pauta], ['Periodicidade', periodicidade], ['Link da proposta', link_complementar]
+    ].filter(([, valor]) => valor).map(([rotulo, valor]) => campo(rotulo, valor)).join('');
     const acoes = evento.status === 'pendente' ? `<div class="csa-painel__acoes">
       <button type="button" class="csa-painel__botao csa-painel__botao--aprovar" data-acao="aprovar">Aprovar</button>
       <button type="button" class="csa-painel__botao csa-painel__botao--editar" data-acao="editar">Editar</button>
@@ -57,6 +62,7 @@ const csaPainel = (() => {
       ${campo('Público estimado', evento.publico)}
       ${campo('Classificação indicativa', evento.classificacao)}
       ${campo('Descrição', evento.descricao)}
+      ${proposta}
     </div><p class="csa-painel__erro" role="alert" hidden></p>${acoes}`, 'Detalhes do evento');
   }
 

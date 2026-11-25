@@ -105,8 +105,10 @@ test('datas com fuso são convertidas para Fortaleza e espaços desconhecidos co
   assert.equal(a.rodar("csaDadosAgenda.espacos.find(e => e.id === '4').nome"), 'Varanda');
 });
 test('aprovação envia status por PUT e filtros passam a enxergar o evento aceito', async () => {
+  const complemento = { email: 'reserva@example.com', entidade: 'Casa', segmento: 'Música', pauta: 'Social',
+    periodicidade: 'Semanal', link_complementar: 'https://example.com/proposta', arquivo_pdf_id: 3 };
   const a = ambiente((url, opcoes) => opcoes.method === 'GET'
-    ? resposta({ eventos: [{ ...registro, status: 'pendente', celular: '85999999999' }] })
+    ? resposta({ eventos: [{ ...registro, ...complemento, status: 'pendente', celular: '85999999999' }] })
     : resposta({ ...registro, ...JSON.parse(opcoes.body) }));
   autenticar(a);
   await a.rodar('csaDadosAgenda.carregar()');
@@ -117,6 +119,7 @@ test('aprovação envia status por PUT e filtros passam a enxergar o evento acei
   assert.equal(pedido.headers.Authorization, 'Bearer token-teste');
   assert.equal(JSON.parse(pedido.body).status, 'aceito');
   assert.equal(JSON.parse(pedido.body).celular, '85999999999');
+  for (const [campo, valor] of Object.entries(complemento)) assert.equal(JSON.parse(pedido.body)[campo], valor);
   assert.equal(a.rodar("csaDadosAgenda.buscarEvento('7').status"), 'aceito');
 });
 test('backend sem status não simula aprovação nem envia alteração incompatível', async () => {
