@@ -114,6 +114,7 @@
   }
 
   const rotuloHorario = horario => horario.replace(':', 'H').replace(/^0/, '');
+  const horarioPassado = (data, inicio) => Date.parse(`${data}T${inicio}:00-03:00`) <= Date.now();
 
   async function mostrarHorarios() {
     const opcoes = document.getElementById('csa-vp-turnos');
@@ -133,7 +134,8 @@
         const grade = elemento('div', 'csa-vp-turno__grade');
         turno.horas.forEach(inicio => {
           const termino = csaVisitaSolicitacao.termino(inicio);
-          const bloqueado = demo ? inicio === '09:20' : !csaVisitaSolicitacao.horarioDisponivel(janelas, dia, inicio);
+          const bloqueado = demo ? inicio === '09:20'
+            : horarioPassado(dia, inicio) || !csaVisitaSolicitacao.horarioDisponivel(janelas, dia, inicio);
           if (!bloqueado) temHorario = true;
           const label = elemento('label', 'csa-vp-turno__opcao');
           const input = elemento('input');
@@ -417,7 +419,13 @@
     const solicitacao = { ...salvo, campos };
     window.csaConfirmacao.revisar({ dados, extras, rotulos }, {
       voltar: () => location.assign(link('formulario-visita.html', { hora: salvo.hora })),
-      enviar: () => csaVisitasApi.enviar(csaVisitaSolicitacao.montar(solicitacao)),
+      enviar: async () => {
+        const janelas = await csaVisitasApi.disponibilidade(dia);
+        if (horarioPassado(dia, salvo.hora) || !csaVisitaSolicitacao.horarioDisponivel(janelas, dia, salvo.hora)) {
+          throw new Error('Esse horário não está mais disponível. Volte à agenda de visitas e escolha outro.');
+        }
+        return csaVisitasApi.enviar(csaVisitaSolicitacao.montar(solicitacao));
+      },
       sucesso: () => {
         if (!demo) {
           try { limpar(); } catch { /* O servidor já confirmou o recebimento. */ }

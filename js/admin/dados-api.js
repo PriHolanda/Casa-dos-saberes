@@ -16,10 +16,7 @@ const csaDadosAgenda = (() => {
     data_inicio: `2026-09-${21 + Math.floor(indice / 2)}T${indice % 2 ? '08' : '14'}:00:00`,
     data_fim: `2026-09-${21 + Math.floor(indice / 2)}T${indice % 2 ? '09' : '15'}:00:00`
   })) : [];
-  const statusPersistidos = new Set();
   function adaptar(item) {
-    if (['aceito', 'pendente'].includes(item.status)) statusPersistidos.add(String(item.id));
-    else statusPersistidos.delete(String(item.id));
     const espacoId = String(item.espaco_id);
     if (!espacos.some(e => e.id === espacoId)) throw new Error(`O evento ${item.id} possui um espaço inválido.`);
     const evento = csaAgendaModelo.normalizarEvento({
@@ -90,15 +87,12 @@ const csaDadosAgenda = (() => {
     async atualizarStatus(id, status) {
       const evento = eventos.find(e => e.id === String(id));
       if (!evento) throw new Error('Evento não encontrado.');
-      if (!['aceito', 'pendente'].includes(status)) throw new Error('Status inválido.');
+      if (!['aceito', 'negado', 'cancelado'].includes(status)) throw new Error('Status inválido.');
       if (demonstracao) return salvar({ ...evento, status }, id);
-      if (!statusPersistidos.has(String(id))) {
-        throw new Error('Não foi possível aprovar o evento. O serviço não permite atualizar o status no momento.');
-      }
-      const resposta = await csaApi.requisitar(`/eventos/${encodeURIComponent(id)}`, {
-        metodo: 'PUT', dados: payload({ ...evento, status }, id)
+      const resposta = await csaApi.requisitar(`/eventos/${encodeURIComponent(id)}/status`, {
+        metodo: 'PATCH', dados: { status }
       });
-      if (resposta.status !== status) throw new Error('A API não confirmou a alteração de status. Recarregue a página.');
+      if (resposta?.status !== status || String(resposta.id) !== String(id)) throw new Error('A API não confirmou a alteração de status. Recarregue a página.');
       const atualizado = adaptar(resposta);
       eventos = eventos.map(e => e.id === String(id) ? atualizado : e);
       return atualizado;

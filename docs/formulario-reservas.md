@@ -2,7 +2,7 @@
 
 Página: `pages/cliente/reservas.html`. Referências: [desktop no Figma](https://www.figma.com/design/tMVK9Y7SW6weOfEss6KhDf/SGA---Casa-de-Saberes--c%C3%B3pia-?node-id=398-403), frame de 1544 × 2359 px, e [mobile no Figma](https://www.figma.com/design/tMVK9Y7SW6weOfEss6KhDf/SGA---Casa-de-Saberes--c%C3%B3pia-?node-id=90-582), frame de 402 × 2854 px.
 
-Esta entrega implementa somente o frontend. A página não depende de login, Keycloak ou FastAPI. Não consulta disponibilidade, não envia reservas e não persiste dados. As respostas e o PDF permanecem na memória da página até que ela seja fechada ou recarregada.
+O formulário parte do horário escolhido na agenda pública e funciona sem login. As respostas e o PDF ficam em um rascunho local para revisão. Ao confirmar, o frontend consulta novamente a disponibilidade e envia a solicitação ao FastAPI.
 
 ## Abrir e verificar
 
@@ -132,7 +132,7 @@ O protótipo define o conteúdo e a aparência, mas não todos os critérios de 
 - Segmentos e pautas permitem múltiplas escolhas. Periodicidade e classificação permitem somente uma, com controles nativos `radio` e aparência quadrada do protótipo.
 - Público deve ser inteiro a partir de 1. Telefone aceita DDD com ou sem código 55. E-mail e URL recebem validação básica.
 - É obrigatório fornecer PDF **ou** link. Informar ambos também é permitido. O link é opcional quando existe PDF.
-- PDF deve ter conteúdo, extensão `.pdf`, MIME compatível e até 10 MB. A validação de conteúdo e segurança do arquivo deverá ser feita novamente no servidor.
+- PDF deve ter conteúdo, extensão `.pdf`, MIME compatível e até 10 MB. A validação de conteúdo do arquivo também é feita no servidor. No fluxo integrado, o limite é de 30 MB.
 - Os dois termos exigem aceite explícito.
 
 A alternativa PDF/link fica em `alternativasObrigatorias`, junto da definição, sem regra baseada em posição do campo:
@@ -148,12 +148,12 @@ A definição é validada antes da renderização. IDs repetidos, tipos desconhe
 
 ## Preparação do envio
 
-Ao clicar em **Enviar formulário**, o controlador valida as respostas. Se houver erro, exibe a mensagem junto à pergunta e move o foco para o primeiro controle inválido. Se estiver válido, mantém os campos, informa que nenhuma solicitação foi enviada e dispara:
+Ao clicar em **Enviar formulário**, o controlador valida as respostas. Se houver erro, exibe a mensagem junto à pergunta e move o foco para o primeiro controle inválido. Se estiver válido, prepara o rascunho para a revisão e dispara:
 
 ```js
 document.addEventListener('csa:reserva-preparada', evento => {
   const { dados, arquivos } = evento.detail;
-  // Ponto de integração futuro: revisão ou envio pela API.
+  // O controlador da confirmação guarda os dados e abre a revisão.
 });
 ```
 
@@ -178,26 +178,9 @@ document.addEventListener('csa:reserva-preparada', evento => {
 }
 ```
 
-O evento real inclui todas as perguntas presentes na definição. `arquivos` é um objeto separado, indexado por ID da pergunta, contendo os objetos `File` originais. Não tentar transmitir `File` como JSON. Para integração com upload, usar `FormData`/multipart ou um fluxo de upload separado definido com o backend. O adaptador HTTP existente hoje serializa JSON; precisa ser estendido caso seja escolhido multipart.
+O evento inclui todas as perguntas da definição. `arquivos` conserva os objetos `File` originais, indexados por ID da pergunta. O controlador envia `POST /eventos/` em JSON quando há apenas link e em multipart com `dados` e `arquivo` quando há PDF. A solicitação só aparece como enviada quando a API confirma um ID e status pendente.
 
-## Rotas sugeridas para o backend — ainda não implementadas
-
-Estes caminhos são uma proposta de contrato, não rotas existentes no FastAPI:
-
-| Método e rota | Uso futuro |
-|---|---|
-| `GET /formularios/reservas` | Obter definição publicada completa, versão e regras. |
-| `GET /formularios/reservas/perguntas/{perguntaId}` | Consultar uma pergunta por ID. |
-| `POST /formularios/reservas/perguntas` | Administrador adiciona uma pergunta. |
-| `PATCH /formularios/reservas/perguntas/{perguntaId}` | Administrador edita título, descrição, opções, coluna ou ordem. |
-| `DELETE /formularios/reservas/perguntas/{perguntaId}` | Administrador remove uma pergunta da próxima versão. |
-| `POST /solicitacoes-reserva` | Enviar respostas vinculadas à versão e os anexos, conforme contrato a definir. |
-
-Para integrar a leitura, substitua o conteúdo de `consultarFormulario` e `consultarPergunta` pela requisição ao servidor, mantendo o formato documentado. O controlador já aguarda a consulta e trata falha de carregamento. Os componentes permanecem iguais.
-
-Para integrar o envio, acrescente estados de envio, sucesso e falha no controlador, conecte o evento ou chame um serviço dedicado e só exiba confirmação após resposta real. O botão desta entrega não usa `csaApi`, não envia HTTP e não gera um número de reserva fictício.
-
-Autorização das rotas administrativas, validação no servidor, retenção de respostas por versão e destino dos anexos ficam para o backend. Antes de excluir perguntas, preservar as definições usadas por solicitações anteriores. Também será necessário definir como a agenda pública fornecerá o espaço, a data e o horário escolhidos: esses campos não aparecem nesta tela do protótipo. Hoje os links “Voltar para agenda” apontam para a página de agenda existente, que mantém seu fluxo atual de autenticação. A tela de confirmação do Figma e a edição administrativa não fazem parte desta entrega.
+O FastAPI aceita um segmento e uma pauta por solicitação. A definição das perguntas de reserva ainda pertence ao frontend. Consulte os [contratos usados na integração](integracao-backend.md).
 
 ## Aparência e verificação
 

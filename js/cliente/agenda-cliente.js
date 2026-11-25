@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', async () => {
-  const { espacos, lerDia, somarDias, intervalo, lerDataHora } = csaAgendaModelo;
-  const { turnos, consultarEventos, parametrosReserva } = csaProgramacao;
+  const { espacos, lerDia, somarDias, intervalo } = csaAgendaModelo;
+  const { consultarEventos, consultarDisponibilidade, opcoesReserva, parametrosReserva } = csaProgramacao;
   const parametros = new URLSearchParams(location.search);
   const dataAtual = document.querySelector('.csa-date-current');
   const mobile = matchMedia('(max-width: 759px)');
@@ -19,7 +19,10 @@ document.addEventListener('DOMContentLoaded', async () => {
   let dia = lerDia(parametros.get('data')) === null ? hoje : parametros.get('data');
   let filtro = 'todos';
   let eventos;
-  let erro;
+  let erroEventos;
+  let vagas;
+  let erroVagas;
+  let consulta = 0;
 
   function elemento(tag, classe = '', texto = '') {
     const no = document.createElement(tag);
@@ -28,7 +31,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     return no;
   }
 
-  function cartao(espaco, evento, periodo) {
+  function cartao(espaco, evento, periodo, vaga) {
     const estado = evento ? 'occupied' : 'available';
     const visual = espaco.visual === 'salas' ? 'expo' : espaco.visual;
     const card = elemento('article', `csa-event csa-event-${estado} csa-event-${visual}`);
@@ -42,7 +45,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
     const info = elemento('div', 'csa-event-info');
     info.append(elemento('span', 'csa-event-space', espaco.nome));
-    info.append(elemento('h4', 'csa-event-name', evento ? evento.nome : 'Sem evento publicado'));
+    info.append(elemento('h4', 'csa-event-name', evento ? evento.nome : `${vaga.inicio} às ${vaga.fim}`));
     if (evento) {
       const detalhes = elemento('a', 'csa-event-details', 'Ver detalhes');
       detalhes.href = `detalhes-reserva.html?${new URLSearchParams({ eventoId: evento.id, data: dia })}`;
@@ -50,7 +53,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     } else {
       const acoes = elemento('div', 'csa-event-actions');
       const reservar = elemento('a', 'csa-event-reserve', 'Solicitar reserva');
-      reservar.href = `reservas.html?${parametrosReserva({ espacoId: espaco.id, data: dia, turno: periodo.id })}`;
+      reservar.href = `reservas.html?${parametrosReserva({ espacoId: espaco.id, data: dia, ...vaga })}`;
       acoes.append(reservar);
       info.append(acoes);
     }
@@ -71,30 +74,44 @@ document.addEventListener('DOMContentLoaded', async () => {
       const lista = secao.querySelector('.csa-events');
       secao.hidden = true;
       lista.replaceChildren();
-      if (!eventos || (filtro !== 'todos' && filtro !== periodo.id)) return;
+      if (filtro !== 'todos' && filtro !== periodo.id) return;
 
       const janela = intervalo(dia, periodo);
-      const publicados = eventos.filter(evento => evento.inicioMs < janela.fim && evento.terminoMs > janela.inicio);
+      const publicados = (eventos || []).filter(evento => evento.inicioMs < janela.fim && evento.terminoMs > janela.inicio);
       if (!disponibilidade.checked) {
         publicados.forEach(evento => lista.append(cartao(espacos.find(item => item.id === evento.espacoId), evento, periodo)));
       }
-      const turno = turnos[periodo.id];
-      if (turno && dia >= hoje) {
-        const inicio = lerDataHora(`${dia}T${turno.inicio}`);
-        const fim = lerDataHora(`${dia}T${turno.fim}`);
-        espacos.filter(espaco => !publicados.some(evento =>
-          evento.espacoId === espaco.id && evento.inicioMs < fim && evento.terminoMs > inicio
-        )).forEach(espaco => lista.append(cartao(espaco, null, periodo)));
+      for (const { espaco, vaga } of vagas || []) {
+        if (vaga.turno === periodo.id) lista.append(cartao(espaco, null, periodo, vaga));
       }
       secao.hidden = !lista.childElementCount;
       quantidade += lista.childElementCount;
     });
-    mensagem.textContent = erro || (eventos ? 'Nenhuma opção para este dia e filtro.' : 'Carregando programação…');
-    mensagem.hidden = quantidade > 0;
+    const erro = [!disponibilidade.checked && erroEventos, erroVagas].filter(Boolean).join(' ');
+    const carregando = (!disponibilidade.checked && !eventos && !erroEventos) || !vagas;
+    mensagem.textContent = erro || (carregando ? 'Carregando programação…' : 'Nenhuma opção para este dia e filtro.');
+    mensagem.hidden = !erro && quantidade > 0;
   }
 
-  anterior.addEventListener('click', () => { dia = somarDias(dia, -1); atualizar(); });
-  proxima.addEventListener('click', () => { dia = somarDias(dia, 1); atualizar(); });
+  async function carregarVagas(data) {
+    dia = data;
+    const id = ++consulta;
+    vagas = data < hoje ? [] : null;
+    erroVagas = '';
+    atualizar();
+    if (vagas) return;
+    const resultados = await Promise.allSettled(espacos.map(espaco => consultarDisponibilidade(data, espaco.id)));
+    if (id !== consulta) return;
+    vagas = resultados.flatMap((resultado, indice) => resultado.status === 'fulfilled'
+      ? opcoesReserva(resultado.value).map(vaga => ({ espaco: espacos[indice], vaga })) : []);
+    if (resultados.some(resultado => resultado.status === 'rejected')) {
+      erroVagas = 'A disponibilidade de alguns espaços não pôde ser consultada.';
+    }
+    atualizar();
+  }
+
+  anterior.addEventListener('click', () => carregarVagas(somarDias(dia, -1)));
+  proxima.addEventListener('click', () => carregarVagas(somarDias(dia, 1)));
   mobile.addEventListener('change', atualizar);
   disponibilidade.addEventListener('change', atualizar);
   escolher.addEventListener('click', () => {
@@ -108,8 +125,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   });
   seletor.addEventListener('change', () => {
     if (lerDia(seletor.value) === null) return;
-    dia = seletor.value;
-    atualizar();
+    carregarVagas(seletor.value);
   });
   botoes.forEach((botao, indice) => botao.addEventListener('click', () => {
     filtro = indice === 0 ? 'todos' : periodos[indice - 1].id;
@@ -117,11 +133,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     atualizar();
   }));
 
-  atualizar();
+  carregarVagas(dia);
   try {
     eventos = await consultarEventos();
   } catch (falha) {
-    erro = falha.message;
+    erroEventos = falha.message;
   }
   atualizar();
 });

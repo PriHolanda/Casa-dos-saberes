@@ -96,7 +96,6 @@ const csaReservas = (() => {
     const respostas = coletarRespostas();
     const erros = csaReservasModelo.validar(definicao, respostas);
     if (reserva) {
-      if (respostas.proposta) erros.proposta = 'O envio de PDF está indisponível. Remova o arquivo e informe o link da proposta.';
       if (respostas.segmentos.length > 1) erros.segmentos = 'Selecione um segmento para enviar pela agenda.';
       if (respostas.pautas.length > 1) erros.pautas = 'Selecione uma pauta para enviar pela agenda.';
     }

@@ -76,6 +76,7 @@ const csaDadosReservas = (() => {
     const definicao = structuredClone(formulario);
     if (comReserva) {
       const limites = { responsavel: { minimo: 3, limite: 150 }, instituicao: { minimo: 3, limite: 150 },
+        telefone: { minimo: 5 }, proposta: { limiteBytes: 30 * 1024 * 1024 },
         'link-proposta': { limite: 500 } };
       definicao.perguntas.forEach(pergunta => Object.assign(pergunta, limites[pergunta.id]));
       definicao.perguntas.unshift(

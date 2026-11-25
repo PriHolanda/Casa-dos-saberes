@@ -21,7 +21,9 @@ const csaAgendaModelo = (() => {
   }
   const status = {
     aceito: { rotulo: 'Aceito', visual: 'aceito' },
-    pendente: { rotulo: 'Pendente', visual: 'pendente' }
+    pendente: { rotulo: 'Pendente', visual: 'pendente' },
+    negado: { rotulo: 'Negado', visual: 'negado' },
+    cancelado: { rotulo: 'Cancelado', visual: 'cancelado' }
   };
   function lerDia(data) {
     if (typeof data !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(data)) return null;

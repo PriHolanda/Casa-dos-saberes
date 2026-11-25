@@ -19,14 +19,23 @@ ROTAS_NUCLEO = (
     ('get', '/usuarios/me'),
     ('get', '/eventos/'),
 )
-ROTAS_VISITAS = (
+ROTAS_INTEGRACAO = (
+    ('get', '/eventos/aceitos'),
+    ('post', '/eventos/'),
+    ('put', '/eventos/{evento_id}'),
+    ('patch', '/eventos/{evento_id}/status'),
+    ('delete', '/eventos/{evento_id}'),
+    ('get', '/disponibilidade'),
+    ('get', '/relatorios/agendamentos'),
     ('get', '/exposicoes/'),
     ('get', '/exposicoes/administracao'),
     ('put', '/exposicoes/{sala_id}'),
     ('get', '/visitas/formulario'),
     ('put', '/visitas/formulario'),
     ('get', '/visitas/disponibilidade'),
+    ('get', '/visitas/'),
     ('post', '/visitas/'),
+    ('delete', '/visitas/{visita_id}'),
 )
 
 
@@ -51,9 +60,9 @@ def verificar_backend():
         print('Se a API usa outra porta, ajuste API_URL. Confira também se a API esperada está ativa nessa porta.', flush=True)
         return
 
-    faltantes = operacoes_ausentes(rotas, ROTAS_VISITAS)
+    faltantes = operacoes_ausentes(rotas, ROTAS_INTEGRACAO)
     if faltantes:
-        print('API encontrada, mas faltam operações para exposições e visitas mediadas.', flush=True)
+        print('API encontrada, mas faltam operações para a integração do sistema.', flush=True)
         print('Operações ausentes — ' + ', '.join(faltantes), flush=True)
         print('Atualize e reinicie o backend AgendamentoCasaDosSaberes.', flush=True)
         return

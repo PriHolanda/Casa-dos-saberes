@@ -35,17 +35,19 @@ const csaPainel = (() => {
     painel.dataset.eventoId = evento.id;
     const status = csaAgendaModelo.definirStatus(evento.status);
     const data = evento.inicio.slice(0, 10);
-    const { email, entidade, segmento, pauta, periodicidade, link_complementar } = evento.complemento || {};
+    const { email, entidade, segmento, pauta, periodicidade, link_complementar, arquivo_pdf_id } = evento.complemento || {};
     const proposta = [
       ['E-mail', email], ['Instituição, grupo ou coletivo', entidade], ['Segmento', segmento],
-      ['Pauta', pauta], ['Periodicidade', periodicidade], ['Link da proposta', link_complementar]
+      ['Pauta', pauta], ['Periodicidade', periodicidade], ['Link da proposta', link_complementar],
+      ['PDF da proposta', arquivo_pdf_id && 'Recebido']
     ].filter(([, valor]) => valor).map(([rotulo, valor]) => campo(rotulo, valor)).join('');
+    const encerrado = ['negado', 'cancelado'].includes(evento.status);
     const acoes = somenteLeitura ? '' : evento.status === 'pendente' ? `<div class="csa-painel__acoes">
       <button type="button" class="csa-painel__botao csa-painel__botao--aprovar" data-acao="aprovar">Aprovar</button>
       <button type="button" class="csa-painel__botao csa-painel__botao--editar" data-acao="editar">Editar</button>
       <button type="button" class="csa-painel__botao csa-painel__botao--negar" data-acao="negar">Negar</button>
     </div>` : `<div class="csa-painel__acoes">
-      <button type="button" class="csa-painel__botao csa-painel__botao--editar" data-acao="editar">Editar evento</button>
+      ${encerrado ? '' : '<button type="button" class="csa-painel__botao csa-painel__botao--editar" data-acao="editar">Editar evento</button>'}
       <button type="button" class="csa-painel__botao csa-painel__botao--negar" data-acao="excluir">Deletar evento</button>
     </div>`;
     abrir(`<div class="csa-painel__cabecalho">
@@ -137,13 +139,12 @@ const csaPainel = (() => {
       return;
     }
     if (!['aprovar', 'negar', 'excluir'].includes(acao)) return;
-    const pergunta = acao === 'aprovar' ? 'Confirmar a aprovação deste evento?' : 'Confirmar a recusa? O evento será removido da agenda.';
-    const perguntaFinal = acao === 'excluir' ? 'Confirmar a exclusão deste evento?' : pergunta;
-    if (!window.confirm(perguntaFinal)) return;
+    const perguntas = { aprovar: 'Confirmar a aprovação deste evento?', negar: 'Confirmar a recusa desta solicitação?', excluir: 'Confirmar a exclusão deste evento?' };
+    if (!window.confirm(perguntas[acao])) return;
     bloquear(true);
     try {
-      if (acao === 'aprovar') {
-        const evento = await csaDadosAgenda.atualizarStatus(eventoId, 'aceito');
+      if (acao !== 'excluir') {
+        const evento = await csaDadosAgenda.atualizarStatus(eventoId, acao === 'aprovar' ? 'aceito' : 'negado');
         bloquear(false);
         mostrarDetalhes(evento);
       } else {
@@ -182,7 +183,7 @@ const csaPainel = (() => {
         termino: `${valores.data}T${valores.termino}:00`,
         publico: quantidade ? quantidade[1] : '',
         classificacao: valores.classificacao, descricao: valores.descricao,
-        status: valores.status || 'pendente', celular: valores.celular || ''
+        status: valores.status || 'aceito', celular: valores.celular || ''
       }, painel.dataset.eventoId || undefined);
       document.dispatchEvent(new CustomEvent('csa:evento-atualizado', { detail: { id: evento.id } }));
       bloquear(false);

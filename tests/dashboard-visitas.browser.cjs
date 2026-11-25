@@ -50,12 +50,18 @@ let ws;
       const url = new URL(request.url);
       const rota = url.pathname;
       requisicoes.push({ rota, metodo: request.method });
-      let body, code = 200;
+      let body, code = 200, formato = 'application/json';
       if (request.method === 'OPTIONS') { body = null; code = 204; }
       else if (rota === '/usuarios/me') body = { id: 1, nome: 'Admin' };
       else if (rota === '/eventos/' && request.method === 'GET') body = { eventos };
-      else if (rota.startsWith('/eventos/') && ['POST', 'PUT'].includes(request.method)) {
+      else if (rota.endsWith('/status') && request.method === 'PATCH') {
+        const id = Number(rota.split('/')[2]);
+        const registro = eventos.find(item => item.id === id);
+        Object.assign(registro, JSON.parse(request.postData));
+        body = registro;
+      } else if (rota.startsWith('/eventos/') && ['POST', 'PUT'].includes(request.method)) {
         const registro = { ...JSON.parse(request.postData), id: request.method === 'POST' ? 50 : Number(rota.split('/').pop()) };
+        if (request.method === 'POST') registro.status = 'aceito';
         eventos = eventos.filter(item => item.id !== registro.id).concat(registro);
         body = registro;
       } else if (rota.startsWith('/eventos/') && request.method === 'DELETE') {
@@ -76,8 +82,12 @@ let ws;
       } else if (rota === '/visitas/formulario') body = { campos: camposVisita };
       else if (rota === '/exposicoes/') body = { exposicoes: [] };
       else if (rota === '/exposicoes/administracao') body = { salas: [{ id: 1, nome: 'Sala expositiva 1' }], exposicoes: [] };
+      else if (rota === '/relatorios/agendamentos') {
+        formato = 'application/pdf';
+        body = '%PDF-1.4';
+      }
       else { body = { detail: 'Rota não definida no teste' }; code = 404; }
-      try { await cmd('Fetch.fulfillRequest', { requestId, responseCode: code, responseHeaders: [{ name: 'Content-Type', value: 'application/json' }, { name: 'Access-Control-Allow-Origin', value: '*' }, { name: 'Access-Control-Allow-Headers', value: 'Authorization, Content-Type' }, { name: 'Access-Control-Allow-Methods', value: 'GET, POST, PUT, DELETE, OPTIONS' }], body: Buffer.from(code === 204 ? '' : JSON.stringify(body)).toString('base64') }); } catch {}
+      try { await cmd('Fetch.fulfillRequest', { requestId, responseCode: code, responseHeaders: [{ name: 'Content-Type', value: formato }, { name: 'Access-Control-Allow-Origin', value: '*' }, { name: 'Access-Control-Allow-Headers', value: 'Authorization, Content-Type' }, { name: 'Access-Control-Allow-Methods', value: 'GET, POST, PUT, PATCH, DELETE, OPTIONS' }], body: Buffer.from(code === 204 ? '' : (formato === 'application/pdf' ? body : JSON.stringify(body))).toString('base64') }); } catch {}
     }
     if (pendentes.has(mensagem.id)) {
       const { resolve, reject } = pendentes.get(mensagem.id);
@@ -188,11 +198,16 @@ let ws;
     await avaliar(`document.querySelector('${grade} [data-acao="adicionar-evento"]').click()`);
     await avaliar("{ const f=document.getElementById('csa-form-evento'); f.elements.espacoId.value='1'; f.elements.nome.value='Solicitação de teste'; f.elements.solicitante.value='Equipe de teste'; f.elements.descricao.value='Atividade cultural de teste para a comunidade.'; f.elements.publico.value='20'; f.requestSubmit(); }");
     await esperar(`Boolean(csaDadosAgenda.buscarEvento('${novo}')) && !document.querySelector('#csa-painel form')`);
-    assert.equal(await avaliar(`csaDadosAgenda.buscarEvento('${novo}').status`), 'pendente');
-    await avaliar("document.querySelector('[data-acao=negar]').click()");
+    assert.equal(await avaliar(`csaDadosAgenda.buscarEvento('${novo}').status`), 'aceito');
+    await avaliar("document.querySelector('[data-acao=excluir]').click()");
     await esperar(`!csaDadosAgenda.buscarEvento('${novo}')`);
     await avaliar("window.csaImpressoes=0; window.print=()=>window.csaImpressoes++; document.getElementById('csa-btn-pdf').click()");
-    assert.equal(await avaliar('window.csaImpressoes'), 1);
+    if (demo) assert.equal(await avaliar('window.csaImpressoes'), 1);
+    else {
+      await esperar("!document.getElementById('csa-btn-pdf').disabled");
+      assert.equal(await avaliar('window.csaImpressoes'), 0);
+      assert.ok(requisicoes.slice(inicioChamadas).some(chamada => chamada.rota === '/relatorios/agendamentos'));
+    }
     await cmd('Emulation.setEmulatedMedia', {media:'print'});
     assert.equal(await avaliar("getComputedStyle(document.querySelector('.csa-grid')).display"), 'table');
     assert.ok(await avaliar("[...document.querySelectorAll('.csa-disponibilidade__adicionar, .csa-navbar-header, #csa-btn-pdf')].every(no=>!no.getClientRects().length)"));
@@ -212,7 +227,7 @@ let ws;
     if (demo) {
       assert.equal(chamadas.length, 0, 'Sugestões em demo acessou a API');
       assert.equal(await avaliar("sessionStorage.getItem('csa-sessao')"), null);
-    } else for (const metodo of ['POST','PUT','DELETE']) assert.ok(chamadas.some(chamada=>chamada.metodo===metodo));
+    } else for (const metodo of ['POST','PUT','PATCH','DELETE']) assert.ok(chamadas.some(chamada=>chamada.metodo===metodo));
     await avaliar("document.querySelectorAll('.csa-navbar-link')[0].click()");
     await esperar("location.pathname.endsWith('/admin/agenda.html') && document.readyState==='complete' && document.querySelector('.csa-event-card--visita')");
     await conferirConsulta();

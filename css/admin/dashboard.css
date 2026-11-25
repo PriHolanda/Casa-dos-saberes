@@ -72,7 +72,9 @@
 .csa-dashboard .csa-event-card__nome { font-size: 13px; font-weight: 680; }
 .csa-dashboard .csa-event-card__horario, .csa-dashboard .csa-event-card__status { font-size: 12px; }
 .csa-dashboard .csa-event-card--visita { display: block; width: 100%; background: #fff; border-color: var(--csa-verde); font-family: inherit; }
-.csa-dashboard .csa-event-card__status--negada, .csa-dashboard .csa-event-card__status--cancelada, .csa-dashboard .csa-event-card__status--desconhecido { color: #757575; }
+.csa-dashboard .csa-event-card__status--negada, .csa-dashboard .csa-event-card__status--cancelada,
+.csa-dashboard .csa-event-card__status--negado, .csa-dashboard .csa-event-card__status--cancelado,
+.csa-dashboard .csa-event-card__status--desconhecido { color: #757575; }
 .csa-dashboard .csa-event-card--visita .csa-event-card__espaco { color: var(--csa-verde); }
 .csa-dashboard #csa-painel { margin: 0; flex-basis: 320px; width: 320px; padding: 16px; gap: 12px; border-radius: 2px; box-shadow: 0 2px 6px #0001; }
 .csa-dashboard .csa-painel__cabecalho h2 { font-size: 18px; font-weight: 750; }

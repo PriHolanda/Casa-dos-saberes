@@ -10,11 +10,14 @@ O frontend usa os controllers e schemas existentes em `~/programing/AgendamentoC
 | Entrar | `POST /usuarios/login` | `email`, `senha`; recebe `access_token` e `expires_in` |
 | Perfil | `GET /usuarios/me` | Cabeçalho Bearer; recebe `id`, `nome`, `email` |
 | Listar eventos | `GET /eventos/` | Resposta `{ "eventos": [...] }` |
-| Cadastrar evento | `POST /eventos/` | `EventoCreate` |
-| Alterar evento | `PUT /eventos/{id}` | Cabeçalho Bearer e `EventoCreate` completo |
+| Eventos públicos | `GET /eventos/aceitos` | Sem autenticação |
+| Disponibilidade de espaço | `GET /disponibilidade?data=AAAA-MM-DD&espaco_id=ID` | Janelas reserváveis e limites de duração |
+| Cadastrar evento | `POST /eventos/` | JSON ou multipart com `dados` (JSON) e `arquivo` (PDF) |
+| Decidir sobre evento | `PATCH /eventos/{id}/status` | Cabeçalho Bearer e `{ "status": "aceito" }` ou `{ "status": "negado" }` |
+| Alterar evento | `PUT /eventos/{id}` | Cabeçalho Bearer e `EventoUpdate` completo |
 | Excluir evento | `DELETE /eventos/{id}` | Cabeçalho Bearer; resposta 204, sem corpo |
 
-`EventoCreate`: `titulo` (3–150 caracteres), `descricao` (10–2000), `data_inicio`, `data_fim`, `classificacao_indicativa`, `espaco_id` inteiro ou nulo, `responsavel` e `publico_estimado` inteiro ou nulo. As datas enviadas são civis, sem offset, seguindo o banco atual. Datas recebidas com offset são exibidas em America/Fortaleza. O formulário original mantém a data do dia/turno escolhido na grade e os horários no mesmo dia.
+`EventoCreate`: `titulo` (3–150 caracteres), `descricao` (10–2000), `data_inicio`, `data_fim`, `classificacao_indicativa`, `espaco_id` inteiro de 1 a 5, `responsavel` e `publico_estimado` inteiro ou nulo. As datas enviadas são civis, sem offset, seguindo o banco atual. Datas recebidas com offset são exibidas em America/Fortaleza. O formulário usa o espaço e o período escolhidos na agenda pública. Antes de enviar, consulta de novo a disponibilidade. O FastAPI confirma uma reserva pública como pendente e cadastra como aceito um evento criado com sessão autenticada.
 
 A agenda real usa os sete dias da semana e não carrega `js/admin/dados-exemplo.js`. Os mocks permanecem apenas como fixture dos testes antigos. O cache é atualizado após a API confirmar a gravação. Recarregar a página consulta o banco novamente.
 
@@ -30,6 +33,8 @@ O token de acesso fica no `sessionStorage` da aba, sem persistir a senha ou o re
 | Ler e salvar as perguntas | `GET /visitas/formulario` e `PUT /visitas/formulario` |
 | Verificar horários de visita | `GET /visitas/disponibilidade?data=AAAA-MM-DD` |
 | Enviar a solicitação revisada | `POST /visitas/` |
+| Listar e cancelar visitas | `GET /visitas/` e `DELETE /visitas/{id}` com Bearer |
+| Exportar relatório | `GET /relatorios/agendamentos` com `tipo`, `data_inicio`, `data_fim` e papel `administrador` |
 
 A listagem administrativa de exposições e as gravações dos editores exigem um token do Keycloak com o papel de realm `administrador`. As alterações de conteúdo e status da exposição são salvas juntas. Os editores oferecem importação explícita quando encontram dados antigos em `localStorage`.
 
@@ -37,15 +42,15 @@ Na visita pública, cada opção de uma hora precisa caber integralmente em uma 
 
 ## Autenticação das rotas
 
-`PUT` e `DELETE /eventos/{id}` exigem `get_current_user_claims`, assim como o perfil. O frontend já envia `Authorization: Bearer <access_token>` diretamente ao backend. Se o backend recusar o token, a sessão local é removida e o navegador volta ao login, sem aplicar a alteração recusada ao cache.
+Alterar, decidir ou excluir eventos exige `get_current_user_claims`, assim como o perfil. O frontend já envia `Authorization: Bearer <access_token>` diretamente ao backend. Se o backend recusar o token, a sessão local é removida e o navegador volta ao login, sem aplicar a alteração recusada ao cache.
 
-Listagem e criação de eventos continuam públicas na API, conforme o fluxo previsto para acesso futuro sem login. Esta interface continua exigindo login para acessar a agenda e realizar suas operações. A proteção atual de edição e exclusão exige um token válido, sem distinção de papel ou proprietário.
+A agenda pública, a consulta de disponibilidade e o envio de solicitações ficam acessíveis sem login. Dashboard e Sugestões de Pauta usam sessão autenticada. O backend exige Bearer para a manutenção de eventos e visitas e o papel `administrador` para exportar relatórios e gravar os editores.
 
-## Protótipo e ajustes do MVP
+## Limites do contrato atual
 
-Foram restaurados o cabeçalho, a barra de controle, os filtros, as legendas e os painéis originais. Permanecem somente domingo e “Imprimir agenda” como mudanças visuais na agenda. As operações são enviadas após Confirmar no formulário ou aceitar a confirmação de Aprovar/Negar.
+Visitas pendentes aguardam uma rota de aprovação ou recusa. A operação disponível de cancelamento exclui a visita. Eventos armazenam um segmento e uma pauta por registro, e o PDF recebido fica associado ao evento pelo ID do arquivo. O backend ainda não expõe uma rota autenticada para baixar a proposta anexada, nem um campo que diferencie a origem dos eventos para contar sugestões de pauta. Os relatórios de período usam o PDF do FastAPI. Com filtro de status ativo, a tela imprime a agenda filtrada porque o relatório ainda recebe somente período e tipo.
 
-Veja [o estado dos ajustes do backend](ajustes-backend-mvp.md). O backend atual já inclui `status` e `celular` nos schemas e no modelo. O frontend envia e lê esses campos; se uma base de dados existente ainda não tiver as colunas, o backend precisa receber uma migração PostgreSQL antes de iniciar a agenda. `create_all` cria tabelas novas, mas não adiciona colunas a uma tabela existente. Não há confirmação fictícia de gravação.
+O frontend verifica se o horário é futuro e cabe em uma janela publicada. O FastAPI verifica sobreposições ao gravar. Os endpoints de criação ainda não aplicam todas as regras de horário e duração usadas para calcular a disponibilidade.
 
 ## Execução e implantação
 
@@ -67,6 +72,6 @@ O FastAPI deve usar `CORSMiddleware`, com as origens permitidas em `settings.cor
 CORS_ORIGINS=http://127.0.0.1:3000,http://localhost:3000
 ```
 
-Permitir `GET`, `POST`, `PUT` e `DELETE`, além dos cabeçalhos `Authorization` e `Content-Type`. As requisições OPTIONS de preflight são tratadas pelo middleware. O token Bearer continua sendo enviado pelo JavaScript; não é necessário compartilhar cookies do WordPress.
+Permitir `GET`, `POST`, `PUT`, `PATCH` e `DELETE`, além dos cabeçalhos `Authorization` e `Content-Type`. As requisições OPTIONS de preflight são tratadas pelo middleware. O token Bearer continua sendo enviado pelo JavaScript; não é necessário compartilhar cookies do WordPress.
 
 Para outra porta de frontend ou Live Server, inclua a origem exata (por exemplo, `http://127.0.0.1:5500`) e reinicie o backend. Em produção, configure o domínio HTTPS do WordPress. CORS não substitui a autenticação e as permissões da API.

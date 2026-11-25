@@ -8,7 +8,7 @@ function ambiente(responder, config) {
   const chamadas = [];
   const redirecionamentos = [];
   const ctx = vm.createContext({
-    console, Date, Intl, csaConfig: config,
+    console, Date, Intl, FormData, Blob, URLSearchParams, csaConfig: config,
     sessionStorage: { getItem: chave => itens.get(chave), setItem: (chave, valor) => itens.set(chave, valor), removeItem: chave => itens.delete(chave) },
     location: { pathname: '/pages/login.html', search: '', hash: '', replace: url => redirecionamentos.push(url) },
     fetch: async (url, opcoes) => { chamadas.push({ url, ...opcoes }); return responder(url, opcoes); }
@@ -110,31 +110,56 @@ test('datas com fuso são convertidas para Fortaleza e espaços desconhecidos co
   assert.equal(a.rodar("csaDadosAgenda.buscarEvento('7').horarioInicio"), '09:00');
   assert.equal(a.rodar("csaDadosAgenda.espacos.find(e => e.id === '4').nome"), 'Varanda');
 });
-test('aprovação envia status por PUT e filtros passam a enxergar o evento aceito', async () => {
+test('status de eventos usa PATCH e preserva os dados da proposta', async () => {
   const complemento = { email: 'reserva@example.com', entidade: 'Casa', segmento: 'Música', pauta: 'Social',
     periodicidade: 'Semanal', link_complementar: 'https://example.com/proposta', arquivo_pdf_id: 3 };
+  const evento = { ...registro, ...complemento, status: 'pendente', celular: '85999999999' };
   const a = ambiente((url, opcoes) => opcoes.method === 'GET'
-    ? resposta({ eventos: [{ ...registro, ...complemento, status: 'pendente', celular: '85999999999' }] })
-    : resposta({ ...registro, ...JSON.parse(opcoes.body) }));
+    ? resposta({ eventos: [evento] })
+    : resposta({ ...evento, ...JSON.parse(opcoes.body) }));
   autenticar(a);
   await a.rodar('csaDadosAgenda.carregar()');
-  assert.equal(a.rodar("csaDadosAgenda.buscarEvento('7').status"), 'pendente');
-  await a.rodar("csaDadosAgenda.atualizarStatus('7', 'aceito')");
-  const pedido = a.chamadas.at(-1);
-  assert.equal(pedido.method, 'PUT');
-  assert.equal(pedido.headers.Authorization, 'Bearer token-teste');
-  assert.equal(JSON.parse(pedido.body).status, 'aceito');
-  assert.equal(JSON.parse(pedido.body).celular, '85999999999');
-  for (const [campo, valor] of Object.entries(complemento)) assert.equal(JSON.parse(pedido.body)[campo], valor);
-  assert.equal(a.rodar("csaDadosAgenda.buscarEvento('7').status"), 'aceito');
+  for (const status of ['aceito', 'negado']) {
+    await a.rodar(`csaDadosAgenda.atualizarStatus('7', '${status}')`);
+    const pedido = a.chamadas.at(-1);
+    assert.match(pedido.url, /\/eventos\/7\/status$/);
+    assert.equal(pedido.method, 'PATCH');
+    assert.equal(pedido.headers.Authorization, 'Bearer token-teste');
+    assert.deepEqual(JSON.parse(pedido.body), { status });
+    assert.equal(a.rodar("csaDadosAgenda.buscarEvento('7').status"), status);
+    for (const [campo, valor] of Object.entries(complemento)) {
+      assert.equal(a.rodar("csaDadosAgenda.buscarEvento('7').complemento")[campo], valor);
+    }
+  }
 });
-test('backend sem status não simula aprovação nem envia alteração incompatível', async () => {
-  const a = ambiente(() => resposta({ eventos: [registro] }));
-  autenticar(a);
-  await a.rodar('csaDadosAgenda.carregar()');
-  await assert.rejects(a.rodar("csaDadosAgenda.atualizarStatus('7', 'aceito')"), /não permite atualizar o status/);
-  assert.equal(a.chamadas.length, 1);
-  assert.equal(a.rodar("csaDadosAgenda.buscarEvento('7').status"), 'pendente');
+
+test('multipart preserva o arquivo e deixa o navegador gerar o limite do corpo', async () => {
+  const a = ambiente(() => resposta({ id: 1, status: 'pendente' }, 201));
+  await a.rodar(`(async () => {
+    const dados = new FormData();
+    dados.append('dados', JSON.stringify({ titulo: 'Evento' }));
+    dados.append('arquivo', new Blob(['%PDF-1.4'], { type: 'application/pdf' }), 'proposta.pdf');
+    return csaApi.requisitar('/eventos/', { metodo: 'POST', dados, autenticado: false });
+  })()`);
+  const pedido = a.chamadas[0];
+  assert.deepEqual(Object.keys(pedido.headers), []);
+  assert.equal(pedido.body.get('arquivo').name, 'proposta.pdf');
+  assert.equal(await pedido.body.get('arquivo').text(), '%PDF-1.4');
+  assert.deepEqual(JSON.parse(pedido.body.get('dados')), { titulo: 'Evento' });
+});
+
+test('disponibilidade usa as janelas do espaço sem oferecer o passado', async () => {
+  const data = '2099-06-01';
+  const a = ambiente(() => resposta({ data, espaco_id: 5, duracao_minima_horas: 2, duracao_maxima_horas: 3,
+    horarios_reservaveis: [{ data_inicio: data + 'T18:00:00', data_fim: data + 'T21:00:00' }] }));
+  vm.runInContext(fs.readFileSync(path.join(__dirname, '../js/cliente/programacao.js'), 'utf8'), a.ctx);
+  const disponibilidade = await a.rodar(`csaProgramacao.consultarDisponibilidade('${data}', '5')`);
+  assert.match(a.chamadas[0].url, /disponibilidade\?data=2099-06-01&espaco_id=5$/);
+  a.ctx.disponibilidade = disponibilidade;
+  assert.deepEqual(JSON.parse(a.rodar(`JSON.stringify(csaProgramacao.opcoesReserva(disponibilidade, Date.parse('${data}T21:30:00Z')))`)), [
+    { turno: 'night', inicio: '18:31', fim: '21:00' }
+  ]);
+  assert.equal(a.rodar(`csaProgramacao.opcoesReserva(disponibilidade, Date.parse('${data}T22:00:00Z')).length`), 0);
 });
 test('aprovação sem confirmação do status na resposta mantém cache anterior', async () => {
   const a = ambiente((url, opcoes) => opcoes.method === 'GET'

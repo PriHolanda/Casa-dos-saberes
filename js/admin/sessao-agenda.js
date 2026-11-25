@@ -4,7 +4,24 @@
   const resumo = typeof csaDashboard === 'undefined' ? null : csaDashboard;
   const aviso = document.getElementById('csa-dashboard-aviso') || document.getElementById('csa-agenda-aviso');
   const exportar = document.getElementById('csa-btn-pdf');
-  if (exportar && document.body.dataset.somenteLeitura !== 'true') exportar.addEventListener('click', () => window.print());
+  if (exportar && document.body.dataset.somenteLeitura !== 'true') {
+    exportar.addEventListener('click', async () => {
+      if (csaDadosAgenda.demonstracao || document.getElementById('csa-filtro-status').value !== 'todos') {
+        window.print();
+        return;
+      }
+      const dias = csaAgenda.periodo();
+      exportar.disabled = true;
+      aviso.textContent = '';
+      try {
+        await csaApi.exportarAgendamentos('eventos', dias[0], dias.at(-1));
+      } catch (erro) {
+        aviso.textContent = erro.message;
+      } finally {
+        exportar.disabled = false;
+      }
+    });
+  }
   agenda.inert = true;
   controles.forEach(elemento => { elemento.disabled = true; });
   agenda.textContent = 'Carregando agenda…';

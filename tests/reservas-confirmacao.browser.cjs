@@ -175,11 +175,10 @@ let ws;
   await clicar(confirmar);
   await esperar("document.getElementById('csa-confirmacao-estado').textContent.includes('Escolha um espaço e horário na agenda')");
 
-  const reserva = new URL('pages/cliente/reservas.html?espacoId=1&data=2099-06-01&turno=morning', base);
+  const reserva = new URL('pages/cliente/reservas.html?espacoId=1&data=2099-06-01&turno=morning&inicio=08%3A00&fim=11%3A00', base);
   await cmd('Page.navigate', { url: reserva.href });
   await esperar("document.querySelector('[name=titulo]')");
   await preencher();
-  await clicar("document.querySelector('[data-remover-anexo]')");
   await avaliar(`(() => {
     const form = document.getElementById('csa-reservas-form');
     form.elements.titulo.value = 'Oficina de teatro';
@@ -188,10 +187,15 @@ let ws;
     form.requestSubmit();
   })()`);
   await esperar(confirmar + ' !== null');
-  assert.match(await avaliar(resumo), /Auditório.*09:00 às 12:00/);
+  assert.match(await avaliar(resumo), /Auditório.*08:00 às 11:00/);
   await avaliar(`window.fetch = async (url, opcoes) => {
-    window.pedidoReserva = { url, metodo: opcoes.method, dados: JSON.parse(opcoes.body) };
-    return new Response(JSON.stringify({ id: 42, status: 'pendente' }), { status: 201, headers: { 'Content-Type': 'application/json' } });
+    if (new URL(url).pathname === '/disponibilidade') {
+      return Response.json({ data: '2099-06-01', espaco_id: 1, duracao_minima_horas: 2, duracao_maxima_horas: 3,
+        horarios_reservaveis: [{ data_inicio: '2099-06-01T08:00:00', data_fim: '2099-06-01T12:00:00' }] });
+    }
+    const arquivo = opcoes.body.get('arquivo');
+    window.pedidoReserva = { url, metodo: opcoes.method, dados: JSON.parse(opcoes.body.get('dados')), arquivo: await arquivo.text() };
+    return Response.json({ id: 42, status: 'pendente' }, { status: 201 });
   }`);
   await clicar(confirmar);
   await esperar("document.getElementById('csa-confirmacao-estado').textContent.includes('Solicitação enviada com sucesso!')");
@@ -199,7 +203,9 @@ let ws;
   assert.equal(new URL(pedido.url).pathname, '/eventos/');
   assert.equal(pedido.metodo, 'POST');
   assert.equal(pedido.dados.espaco_id, 1);
-  assert.equal(pedido.dados.data_inicio, '2099-06-01T09:00:00');
+  assert.equal(pedido.dados.data_inicio, '2099-06-01T08:00:00');
+  assert.equal(pedido.arquivo, '%PDF-1.4 teste');
+  assert.equal(pedido.dados.aceitou_termos, true);
   assert.equal(pedido.dados.link_complementar, 'https://example.com/proposta');
   await cmd('Page.reload');
   await esperar("document.getElementById('csa-confirmacao-estado').textContent.includes('Solicitação enviada com sucesso!')");

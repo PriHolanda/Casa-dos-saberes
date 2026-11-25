@@ -269,7 +269,7 @@ A mesma página apresenta automaticamente a versão mobile do Figma em telas de 
 
 Para adicionar, editar, remover ou reordenar perguntas, altere a definição em `js/cliente/reservas-dados.js`. Cada pergunta tem ID estável, título, descrição e corpo. O botão valida as respostas e abre a revisão. Para enviar ao FastAPI, comece pela agenda pública escolhendo um espaço, uma data e um turno. A solicitação entra como pendente após a confirmação.
 
-O envio integrado recebe um link para a proposta. Os anexos PDF podem ser selecionados e revisados no rascunho. Consulte [Formulário de reserva: componentes e integração](docs/formulario-reservas.md) para o schema, os IDs, as regras de validação e o payload.
+O envio integrado aceita PDF, link ou ambos. A agenda consulta a disponibilidade por espaço e data, e a revisão confirma que o horário ainda está livre antes de enviar. Consulte [Formulário de reserva: componentes e integração](docs/formulario-reservas.md) para o schema, os IDs, as regras de validação e o payload.
 
 ---
 

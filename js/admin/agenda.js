@@ -109,5 +109,5 @@ const csaAgenda = (() => {
     }
   });
   desenhar();
-  return { EventCard, AvailabilityCard, AgendaCell, AgendaGrid, recarregar: desenhar };
+  return { EventCard, AvailabilityCard, AgendaCell, AgendaGrid, periodo, recarregar: desenhar };
 })();

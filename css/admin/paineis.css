@@ -75,6 +75,8 @@
   background: #ffead5;
 }
 
+.csa-painel__status--negado,
+.csa-painel__status--cancelado,
 .csa-painel__status--desconhecido {
   color: var(--csa-texto);
   background: #eee;

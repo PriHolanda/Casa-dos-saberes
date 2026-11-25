@@ -16,19 +16,19 @@
 
   function descreverReserva(reserva) {
     const espaco = csaAgendaModelo.espacos.find(item => item.id === reserva.espacoId);
-    const turno = csaProgramacao.turnos[reserva.turno];
+    const turno = csaProgramacao.horarioReserva(reserva);
     return `${espaco.nome} · ${csaAgendaModelo.formatarDia(reserva.data)} · ${turno.inicio} às ${turno.fim}`;
   }
 
   async function enviarReserva({ dados: { respostas }, arquivos, reserva }, definicao) {
-    if (arquivos.proposta) throw new Error('O envio de PDF está indisponível. Retire o anexo e informe o link da proposta para enviar.');
     if (respostas.segmentos.length !== 1 || respostas.pautas.length !== 1) {
       throw new Error('Para enviar pela agenda, selecione um segmento e uma pauta na proposta.');
     }
     function opcao(pergunta, id) {
       return definicao.perguntas.find(item => item.id === pergunta).opcoes.find(item => item.id === id)?.titulo;
     }
-    const { inicio, fim } = csaProgramacao.turnos[reserva.turno];
+    const { inicio, fim } = csaProgramacao.horarioReserva(reserva);
+    await csaProgramacao.confirmarDisponibilidade(reserva);
     const dados = {
       titulo: respostas.titulo,
       descricao: respostas['descricao-evento'],
@@ -44,9 +44,17 @@
       periodicidade: opcao('periodicidade', respostas.periodicidade),
       classificacao_indicativa: opcao('classificacao', respostas.classificacao),
       publico_estimado: respostas.publico,
-      link_complementar: respostas['link-proposta']
+      link_complementar: respostas['link-proposta'] || null,
+      aceitou_termos: respostas['ciencia-analise'] === true && respostas['ciencia-logos'] === true
     };
-    const resposta = await csaApi.requisitar('/eventos/', { metodo: 'POST', dados, autenticado: false });
+    let corpo = dados;
+    if (arquivos.proposta) {
+      corpo = new FormData();
+      corpo.append('dados', JSON.stringify(dados));
+      const pdf = arquivos.proposta;
+      corpo.append('arquivo', pdf.type === 'application/pdf' ? pdf : pdf.slice(0, pdf.size, 'application/pdf'), pdf.name);
+    }
+    const resposta = await csaApi.requisitar('/eventos/', { metodo: 'POST', dados: corpo, autenticado: false });
     if (Number.isSafeInteger(resposta?.id) && resposta.id > 0 && resposta.status === 'pendente') {
       return { enviada: true, status: 'pendente', id: resposta.id };
     }

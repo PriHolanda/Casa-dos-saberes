@@ -101,7 +101,7 @@ for (const invalido of [null, { ...evento, id: undefined }, { ...evento, nome: '
 assert.equal(executar('csaAgenda.EventCard({}, undefined)'), '');
 contexto.eventoTeste = { ...evento, status: 'cancelado', nome: '<img src=x onerror=alert(1)>' };
 const protegido = executar('csaAgenda.EventCard(eventoTeste, csaDadosAgenda.espacos[0])');
-assert.match(protegido, /Status desconhecido/);
+assert.match(protegido, /Cancelado/);
 assert.ok(!protegido.includes('Pendente'));
 assert.ok(!protegido.includes('<img'));
 assert.match(protegido, /&lt;img/);

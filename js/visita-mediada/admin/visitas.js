@@ -235,7 +235,26 @@
       if (visita) abrirDetalhe(visita, botao);
     }
   });
-  document.getElementById('csa-visitas-exportar').addEventListener('click', () => window.print());
+  const exportar = document.getElementById('csa-visitas-exportar');
+  exportar.addEventListener('click', async () => {
+    if (demonstracao || filtro.value !== 'todos') {
+      window.print();
+      return;
+    }
+    const dias = diasDoPeriodo();
+    const avisoExportacao = document.getElementById('csa-visitas-exportacao-aviso');
+    exportar.disabled = true;
+    avisoExportacao.textContent = '';
+    avisoExportacao.hidden = true;
+    try {
+      await csaApi.exportarAgendamentos('visitas', dataISO(dias[0]), dataISO(dias.at(-1)));
+    } catch (erro) {
+      avisoExportacao.textContent = erro.message;
+      avisoExportacao.hidden = false;
+    } finally {
+      exportar.disabled = false;
+    }
+  });
   dialogo.querySelector('.csa-visita-detalhe__fechar').addEventListener('click', () => dialogo.close());
   dialogo.addEventListener('cancel', evento => {
     if (cancelando) evento.preventDefault();
