@@ -51,10 +51,7 @@
     const dados = entrada && entrada.dados;
     if (!dados || typeof dados !== 'object' || Array.isArray(dados) || typeof dados.responsavel !== 'string' || !dados.responsavel.trim()
       || (!demonstracao && !revisao && (entrada.enviada !== true || !['pendente', 'confirmada'].includes(entrada.status)))) {
-      estado.replaceChildren(elemento('h2', '', 'Nenhuma solicitação disponível'), elemento('p', '', 'Não foi possível localizar os dados de uma solicitação enviada. Nenhum envio foi confirmado nesta página.'));
-      const link = elemento('a', 'csa-confirmacao-exemplos', 'Visualizar demonstração com dados fictícios');
-      link.href = '?demo=1';
-      estado.append(link);
+      estado.replaceChildren(elemento('h2', '', 'Nenhuma solicitação disponível'), elemento('p', '', 'Não foi possível localizar a solicitação. Retorne ao formulário para conferir suas informações.'));
       return;
     }
     if (typeof entrada.urlFormulario === 'string') {
@@ -87,7 +84,7 @@
     if (demonstracao || revisao) {
       estado.hidden = true;
       const termos = elemento('p', 'csa-confirmacao-termos', 'Ao confirmar, você declara que revisou as informações e está de acordo com os termos apresentados no formulário.');
-      if (tipo === 'visita') termos.prepend(elemento('span', '', 'Atenção:'), ' ');
+      termos.prepend(elemento('span', '', 'Atenção:'), ' ');
       const acoes = elemento('div', 'csa-confirmacao-acoes');
       const confirmar = elemento('button', 'csa-confirmacao-botao csa-confirmacao-botao--principal', 'Confirmar e enviar');
       confirmar.type = 'button';
@@ -103,7 +100,7 @@
           try {
             const resposta = await revisao.enviar();
             if (resposta?.enviada !== true || !['pendente', 'confirmada'].includes(resposta.status)) {
-              throw new Error('O serviço não confirmou o envio. Nenhum sucesso foi confirmado.');
+              throw new Error('Não foi possível confirmar o envio. Suas informações foram preservadas.');
             }
             status = resposta.status;
             aoVoltar = null;

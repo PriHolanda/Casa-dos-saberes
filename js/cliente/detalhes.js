@@ -5,7 +5,7 @@
 // INTEGRAÇÃO COM A AGENDA PÚBLICA:
 // - Sobre o evento: detalhes-reserva.html?eventoId=ID
 // - Espaço livre: a agenda encaminha diretamente para reservas.html
-// - Visitas: detalhes-visita.html?espacoId=ID
+// - Visitas: pages/visita-mediada/cliente/detalhes-visita.html?espacoId=ID
 //
 // O parâmetro ?demo=1 é destinado aos testes das interfaces.
 // As páginas de detalhes não encaminham para formulários.
@@ -151,44 +151,6 @@ const csaDetalhes = (() => {
     return true;
   }
 
-  function configurarMenu() {
-    const botao = document.querySelector('.csa-detalhes-menu__botao');
-    const menu = document.getElementById('csa-detalhes-menu');
-
-    function fechar() {
-      menu.hidden = true;
-      botao.setAttribute('aria-expanded', 'false');
-      botao.setAttribute('aria-label', 'Abrir menu');
-    }
-
-    botao.addEventListener('click', () => {
-      const aberto = !menu.hidden;
-
-      menu.hidden = aberto;
-      botao.setAttribute('aria-expanded', String(!aberto));
-      botao.setAttribute(
-        'aria-label',
-        aberto ? 'Abrir menu' : 'Fechar menu'
-      );
-    });
-
-    document.addEventListener('keydown', evento => {
-      if (evento.key === 'Escape' && !menu.hidden) {
-        fechar();
-        botao.focus();
-      }
-    });
-
-    document.addEventListener('click', evento => {
-      if (
-        !menu.contains(evento.target) &&
-        !botao.contains(evento.target)
-      ) {
-        fechar();
-      }
-    });
-  }
-
   async function carregar() {
     mostrarMensagem('Carregando informações…');
     grade.setAttribute('aria-busy', 'true');
@@ -200,7 +162,7 @@ const csaDetalhes = (() => {
           && (['localhost', '127.0.0.1', '[::1]'].includes(location.hostname) || location.protocol === 'file:');
         const exposicoes = demo ? csaVisitasModelo.exposicoesDemo() : await csaVisitasApi.exposicoes();
         const exposicao = exposicoes.find(item => item.sala_id === salaId);
-        if (!exposicao || exposicao.pausada) {
+        if (!exposicao?.nome?.trim() || exposicao.pausada) {
           mostrarMensagem('Esta exposição não está em cartaz.', true);
           return false;
         }
@@ -282,7 +244,6 @@ const csaDetalhes = (() => {
     }
   }
 
-  configurarMenu();
 
   const pronto = carregar();
 

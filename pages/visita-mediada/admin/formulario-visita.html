@@ -4,43 +4,28 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Formulário de Visita | Casa dos Saberes</title>
-  <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="../../css/base.css">
-  <link rel="stylesheet" href="../../css/admin/visitas.css">
-  <script src="../../js/config.js" defer></script>
-  <script src="../../js/api.js" defer></script>
-  <script src="../../js/visitas-modelo.js" defer></script>
-  <script src="../../js/visitas-api.js" defer></script>
-  <script src="../../js/admin/formulario-visita.js" defer></script>
+  <link rel="icon" href="../../../assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../../../css/base.css">
+  <link rel="stylesheet" href="../../../css/visita-mediada/admin/visitas.css">
+  <script src="../../../js/navbar.js" defer></script>
+  <script src="../../../js/config.js" defer></script>
+  <script src="../../../js/api.js" defer></script>
+  <script src="../../../js/visita-mediada/modelo.js" defer></script>
+  <script src="../../../js/visitas-api.js" defer></script>
+  <script src="../../../js/visita-mediada/admin/formulario-visita.js" defer></script>
+  <link rel="stylesheet" href="../../../css/padroes.css">
+  <link rel="stylesheet" href="../../../css/navbar.css">
 </head>
-<body class="csa-visitas csa-visitas--formulario">
-  <header class="csa-visitas-header">
-    <div class="csa-visitas-header__topo">
-      <a href="agenda.html" aria-label="Casa dos Saberes — agenda administrativa">
-        <img src="../../assets/reservas/csca-gov.png" width="214" height="31" alt="Casa dos Saberes Cego Aderaldo e Governo do Ceará">
-      </a>
-      <details class="csa-visitas-menu">
-        <summary aria-label="Abrir menu">
-          <img src="../../assets/reservas/menu.svg" width="41" height="27" alt="">
-          <span class="csa-visitas-menu__admin"><span class="csa-visitas-menu__sigla">AD</span><span>Admin<small>Casa dos Saberes</small></span></span>
-        </summary>
-        <nav aria-label="Administração">
-          <a href="agenda.html">Agenda</a>
-          <a href="visitas.html">Visitas Mediadas</a>
-          <a href="editor-visitas.html">Editor Administrativo</a>
-          <a href="formulario-visita.html" aria-current="page">Formulário de Visita</a>
-        </nav>
-      </details>
-    </div>
-    <div class="csa-visitas-header__faixa" aria-hidden="true"></div>
-  </header>
+<body data-csa-interface class="csa-visitas csa-visitas--formulario">
+  <csa-navbar area="admin"></csa-navbar>
 
   <main class="csa-visitas-formulario">
     <a class="csa-visitas-formulario__voltar" href="editor-visitas.html">
-      <span><img src="../../assets/reservas/voltar.svg" width="32" height="32" alt=""></span>
+      <span><img src="../../../assets/reservas/voltar.svg" width="32" height="32" alt=""></span>
       Voltar para o editor administrativo
     </a>
     <h1>Formulário de <span>visita</span></h1>
+    <p class="csa-visitas-aviso">As perguntas salvas ficam disponíveis no formulário público. Os campos obrigatórios para a solicitação ficam sempre ativos.</p>
     <p class="csa-visita-formulario__aviso"><strong>Importante:</strong> ao enviar sua solicitação, aguarde a confirmação da nossa equipe via telefone ou e-mail. O envio do formulário não significa que a reserva já foi confirmada.</p>
     <div class="csa-visita-formulario__colunas">
       <section class="csa-visita-formulario__termo csa-visita-formulario__termo--inicio" aria-labelledby="termo-analise">

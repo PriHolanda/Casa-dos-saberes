@@ -56,7 +56,7 @@ test('usa autenticação apenas para as operações dos editores e exige confirm
     { salas: [], exposicoes: [] }, { sala_id: 2, pausada: true }, { exposicoes: [{ sala_id: 2 }] },
     { campos: [] }, { campos: [] }, { data: dia, horarios_reservaveis: [] }, { id: 3, status: 'pendente' }
   ];
-  const api = carregar(['visitas-modelo.js', 'visitas-api.js'], 'csaVisitasApi', {
+  const api = carregar(['visita-mediada/modelo.js', 'visitas-api.js'], 'csaVisitasApi', {
     csaApi: { requisitar: async (...argumentos) => { chamadas.push(argumentos); return respostas.shift(); } }
   });
   await api.editorExposicoes();

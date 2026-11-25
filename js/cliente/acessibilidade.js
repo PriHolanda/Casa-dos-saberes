@@ -1,7 +1,7 @@
 document.addEventListener("DOMContentLoaded", () => {
   const botaoMenu = document.querySelector(".csa-acessibilidade-btn");
   const painel = document.querySelector(".csa-acessibilidade-painel");
-  const conteudo = document.querySelector(".csa-agenda-cliente, .csa-vp-vitrine");
+  const conteudos = document.querySelectorAll(".csa-agenda-cliente, .csa-visita-publica main, .csa-visita-publica > .csa-vp-sucesso");
   const raiz = document.documentElement;
 
   const chaveSalva = "csa-acessibilidade";
@@ -34,7 +34,9 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function aplicar() {
-    conteudo.style.zoom = `${estado.tamanho}%`;
+    conteudos.forEach(conteudo => {
+      conteudo.style.zoom = `${estado.tamanho}%`;
+    });
 
     raiz.classList.toggle("csa-alto-contraste", estado.contraste);
     raiz.classList.toggle("csa-sublinhar-links", estado.sublinhar);

@@ -84,14 +84,14 @@
       }
       const necessario = obrigatorios.includes(campo.id)
         || (campo.id === 'quantidadePcd' && campos.some(item => item.id === 'acessibilidade'));
-      if (!necessario) {
-        linha.append(botao('csa-visitas-botao csa-visita-campo__remover', 'x', async evento => {
-          const botaoRemover = evento.currentTarget;
-          const guardado = await persistir(campos.filter((_, item) => item !== posicao));
-          if (guardado) (document.querySelectorAll('.csa-visita-campo__editar')[posicao] || adicionar).focus();
-          else botaoRemover.focus();
-        }, `Remover ${campo.titulo}`));
-      }
+      const remover = botao('csa-visitas-botao csa-visita-campo__remover', 'x', async () => {
+        const guardado = await persistir(campos.filter((_, item) => item !== posicao));
+        if (guardado) (document.querySelectorAll('.csa-visita-campo__editar')[posicao] || adicionar).focus();
+        else remover.focus();
+      }, `Remover ${campo.titulo}`);
+      remover.disabled = necessario;
+      if (necessario) remover.title = 'Campo obrigatório para solicitar uma visita.';
+      linha.append(remover);
       secao.append(titulo, linha);
       (campo.complementar ? complementar : principal).append(secao);
     });

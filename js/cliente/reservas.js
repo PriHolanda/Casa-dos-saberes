@@ -134,25 +134,6 @@ const csaReservas = (() => {
     campo.focus();
   });
 
-  const botaoMenu = document.querySelector('.csa-reservas-menu__botao');
-  const menu = document.getElementById('csa-reservas-menu');
-  function fecharMenu() {
-    menu.hidden = true;
-    botaoMenu.setAttribute('aria-expanded', 'false');
-    botaoMenu.setAttribute('aria-label', 'Abrir menu');
-  }
-  botaoMenu.addEventListener('click', () => {
-    menu.hidden = !menu.hidden;
-    botaoMenu.setAttribute('aria-expanded', String(!menu.hidden));
-    botaoMenu.setAttribute('aria-label', menu.hidden ? 'Abrir menu' : 'Fechar menu');
-  });
-  document.addEventListener('keydown', evento => {
-    if (evento.key === 'Escape' && !menu.hidden) { fecharMenu(); botaoMenu.focus(); }
-  });
-  document.addEventListener('click', evento => {
-    if (!menu.contains(evento.target) && !botaoMenu.contains(evento.target)) fecharMenu();
-  });
-
   const pronto = carregar();
   return { pronto };
 })();

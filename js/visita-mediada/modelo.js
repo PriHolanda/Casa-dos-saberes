@@ -1,13 +1,14 @@
 const csaVisitasModelo = (() => {
-  const chaveFormulario = 'csa:formulario-visita:1';
-  const chaveExposicoes = 'csa:exposicoes:1';
+  const demonstracao = typeof location !== 'undefined' && new URLSearchParams(location.search).get('demo') === '1' && ['localhost', '127.0.0.1', '[::1]', ''].includes(location.hostname);
+  const chaveFormulario = demonstracao ? 'csa:formulario-visita:demo:1' : 'csa:formulario-visita:1';
+  const chaveExposicoes = demonstracao ? 'csa:exposicoes:demo:1' : 'csa:exposicoes:1';
   const salas = ['Sala expositiva 1', 'Sala expositiva 2', 'Corredor', 'Varanda'];
   const modelo = {
     nome: 'Exposição X', descricao: 'Uma exposição legal que vai trazer alegria alegria alegria alegria alegria e felicidade felicidade.',
     classificacao: '14 anos', pausada: false
   };
   const campos = [
-    { id: 'responsavel', titulo: 'Responsável pelo visita', dica: 'Nome' },
+    { id: 'responsavel', titulo: 'Responsável pela visita', dica: 'Nome' },
     { id: 'telefone', titulo: 'Telefone do responsável', dica: '(xx) x xxxx-xxxx' },
     { id: 'email', titulo: 'E-mail do responsável', dica: 'loremipsum@gmail.com', email: true },
     { id: 'formacao', titulo: 'Formação do responsável' },
@@ -59,5 +60,32 @@ const csaVisitasModelo = (() => {
     return [...definicao, ...necessarios.filter(id => !ids.has(id)).map(id => campos.find(campo => campo.id === id))];
   }
 
-  return { salas, campos, obrigatorios, formularioLocal, exposicaoLocal, exposicoesDemo, completarFormulario };
+  function status(valor) {
+    if (valor === 'aprovada' || valor === 'aceito') return { valor: 'aceito', rotulo: 'Aceito' };
+    if (valor === 'pendente') return { valor: 'pendente', rotulo: 'Pendente' };
+    if (valor === 'negada') return { valor: 'negada', rotulo: 'Negada' };
+    if (valor === 'cancelada') return { valor: 'cancelada', rotulo: 'Cancelada' };
+    return { valor: 'desconhecido', rotulo: 'Status desconhecido' };
+  }
+
+  function dataCivil(valor) {
+    if (typeof valor !== 'string' || !/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(?::\d{2}(?:\.\d+)?)?(?:Z|[+-]\d{2}:\d{2})?$/.test(valor)) return null;
+    const civil = valor.slice(0, 19).padEnd(19, ':00');
+    const instante = new Date(`${civil}Z`);
+    if (!Number.isFinite(instante.getTime()) || instante.toISOString().slice(0, 19) !== civil) return null;
+    if (!/(Z|[+-]\d{2}:\d{2})$/.test(valor)) return civil;
+    const data = new Date(valor);
+    if (!Number.isFinite(data.getTime())) return null;
+    return new Intl.DateTimeFormat('sv-SE', { timeZone: 'America/Fortaleza', year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hourCycle: 'h23' }).format(data).replace(' ', 'T');
+  }
+
+  function normalizarVisita(visita) {
+    if (!visita || !['string', 'number'].includes(typeof visita.id) || !String(visita.id).trim()) throw new Error('A resposta contém uma visita sem identificador.');
+    const inicio = dataCivil(visita.data_inicio);
+    const fim = dataCivil(visita.data_fim);
+    if (!inicio || !fim || fim <= inicio) throw new Error('A resposta contém uma visita com datas ou horários inválidos.');
+    return { ...visita, id: String(visita.id), data_inicio: inicio, data_fim: fim };
+  }
+
+  return { salas, campos, obrigatorios, formularioLocal, exposicaoLocal, exposicoesDemo, completarFormulario, status, dataCivil, normalizarVisita, demonstracao };
 })();

@@ -4,6 +4,13 @@
   const mensagem = document.getElementById('csa-auth-mensagem');
   const enviar = document.getElementById('csa-auth-enviar');
   const alternar = document.getElementById('csa-auth-alternar');
+  function paginaAposLogin() {
+    const proxima = new URLSearchParams(location.search).get('next');
+    if (!proxima?.startsWith('/pages/')) return '/pages/admin/agenda.html';
+    const destino = new URL(proxima, location.origin);
+    if (destino.origin !== location.origin || !destino.pathname.startsWith('/pages/') || destino.pathname === '/pages/login.html') return '/pages/admin/agenda.html';
+    return `${destino.pathname}${destino.search}${destino.hash}`;
+  }
   function modo(criar) {
     cadastro = criar;
     document.getElementById('csa-nome-campo').hidden = !criar;
@@ -36,7 +43,7 @@
         form.elements.confirmacao.value = '';
       } else {
         await csaApi.entrar(dados.email, dados.senha);
-        location.replace('/pages/admin/agenda.html');
+        location.replace(paginaAposLogin());
       }
     } catch (erro) { mensagem.textContent = erro.message; mensagem.hidden = false; }
     finally { enviar.disabled = alternar.disabled = false; }

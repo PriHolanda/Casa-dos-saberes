@@ -1,6 +1,7 @@
 // data-evento-id/data-data/data-turno permitem integrar ações futuramente.
 // Os componentes desta etapa são somente informativos.
 const csaAgenda = (() => {
+  const somenteLeitura = document.body?.dataset?.somenteLeitura === 'true';
   const modelo = csaAgendaModelo;
   const estado = { visao: 'semanal', data: csaDadosAgenda.dataInicial, status: 'todos' };
   const dias = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
@@ -26,6 +27,7 @@ const csaAgenda = (() => {
   }
   // Disponibilidade apenas visual: não confirma que um espaço pode ser reservado.
   function AvailabilityCard(registro, turno, temEventos) {
+    if (somenteLeitura) return `<span data-data="${escapar(registro.data)}" data-turno="${escapar(turno.id)}" hidden></span>`;
     return `<div class="csa-disponibilidade${temEventos ? ' csa-disponibilidade--compacta' : ''}" data-data="${escapar(registro.data)}" data-turno="${escapar(turno.id)}" aria-label="${escapar(turno.nome)}: Disponível">
       ${temEventos ? '' : `<p class="csa-disponibilidade__titulo">${escapar(turno.nome)}<br>Disponível</p><svg class="csa-disponibilidade__icone" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="4" y="5" width="16" height="16" rx="2"/><path d="M4 10h16M8 2v6M16 2v6"/></svg>`}
       <button type="button" class="csa-disponibilidade__adicionar" data-acao="adicionar-evento" aria-label="Adicionar evento em ${escapar(registro.data)}, turno ${escapar(turno.nome)}"><span aria-hidden="true">+</span><p>Adicionar<br>Evento</p></button>
@@ -34,10 +36,13 @@ const csaAgenda = (() => {
   function AgendaCell(data, turno, dados, filtro = 'todos') {
     const { inicio, fim } = modelo.intervalo(data, turno);
     const todos = dados.eventos.filter(e => e.inicioMs < fim && e.terminoMs > inicio);
-    const eventos = todos.filter(e => filtro === 'todos' || e.status === filtro).sort((a, b) => a.inicioMs - b.inicioMs);
-    const cards = eventos.map(e => EventCard(e, dados.espacos.find(s => s.id === e.espacoId))).join('');
+    const eventos = todos.filter(e => somenteLeitura ? filtro !== 'visitas' : filtro === 'todos' || e.status === filtro).sort((a, b) => a.inicioMs - b.inicioMs);
+    const visitas = typeof csaDashboard !== 'undefined' ? csaDashboard.consultarPeriodo(data, data).filter(visita => visita.data_inicio < new Date(fim).toISOString().slice(0, 19) && visita.data_fim > new Date(inicio).toISOString().slice(0, 19)) : [];
+    const registros = eventos.map(e => ({ inicio: e.inicio, html: EventCard(e, dados.espacos.find(s => s.id === e.espacoId)) }));
+    visitas.filter(visita => somenteLeitura ? filtro !== 'pautas' : filtro === 'todos' || csaVisitasModelo.status(visita.status).valor === filtro).forEach(visita => registros.push({ inicio: visita.data_inicio, html: csaDashboard.cartao(visita) }));
+    const cards = registros.sort((a, b) => a.inicio.localeCompare(b.inicio)).map(registro => registro.html).join('');
     // Eventos ocultos pelo filtro preservam a variante compacta da célula.
-    const livre = AvailabilityCard({ data }, turno, todos.length > 0);
+    const livre = AvailabilityCard({ data }, turno, todos.length > 0 || visitas.length > 0);
     return `<td class="csa-grid__celula"><div class="csa-grid__conteudo">${cards}${livre}</div></td>`;
   }
   function AgendaGrid(datas, dados, visao = 'semanal', filtro = 'todos') {
@@ -65,6 +70,7 @@ const csaAgenda = (() => {
       botao.classList.toggle('csa-alternador__botao--ativo', ativo);
       botao.setAttribute('aria-pressed', String(ativo));
     });
+    if (typeof csaDashboard !== 'undefined') csaDashboard.atualizar(estado.data);
   }
   document.addEventListener('csa:mudar-data', e => {
     if (![-1, 1].includes(e.detail?.direcao)) return;
@@ -77,7 +83,7 @@ const csaAgenda = (() => {
     desenhar();
   });
   document.addEventListener('csa:mudar-filtro', e => {
-    if (!['todos', 'aceito', 'pendente'].includes(e.detail?.status)) return;
+    if (!(somenteLeitura ? ['todos', 'pautas', 'visitas'] : ['todos', 'aceito', 'pendente']).includes(e.detail?.status)) return;
     estado.status = e.detail.status;
     desenhar();
   });
@@ -89,7 +95,7 @@ const csaAgenda = (() => {
       return;
     }
     const adicionar = e.target.closest('[data-acao="adicionar-evento"]');
-    if (adicionar) {
+    if (adicionar && !somenteLeitura) {
       const disponibilidade = adicionar.closest('.csa-disponibilidade');
       document.dispatchEvent(new CustomEvent('csa:abrir-cadastro', {
         detail: { data: disponibilidade.dataset.data, turno: disponibilidade.dataset.turno }

@@ -95,7 +95,7 @@ let ws;
   await esperar(confirmar + ' !== null');
   assert.ok((await avaliar(resumo)).includes('Nome alterado'));
   await clicar(confirmar);
-  await esperar("document.getElementById('csa-confirmacao-estado').textContent.includes('ainda não está disponível')");
+  await esperar("document.getElementById('csa-confirmacao-estado').textContent.includes('Escolha um espaço e horário na agenda')");
   assert.ok(!(await avaliar("document.querySelector('main').textContent")).includes('Solicitação enviada com sucesso!'));
   assert.equal(await avaliar(confirmar + '.disabled'),false);
   await avaliar(`window.csaEnviarReserva = async entrada => {
@@ -127,7 +127,7 @@ let ws;
   assert.equal(await avaliar("window.payloadRecebido.dados.respostas.responsavel"),'Nome alterado');
   await avaliar("window.csaEnviarReserva = async () => ({status:'pendente'})");
   await clicar(confirmar);
-  await esperar("document.getElementById('csa-confirmacao-estado').textContent.includes('não confirmou')");
+  await esperar("document.getElementById('csa-confirmacao-estado').textContent.includes('Não foi possível confirmar o envio')");
   await avaliar("window.csaEnviarReserva = async () => ({enviada:true,status:'pendente'})");
   await clicar(confirmar);
   await esperar("document.getElementById('csa-confirmacao-estado').textContent.includes('Solicitação enviada com sucesso!')");
@@ -173,7 +173,36 @@ let ws;
   await cmd('Page.navigate', { url: new URL('pages/cliente/confirmacao-reserva.html', base).href });
   await esperar("document.getElementById('csa-confirmacao-grade')?.textContent.includes('Nome alterado')");
   await clicar(confirmar);
-  await esperar("document.getElementById('csa-confirmacao-estado').textContent.includes('ainda não está disponível')");
+  await esperar("document.getElementById('csa-confirmacao-estado').textContent.includes('Escolha um espaço e horário na agenda')");
+
+  const reserva = new URL('pages/cliente/reservas.html?espacoId=1&data=2099-06-01&turno=morning', base);
+  await cmd('Page.navigate', { url: reserva.href });
+  await esperar("document.querySelector('[name=titulo]')");
+  await preencher();
+  await clicar("document.querySelector('[data-remover-anexo]')");
+  await avaliar(`(() => {
+    const form = document.getElementById('csa-reservas-form');
+    form.elements.titulo.value = 'Oficina de teatro';
+    form.elements['descricao-evento'].value = 'Oficina aberta à comunidade';
+    for (const nome of ['segmentos', 'pautas']) form.elements[nome][1].checked = false;
+    form.requestSubmit();
+  })()`);
+  await esperar(confirmar + ' !== null');
+  assert.match(await avaliar(resumo), /Auditório.*09:00 às 12:00/);
+  await avaliar(`window.fetch = async (url, opcoes) => {
+    window.pedidoReserva = { url, metodo: opcoes.method, dados: JSON.parse(opcoes.body) };
+    return new Response(JSON.stringify({ id: 42, status: 'pendente' }), { status: 201, headers: { 'Content-Type': 'application/json' } });
+  }`);
+  await clicar(confirmar);
+  await esperar("document.getElementById('csa-confirmacao-estado').textContent.includes('Solicitação enviada com sucesso!')");
+  const pedido = await avaliar('window.pedidoReserva');
+  assert.equal(new URL(pedido.url).pathname, '/eventos/');
+  assert.equal(pedido.metodo, 'POST');
+  assert.equal(pedido.dados.espaco_id, 1);
+  assert.equal(pedido.dados.data_inicio, '2099-06-01T09:00:00');
+  assert.equal(pedido.dados.link_complementar, 'https://example.com/proposta');
+  await cmd('Page.reload');
+  await esperar("document.getElementById('csa-confirmacao-estado').textContent.includes('Solicitação enviada com sucesso!')");
   assert.deepEqual(erros, []);
   console.log('OK: fluxo real, PDF, edição, erros, contrato de backend, fundo padronizado e demonstração isolada sem chamadas de envio nem alteração do rascunho.');
 })().catch(erro => { console.error(erro); process.exitCode = 1; }).finally(() => {

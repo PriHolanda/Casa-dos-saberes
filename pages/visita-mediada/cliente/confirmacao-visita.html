@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Confirmação de visita mediada — Casa dos Saberes</title>
+  <link rel="stylesheet" href="../../../css/base.css">
+  <link rel="stylesheet" href="../../../css/cliente/confirmacao.css">
+  <link rel="stylesheet" href="../../../css/visita-mediada/cliente/visita.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.3.1/css/all.min.css">
+  <script src="../../../js/navbar.js" defer></script>
+  <script src="../../../js/cliente/confirmacao-dados.js" defer></script>
+  <script src="../../../js/cliente/confirmacao.js" defer></script>
+  <script src="../../../js/config.js" defer></script>
+  <script src="../../../js/api.js" defer></script>
+  <script src="../../../js/visita-mediada/modelo.js" defer></script>
+  <script src="../../../js/visitas-api.js" defer></script>
+  <script src="../../../js/cliente/visita-solicitacao.js" defer></script>
+  <script src="../../../js/visita-mediada/cliente/visita.js" defer></script>
+  <script src="../../../js/cliente/acessibilidade.js" defer></script>
+  <link rel="stylesheet" href="../../../css/padroes.css">
+  <link rel="stylesheet" href="../../../css/navbar.css">
+</head>
+<body data-csa-interface class="csa-confirmacao csa-confirmacao--visita csa-visita-publica" data-csa-tipo="visita" data-visita-pagina="revisao">
+  <csa-navbar area="usuario"></csa-navbar>
+
+  <aside class="csa-vp-acessibilidade">
+    <button class="csa-acessibilidade-btn" type="button" aria-label="Abrir menu de acessibilidade" aria-expanded="false" aria-controls="csa-acessibilidade-painel">
+      <i class="fa-solid fa-universal-access" aria-hidden="true"></i>
+    </button>
+    <div class="csa-acessibilidade-painel" id="csa-acessibilidade-painel" hidden>
+      <button type="button" data-acao="aumentar-fonte">A+ Aumentar fonte</button>
+      <button type="button" data-acao="diminuir-fonte">A- Diminuir fonte</button>
+      <button type="button" data-acao="contraste">Alto contraste</button>
+      <button type="button" data-acao="sublinhar">Sublinhar links</button>
+      <button type="button" data-acao="resetar">Restaurar padrão</button>
+    </div>
+  </aside>
+  <div vw class="enabled csa-vp-libras">
+    <div vw-access-button class="active"></div>
+    <div vw-plugin-wrapper><div class="vw-plugin-top-wrapper"></div></div>
+  </div>
+
+  <main class="csa-confirmacao-conteudo">
+    <button class="csa-confirmacao-voltar" type="button" data-csa-voltar>
+      <span class="csa-confirmacao-seta" aria-hidden="true"><img src="../../../assets/reservas/voltar.svg" width="28" height="28" alt=""></span>
+      Voltar ao formulário
+    </button>
+    <h1 id="csa-confirmacao-titulo">Confirme as informações</h1>
+    <section class="csa-confirmacao-estado" id="csa-confirmacao-estado" aria-live="polite" tabindex="-1">
+      <h2>Nenhuma solicitação disponível</h2>
+      <p>Não foi possível localizar a solicitação. Retorne ao formulário para conferir suas informações.</p>
+    </section>
+    <div class="csa-confirmacao-grade" id="csa-confirmacao-grade" hidden></div>
+    <noscript><p>Ative o JavaScript para visualizar o resumo.</p></noscript>
+  </main>
+  <section class="csa-vp-sucesso" id="csa-vp-sucesso" aria-labelledby="csa-vp-sucesso-titulo" hidden>
+    <div>
+      <span class="csa-vp-sucesso__icone" aria-hidden="true"></span>
+      <h1 id="csa-vp-sucesso-titulo" tabindex="-1">Sua solicitação de visita foi enviada!</h1>
+      <a class="csa-vp-botao" href="visitas.html" data-visita-retorno>Retornar a agenda</a>
+    </div>
+  </section>
+</body>
+</html>

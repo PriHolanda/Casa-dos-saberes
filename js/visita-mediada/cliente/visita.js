@@ -1,6 +1,6 @@
 (() => {
   const parametros = new URLSearchParams(location.search);
-  const demo = parametros.get('demo') === '1' && ['localhost', '127.0.0.1', '[::1]', ''].includes(location.hostname);
+  const demo = csaVisitasModelo.demonstracao;
   const chave = demo ? 'csa-visita-rascunho-demo' : 'csa-visita-rascunho';
   const pagina = document.body.dataset.visitaPagina;
   const turnos = [
@@ -37,6 +37,22 @@
     document.querySelectorAll('[data-visita-retorno]').forEach(a => { a.href = link('visitas.html'); });
   }
 
+  function carregarLibras() {
+    if (!document.querySelector('.csa-vp-libras') || document.getElementById('csa-vp-plugin-libras')) return;
+    const script = document.createElement('script');
+    script.id = 'csa-vp-plugin-libras';
+    script.src = 'https://vlibras.gov.br/app/vlibras-plugin.js';
+    script.onload = () => {
+      if (!window.VLibras?.Widget) {
+        console.error('Não foi possível inicializar o VLibras.');
+        return;
+      }
+      new window.VLibras.Widget('https://vlibras.gov.br/app');
+    };
+    script.onerror = () => console.error('Não foi possível carregar o VLibras.');
+    document.head.append(script);
+  }
+
   function rascunho() {
     try { return JSON.parse(sessionStorage.getItem(chave)); } catch { return null; }
   }
@@ -50,7 +66,7 @@
     const periodo = document.getElementById('csa-vp-data-texto');
     const avancar = document.getElementById('csa-vp-agendar');
     function atualizar() {
-      const formato = new Intl.DateTimeFormat('pt-BR', { weekday: 'short', day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' });
+      const formato = new Intl.DateTimeFormat('pt-BR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' });
       const data = formato.format(new Date(`${dia}T12:00:00Z`)).replace('.', '').replace(/ de (\p{L})/u, (_, letra) => ` de ${letra.toUpperCase()}`);
       calendario.value = dia;
       periodo.dateTime = dia;
@@ -74,27 +90,13 @@
       atualizar();
     }));
     atualizar();
-    const desktop = matchMedia('(min-width: 761px) and (not (pointer: coarse))');
-    function carregarLibras() {
-      if (!desktop.matches || document.getElementById('csa-vp-plugin-libras')) return;
-      const script = document.createElement('script');
-      script.id = 'csa-vp-plugin-libras';
-      script.src = 'https://vlibras.gov.br/app/vlibras-plugin.js';
-      script.onload = () => {
-        if (window.VLibras?.Widget) new window.VLibras.Widget('https://vlibras.gov.br/app');
-      };
-      document.head.append(script);
-    }
-    desktop.addEventListener('change', carregarLibras);
-    carregarLibras();
-
     lista.setAttribute('aria-busy', 'true');
     lista.append(elemento('p', '', 'Carregando exposições…'));
     try {
       const exposicoes = demo ? csaVisitasModelo.exposicoesDemo() : await csaVisitasApi.exposicoes();
       lista.replaceChildren();
       for (const exposicao of exposicoes) {
-        if (exposicao.pausada) continue;
+        if (!exposicao.nome?.trim() || exposicao.pausada) continue;
         const cartao = elemento('article', 'csa-vp-exposicao');
         cartao.dataset.sala = exposicao.sala_id - 1;
         const detalhes = elemento('a', '', 'Ver detalhes');
@@ -294,7 +296,7 @@
       perguntas.removeAttribute('aria-busy');
     }
     const anterior = rascunho();
-    const salvo = anterior?.dia === dia && anterior?.hora === horario ? anterior.respostas || {} : {};
+    const salvo = anterior?.respostas || {};
     const esquerda = elemento('div', 'csa-vp-coluna');
     const direita = elemento('div', 'csa-vp-coluna');
     const ciencia = termo(termos[0], salvo);
@@ -319,6 +321,32 @@
     }
     mobile.addEventListener('change', organizar);
     organizar();
+    function respostasAtuais() {
+      const respostas = {};
+      const valores = new FormData(form);
+      for (const [id, valor] of valores) {
+        const campo = campos.find(item => item.id === id);
+        respostas[id] = campo?.multipla ? valores.getAll(id) : valor.trim();
+      }
+      return respostas;
+    }
+    function validarPessoas() {
+      const quantidade = form.elements.quantidade;
+      const pcd = form.elements.quantidadePcd;
+      const telefone = form.elements.telefone;
+      const digitos = telefone.value.replace(/\D/g, '');
+      telefone.setCustomValidity(digitos.length < 10 || digitos.length > 15 ? 'Informe um telefone com DDD, entre 10 e 15 dígitos.' : '');
+      if (pcd) pcd.setCustomValidity(pcd.value !== '' && Number(pcd.value) > Number(quantidade.value) ? 'A quantidade de pessoas com deficiência não pode superar o total do grupo.' : '');
+    }
+    form.addEventListener('input', () => {
+      validarPessoas();
+      try {
+        if (horario && dataValida(pedido)) guardar({ dia, hora: horario, respostas: respostasAtuais() });
+      } catch {
+        aviso.textContent = 'O navegador não conseguiu salvar o rascunho. Mantenha esta página aberta para preservar suas respostas.';
+        aviso.hidden = false;
+      }
+    });
     form.querySelector('[type="submit"]').disabled = false;
     form.addEventListener('submit', evento => {
       evento.preventDefault();
@@ -328,11 +356,9 @@
         aviso.focus();
         return;
       }
-      const valores = new FormData(form);
-      const multiplos = new Set(campos.filter(campo => campo.multipla && campo.opcoes).map(campo => campo.id));
-      const respostas = Object.fromEntries([...valores].map(([id, valor]) => [
-        id, multiplos.has(id) ? valores.getAll(id) : valor.trim()
-      ]));
+      validarPessoas();
+      if (!form.reportValidity()) return;
+      const respostas = respostasAtuais();
       const solicitacao = { dia, hora: horario, respostas, campos };
       if (!demo) {
         try {
@@ -379,7 +405,12 @@
       campo.id, csaVisitaSolicitacao.valores(respostas, campo.id).join(', ')
     ]));
     const rotulos = Object.fromEntries(campos.map(campo => [campo.id, tituloPergunta(campo)]));
-    const extras = campos.filter(campo => !camposDoResumo.includes(campo.id)).map(campo => [campo.id, rotulos[campo.id]]);
+    dados.dataVisita = new Intl.DateTimeFormat('pt-BR', { timeZone: 'UTC', dateStyle: 'long' }).format(new Date(`${dia}T12:00:00Z`));
+    dados.horarioVisita = `${salvo.hora} às ${csaVisitaSolicitacao.termino(salvo.hora)}`;
+    rotulos.dataVisita = 'Data da visita';
+    rotulos.horarioVisita = 'Horário da visita';
+    const extras = [['dataVisita', rotulos.dataVisita], ['horarioVisita', rotulos.horarioVisita],
+      ...campos.filter(campo => !camposDoResumo.includes(campo.id)).map(campo => [campo.id, rotulos[campo.id]])];
     for (const id of ['quantidade', 'quantidadePcd']) {
       if (dados[id]) dados[id] += Number(dados[id]) === 1 ? ' Pessoa' : ' Pessoas';
     }
@@ -401,6 +432,7 @@
   }
 
   atualizarRetornos();
+  carregarLibras();
   if (pagina === 'agenda') mostrarAgenda();
   if (pagina === 'horarios') mostrarHorarios();
   if (pagina === 'formulario') mostrarFormulario();

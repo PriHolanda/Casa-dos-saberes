@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Formulário de visita | Casa dos Saberes</title>
+  <link rel="icon" href="../../../assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../../../css/base.css">
+  <link rel="stylesheet" href="../../../css/visita-mediada/cliente/visita.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.3.1/css/all.min.css">
+  <script src="../../../js/navbar.js" defer></script>
+  <script src="../../../js/config.js" defer></script>
+  <script src="../../../js/api.js" defer></script>
+  <script src="../../../js/visita-mediada/modelo.js" defer></script>
+  <script src="../../../js/visitas-api.js" defer></script>
+  <script src="../../../js/cliente/visita-solicitacao.js" defer></script>
+  <script src="../../../js/visita-mediada/cliente/visita.js" defer></script>
+  <script src="../../../js/cliente/acessibilidade.js" defer></script>
+  <link rel="stylesheet" href="../../../css/padroes.css">
+  <link rel="stylesheet" href="../../../css/navbar.css">
+</head>
+<body data-csa-interface class="csa-visita-publica" data-visita-pagina="formulario">
+  <csa-navbar area="usuario"></csa-navbar>
+
+  <aside class="csa-vp-acessibilidade">
+    <button class="csa-acessibilidade-btn" type="button" aria-label="Abrir menu de acessibilidade" aria-expanded="false" aria-controls="csa-acessibilidade-painel">
+      <i class="fa-solid fa-universal-access" aria-hidden="true"></i>
+    </button>
+    <div class="csa-acessibilidade-painel" id="csa-acessibilidade-painel" hidden>
+      <button type="button" data-acao="aumentar-fonte">A+ Aumentar fonte</button>
+      <button type="button" data-acao="diminuir-fonte">A- Diminuir fonte</button>
+      <button type="button" data-acao="contraste">Alto contraste</button>
+      <button type="button" data-acao="sublinhar">Sublinhar links</button>
+      <button type="button" data-acao="resetar">Restaurar padrão</button>
+    </div>
+  </aside>
+  <div vw class="enabled csa-vp-libras">
+    <div vw-access-button class="active"></div>
+    <div vw-plugin-wrapper><div class="vw-plugin-top-wrapper"></div></div>
+  </div>
+
+  <main class="csa-vp-formulario">
+    <a class="csa-vp-voltar" href="visitas.html" data-visita-retorno>
+      <span><img src="../../../assets/reservas/voltar.svg" width="28" height="28" alt=""></span> Voltar para agenda
+    </a>
+    <h1 id="csa-vp-formulario-titulo">Formulário de visita</h1>
+    <p class="csa-vp-formulario__aviso"><strong>Importante:</strong> ao enviar sua solicitação, aguarde a confirmação da nossa equipe via telefone ou e-mail. O envio do formulário não significa que a reserva já foi confirmada.</p>
+    <form id="csa-vp-formulario" aria-labelledby="csa-vp-formulario-titulo">
+      <div class="csa-vp-perguntas" id="csa-vp-perguntas"></div>
+      <noscript><p>Ative o JavaScript para preencher o formulário.</p></noscript>
+      <p class="csa-vp-aviso" id="csa-vp-aviso" role="alert" tabindex="-1" hidden></p>
+      <button class="csa-vp-botao" type="submit" disabled>Enviar formulário</button>
+    </form>
+  </main>
+</body>
+</html>

@@ -4,6 +4,9 @@ const csaDadosReservas = (() => {
     id: 'reservas',
     versao: 1,
     perguntas: [
+      { id: 'ciencia-analise', tipo: 'termo', titulo: 'Termo de Ciência sobre Análise e Aprovação da solicitação', descricao: '',
+        texto: 'Declaro estar ciente de que esta solicitação não garante a realização do evento, estando sua análise e aprovação sujeitas à avaliação da gestão do espaço cultural solicitado, que poderá autorizar, negar ou solicitar ajustes à proposta.',
+        obrigatoria: true, coluna: 'principal', ordem: 1 },
       { id: 'responsavel', tipo: 'aberta', titulo: 'Responsável pelo agendamento', descricao: 'Nome',
         mobile: { descricao: 'Digite o nome' },
         campo: 'text', autocomplete: 'name', obrigatoria: true, limite: 255, coluna: 'principal', ordem: 10 },
@@ -39,7 +42,7 @@ const csaDadosReservas = (() => {
         ] },
       { id: 'classificacao', tipo: 'escolha', titulo: 'Qual a classificação indicativa da sua atividade?', descricao: '',
         mobile: { titulo: 'Qual a classificação indicativa?' },
-        multipla: false, obrigatoria: true, coluna: 'principal', ordem: 80,
+        multipla: false, obrigatoria: true, coluna: 'complementar', ordem: 10,
         opcoes: [
           { id: 'livre', titulo: 'Livre' }, { id: '10', titulo: '10 anos' },
           { id: '12', titulo: '12 anos' }, { id: '14', titulo: '14 anos' },
@@ -47,7 +50,7 @@ const csaDadosReservas = (() => {
         ] },
       { id: 'publico', tipo: 'aberta', titulo: 'Público estimado', descricao: 'Ex: 80',
         mobile: { descricao: 'Digite aqui' },
-        campo: 'number', minimo: 1, obrigatoria: true, coluna: 'principal', ordem: 90 },
+        campo: 'number', minimo: 1, obrigatoria: true, coluna: 'complementar', ordem: 20 },
       { id: 'proposta', tipo: 'anexo',
         titulo: 'Anexe a sua proposta em formato PDF ou o link para a proposta para que tenhamos acesso a mais detalhes',
         descricao: 'Precisamos do máximo de informações possíveis para ter uma dimensão do que está sendo proposto.',
@@ -56,16 +59,13 @@ const csaDadosReservas = (() => {
           descricao: 'Apresentar a proposta em detalhes. Precisamos do máximo de informações possíveis para ter uma dimensão do que está sendo proposto.'
         },
         obrigatoria: true, aceita: '.pdf,application/pdf', limiteBytes: 10 * 1024 * 1024,
-        coluna: 'complementar', ordem: 10 },
+        coluna: 'complementar', ordem: 30 },
       { id: 'link-proposta', tipo: 'aberta', titulo: 'Link da proposta', descricao: 'Cole o link aqui (Opcional)',
         mobile: { descricao: 'Cole o link aqui. (Opcional)' },
-        tituloVisivel: false, campo: 'url', obrigatoria: false, limite: 2048, coluna: 'complementar', ordem: 20 },
-      { id: 'ciencia-analise', tipo: 'termo', titulo: 'Termo de Ciência sobre Análise e Aprovação da solicitação', descricao: '',
-        texto: 'Declaro estar ciente de que esta solicitação não garante a realização do evento, estando sua análise e aprovação sujeitas à avaliação da gestão do espaço cultural solicitado, que poderá autorizar, negar ou solicitar ajustes à proposta.',
-        obrigatoria: true, coluna: 'complementar', ordem: 30 },
+        tituloVisivel: false, campo: 'url', obrigatoria: false, limite: 2048, coluna: 'complementar', ordem: 40 },
       { id: 'ciencia-logos', tipo: 'termo', titulo: 'Termo de Ciência sobre Uso da Régua de Logos Institucional', descricao: '',
         texto: 'Declaro estar ciente de que, em caso de aprovação da presente solicitação, deverá ser utilizado em todos os materiais de divulgação (como cards, flyers, pôsteres e/ou publicações) o uso obrigatório da régua de logos padrão do equipamento cultural, conforme disponibilizado.',
-        obrigatoria: true, coluna: 'complementar', ordem: 40 }
+        obrigatoria: true, coluna: 'complementar', ordem: 50 }
     ],
     // Regras entre perguntas são declarativas e também podem vir da API.
     alternativasObrigatorias: [{ ids: ['proposta', 'link-proposta'], mensagem: 'Adicione a proposta em PDF ou informe um link para ela.' }]

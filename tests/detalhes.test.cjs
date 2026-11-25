@@ -228,7 +228,13 @@ test('HTML mantém cards fixos e não possui botões de continuidade', () => {
     'detalhes-visita.html'
   ]) {
     const html = fs.readFileSync(
-      path.join(raiz, 'pages', 'cliente', pagina),
+      path.join(
+        raiz,
+        'pages',
+        pagina === 'detalhes-visita.html' ? 'visita-mediada' : 'cliente',
+        ...(pagina === 'detalhes-visita.html' ? ['cliente'] : []),
+        pagina
+      ),
       'utf8'
     );
 

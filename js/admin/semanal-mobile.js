@@ -41,7 +41,8 @@
       const botao = document.createElement('button');
       botao.type = 'button';
       botao.className = 'csa-dia__cabecalho';
-      botao.setAttribute('aria-expanded', 'false');
+      const expandido = i === 0;
+      botao.setAttribute('aria-expanded', String(expandido));
       botao.setAttribute('aria-controls', idCorpo);
       // só textos fixos e números, sem entrada do usuário
       botao.innerHTML =
@@ -52,7 +53,7 @@
       const corpo = document.createElement('div');
       corpo.id = idCorpo;
       corpo.className = 'csa-dia__corpo';
-      corpo.hidden = true;
+      corpo.hidden = !expandido;
 
       turnos.forEach(turno => {
         const conteudo = turno.celulas[i]?.querySelector('.csa-grid__conteudo');
@@ -65,6 +66,12 @@
         // o clone mantém os data-atributos, então os cliques em cards e em
         // "Adicionar Evento" continuam tratados pelo listener do agenda.js
         bloco.append(nome, conteudo.cloneNode(true));
+        if (!conteudo.querySelector('.csa-event-card')) {
+          const vazio = document.createElement('p');
+          vazio.className = 'csa-vazio-turno';
+          vazio.textContent = 'Nenhum registro neste turno.';
+          bloco.insertBefore(vazio, bloco.lastChild);
+        }
         corpo.append(bloco);
       });
 

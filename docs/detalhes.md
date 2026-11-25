@@ -15,9 +15,11 @@ As páginas possuem estrutura responsiva e compartilham os módulos de consulta,
 
 ```text
 pages/
-└── cliente/
-    ├── detalhes-reserva.html
-    └── detalhes-visita.html
+├── cliente/
+│   └── detalhes-reserva.html
+└── visita-mediada/
+    └── cliente/
+        └── detalhes-visita.html
 
 css/
 └── cliente/
@@ -46,7 +48,7 @@ tests/
 | Arquivo | Responsabilidade |
 |---|---|
 | `pages/cliente/detalhes-reserva.html` | Apresentação das informações de eventos cadastrados e confirmados. |
-| `pages/cliente/detalhes-visita.html` | Apresentação das informações de visitas mediadas. |
+| `pages/visita-mediada/cliente/detalhes-visita.html` | Apresentação das informações de visitas mediadas. |
 | `css/cliente/detalhes.css` | Estilos compartilhados e responsividade das páginas. |
 | `js/cliente/detalhes-dados.js` | Consulta e disponibilização dos dados utilizados nas páginas. |
 | `js/cliente/detalhes-modelo.js` | Validação, normalização e formatação das informações. |
@@ -169,7 +171,7 @@ Eventos cadastrados e confirmados podem ser consultados por meio de seus identif
 
 ### 4.2. Detalhes das visitas mediadas
 
-**Arquivo:** `pages/cliente/detalhes-visita.html`
+**Arquivo:** `pages/visita-mediada/cliente/detalhes-visita.html`
 
 A página apresenta informações relacionadas às visitas mediadas e aos espaços destinados a essas atividades.
 
@@ -219,7 +221,7 @@ A integração utiliza o identificador do evento, sem necessidade de transferir 
 A página de visitas pode ser acessada com o identificador de um espaço associado:
 
 ```text
-pages/cliente/detalhes-visita.html?espacoId=3
+pages/visita-mediada/cliente/detalhes-visita.html?espacoId=3
 ```
 
 Nesse cenário, o controlador utiliza as informações disponíveis no catálogo de espaços para preparar a apresentação básica da visita.
@@ -348,13 +350,13 @@ http://127.0.0.1:3001/pages/cliente/detalhes-reserva.html?demo=1
 ### Visita demonstrativa
 
 ```text
-http://127.0.0.1:3001/pages/cliente/detalhes-visita.html?demo=1
+http://127.0.0.1:3001/pages/visita-mediada/cliente/detalhes-visita.html?demo=1
 ```
 
 ### Consulta de espaço associado à visita
 
 ```text
-http://127.0.0.1:3001/pages/cliente/detalhes-visita.html?espacoId=3
+http://127.0.0.1:3001/pages/visita-mediada/cliente/detalhes-visita.html?espacoId=3
 ```
 
 O parâmetro `demo=1` utiliza exemplos específicos para testes, mantendo-os separados das consultas normais.

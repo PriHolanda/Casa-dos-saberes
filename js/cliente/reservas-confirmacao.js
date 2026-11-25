@@ -184,7 +184,7 @@
         }
       });
     } catch {
-      avisar('Não foi possível recuperar os dados para revisão. Nenhuma solicitação foi enviada. Retorne ao formulário para tentar novamente.');
+      avisar('Não foi possível recuperar suas informações. Retorne ao formulário para tentar novamente.');
     }
   })();
 })();

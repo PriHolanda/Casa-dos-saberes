@@ -13,7 +13,9 @@
   <link rel="stylesheet" href="../../css/base.css">
   <link rel="stylesheet" href="../../css/componentes.css">
   <link rel="stylesheet" href="../../css/cliente/detalhes.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.3.1/css/all.min.css">
 
+  <script src="../../js/navbar.js" defer></script>
   <script src="../../js/config.js" defer></script>
   <script src="../../js/api.js" defer></script>
   <script src="../../js/agenda-modelo.js" defer></script>
@@ -21,52 +23,21 @@
   <script src="../../js/cliente/detalhes-dados.js" defer></script>
   <script src="../../js/cliente/detalhes-modelo.js" defer></script>
   <script src="../../js/cliente/detalhes.js" defer></script>
+  <link rel="stylesheet" href="../../css/padroes.css">
+  <link rel="stylesheet" href="../../css/navbar.css">
 </head>
 
-<body class="csa-detalhes csa-detalhes--reserva" data-csa-tipo="reserva">
+<body data-csa-interface class="csa-detalhes csa-detalhes--reserva" data-csa-tipo="reserva">
   <a class="csa-detalhes__pular" href="#csa-detalhes-conteudo">
     Ir para o conteúdo
   </a>
 
-  <header class="csa-detalhes-header">
-    <div class="csa-detalhes-header__conteudo">
-      <a href="agenda-cliente.html" aria-label="Casa dos Saberes — agenda">
-        <img
-          src="../../assets/reservas/csca-gov.png"
-          width="214"
-          height="31"
-          alt="Casa dos Saberes Cego Aderaldo e Governo do Ceará"
-        >
-      </a>
-
-      <button
-        class="csa-detalhes-menu__botao"
-        type="button"
-        aria-label="Abrir menu"
-        aria-expanded="false"
-        aria-controls="csa-detalhes-menu"
-      >
-        <img src="../../assets/reservas/menu.svg" width="41" height="27" alt="">
-      </button>
-
-      <nav
-        class="csa-detalhes-menu"
-        id="csa-detalhes-menu"
-        aria-label="Navegação principal"
-        hidden
-      >
-        <a href="agenda-cliente.html">Agenda</a>
-        <a href="reservas.html">Formulário de reserva</a>
-      </nav>
-    </div>
-
-    <div class="csa-detalhes-header__faixa" aria-hidden="true"></div>
-  </header>
+  <csa-navbar area="usuario"></csa-navbar>
 
   <main class="csa-detalhes__conteudo" id="csa-detalhes-conteudo">
     <a class="csa-detalhes__voltar" href="agenda-cliente.html">
       <span class="csa-detalhes__seta" aria-hidden="true">
-        <img src="../../assets/reservas/voltar.svg" width="24" height="24" alt="">
+        <img src="../../assets/reservas/voltar.svg" width="28" height="28" alt="">
       </span>
       <span>Voltar para a agenda</span>
     </a>

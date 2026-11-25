@@ -1,14 +1,14 @@
 (() => {
   const parametros = new URLSearchParams(location.search);
-  const demonstracao = parametros.get('demo') === '1' && ['localhost', '127.0.0.1', '[::1]', ''].includes(location.hostname);
-  const mobile = matchMedia('(max-width: 760px), (pointer: coarse)');
+  const demonstracao = csaVisitasModelo.demonstracao;
+  const mobile = matchMedia('(max-width: 768px)');
   const dataCompleta = new Intl.DateTimeFormat('pt-BR', { day: 'numeric', month: 'long', year: 'numeric' });
   const diaSemana = new Intl.DateTimeFormat('pt-BR', { weekday: 'short' });
   const diaMes = new Intl.DateTimeFormat('pt-BR', { day: '2-digit', month: '2-digit' });
   const botoesVisao = document.querySelectorAll('[data-visao]');
   const filtro = document.getElementById('csa-visitas-filtro');
   const periodo = document.getElementById('csa-visitas-periodo');
-  const grade = document.getElementById('csa-visitas-grade');
+  const grade = document.getElementById('csa-agenda');
   const mensagem = document.getElementById('csa-visitas-mensagem');
   const dialogo = document.getElementById('csa-visita-detalhe');
   const titulo = document.getElementById('csa-visita-detalhe-titulo');
@@ -17,7 +17,9 @@
   const acoes = dialogo.querySelectorAll('[data-acao]');
   const turnos = ['Manhã', 'Tarde'];
   const hoje = new Intl.DateTimeFormat('sv-SE', { timeZone: 'America/Fortaleza', dateStyle: 'short' }).format(new Date());
-  let data = demonstracao ? new Date(2026, 8, 21) : new Date(`${hoje}T12:00:00`);
+  const solicitada = parametros.get('dia');
+  const diaInicial = csaVisitasModelo.dataCivil(`${solicitada}T12:00:00`) ? solicitada : demonstracao ? '2026-09-21' : hoje;
+  let data = new Date(`${diaInicial}T12:00:00`);
   let visao = mobile.matches ? 'diaria' : 'semanal';
   let visaoEscolhida = false;
   let visitas;
@@ -41,7 +43,7 @@
   function diasDoPeriodo() {
     if (visao === 'diaria') return [data];
     const segunda = somarDias(data, -((data.getDay() + 6) % 7));
-    return Array.from({ length: 6 }, (_, indice) => somarDias(segunda, indice));
+    return Array.from({ length: 7 }, (_, indice) => somarDias(segunda, indice));
   }
 
   function dataISO(dia) {
@@ -71,8 +73,8 @@
           id: itens.length + 1,
           status: dia === 22 && indice === 0 ? 'pendente' : base.status,
           turno,
-          data_inicio: `2026-09-${dia}T08:00:00`,
-          data_fim: `2026-09-${dia}T09:00:00`
+          data_inicio: `2026-09-${dia}T${turno ? '14' : '08'}:00:00`,
+          data_fim: `2026-09-${dia}T${turno ? '15' : '09'}:00:00`
         });
       });
     }
@@ -83,65 +85,66 @@
     const chave = dataISO(dia);
     return visitas.filter(visita => {
       const inicio = visita.data_inicio;
-      const visitaTurno = visita.turno ?? Number(hora(inicio) >= '12:00');
-      return inicio?.slice(0, 10) === chave && turno === visitaTurno && (filtro.value === 'todos' || visita.status === filtro.value);
+      const comeco = `${chave}T${turno === 0 ? '00' : '12'}:00:00`;
+      const fim = `${chave}T${turno === 0 ? '12' : '23'}:${turno === 0 ? '00:00' : '59:59'}`;
+      const estado = csaVisitasModelo.status(visita.status).valor;
+      return inicio < fim && visita.data_fim > comeco && (filtro.value === 'todos' || estado === (filtro.value === 'aprovada' ? 'aceito' : filtro.value));
     });
   }
 
   function cartao(visita) {
-    const pendente = visita.status === 'pendente';
-    const botao = elemento('button', 'csa-visitas-card');
+    const estado = csaVisitasModelo.status(visita.status);
+    const pendente = estado.valor === 'pendente';
+    const botao = elemento('button', 'csa-visitas-card csa-event-card');
     botao.type = 'button';
     botao.dataset.visitaId = visita.id;
-    const status = elemento('span', `csa-visitas-card__status${pendente ? ' csa-visitas-card__status--pendente' : ''}`);
-    const indicador = elemento('span', `csa-visitas-indicador${pendente ? ' csa-visitas-indicador--pendente' : ''}`);
+    const status = elemento('span', `csa-visitas-card__status csa-event-card__status--${estado.valor}${pendente ? ' csa-visitas-card__status--pendente' : ''}`);
+    const indicador = elemento('span', `csa-visitas-indicador csa-visitas-indicador--${estado.valor}`);
     indicador.setAttribute('aria-hidden', 'true');
-    status.append(indicador, pendente ? 'Pendente' : 'Aceito');
-    const horario = elemento('time', '', `${hora(visita.data_inicio)} - ${hora(visita.data_fim)}`);
+    status.append(indicador, estado.rotulo);
+    const horario = elemento('time', '', `${hora(visita.data_inicio)} às ${hora(visita.data_fim)}`);
     horario.dateTime = visita.data_inicio;
-    botao.append(elemento('span', 'csa-visitas-card__categoria', 'Visita Mediada'), elemento('strong', '', visita.instituicao || visita.nome_responsavel), horario, status);
-    botao.addEventListener('click', () => abrirDetalhe(visita, botao));
+    botao.append(elemento('span', 'csa-visitas-card__categoria', 'Visita Mediada'), elemento('strong', '', visita.instituicao || visita.nome_responsavel || 'Responsável não informado'), horario, status);
     return botao;
   }
 
-  function renderizarDiaria(dia) {
-    const lista = elemento('div', 'csa-visitas-turnos');
-    turnos.forEach((turno, indice) => {
-      const detalhes = elemento('details');
-      detalhes.open = true;
-      detalhes.append(elemento('summary', '', turno));
-      const itens = visitasDoTurno(dia, indice);
-      detalhes.append(...(itens.length ? itens.map(cartao) : [elemento('p', 'csa-visitas-vazio', 'Sem visitas neste turno.') ]));
-      lista.append(detalhes);
-    });
-    return lista;
-  }
-
-  function renderizarSemanal(dias) {
-    const secao = elemento('div', 'csa-visitas-semana');
-    secao.tabIndex = 0;
-    secao.setAttribute('role', 'region');
-    secao.setAttribute('aria-label', 'Visitas da semana');
-    const tabela = elemento('table');
+  function renderizarAgenda(dias) {
+    const tabela = elemento('table', `csa-grid${visao === 'diaria' ? ' csa-grid--diaria' : ''}`);
+    tabela.append(elemento('caption', 'csa-grid__caption', `Agenda ${visao === 'diaria' ? 'diária' : 'semanal'} de visitas por dia e turno`));
     const cabecalho = tabela.createTHead().insertRow();
-    cabecalho.append(elemento('th'));
+    const turno = elemento('th');
+    turno.scope = 'col';
+    turno.append(elemento('span', 'csa-grid__caption', 'Turno'));
+    cabecalho.append(turno);
     dias.forEach(dia => {
       const coluna = elemento('th');
       coluna.scope = 'col';
       const nomeDia = diaSemana.format(dia).replace('.', '');
-      coluna.append(nomeDia[0].toUpperCase() + nomeDia.slice(1), elemento('span', '', diaMes.format(dia)));
+      coluna.append(elemento('strong', '', nomeDia[0].toUpperCase() + nomeDia.slice(1)), elemento('span', '', diaMes.format(dia)));
       cabecalho.append(coluna);
     });
     const corpo = tabela.createTBody();
     turnos.forEach((turno, indice) => {
       const linha = corpo.insertRow();
+      linha.dataset.turno = indice === 0 ? 'manha' : 'tarde';
       const rotulo = elemento('th', '', turno);
       rotulo.scope = 'row';
       linha.append(rotulo);
-      dias.forEach(dia => linha.insertCell().append(...visitasDoTurno(dia, indice).map(cartao)));
+      dias.forEach(dia => {
+        const celula = linha.insertCell();
+        celula.className = 'csa-grid__celula';
+        const conteudo = elemento('div', 'csa-grid__conteudo');
+        conteudo.dataset.turno = linha.dataset.turno;
+        const referencia = elemento('span');
+        referencia.dataset.data = dataISO(dia);
+        referencia.hidden = true;
+        const itens = visitasDoTurno(dia, indice);
+        conteudo.append(...itens.map(cartao), referencia);
+        if (visao === 'diaria' && !itens.length) conteudo.prepend(elemento('p', 'csa-vazio-turno', 'Nenhum registro neste turno.'));
+        celula.append(conteudo);
+      });
     });
-    secao.append(tabela);
-    return secao;
+    return tabela;
   }
 
   function atualizar() {
@@ -153,8 +156,8 @@
     botoesVisao.forEach(botao => botao.setAttribute('aria-pressed', String(botao.dataset.visao === visao)));
     document.getElementById('csa-visitas-filtro-texto').textContent = filtro.selectedOptions[0].textContent;
     if (!visitas) return;
-    grade.replaceChildren(visao === 'diaria' ? renderizarDiaria(inicio) : renderizarSemanal(dias));
-    grade.hidden = false;
+    grade.replaceChildren(renderizarAgenda(dias));
+    document.getElementById('csa-visitas-grade').hidden = false;
   }
 
   function quadro(nome, grupos) {
@@ -179,7 +182,8 @@
   function abrirDetalhe(visita, botao) {
     ativa = visita;
     gatilho = botao;
-    const pendente = visita.status === 'pendente';
+    const estado = csaVisitasModelo.status(visita.status);
+    const pendente = estado.valor === 'pendente';
     titulo.textContent = pendente ? 'Solicitação de visita mediada' : 'Detalhes da Visita Mediada';
     quadros.replaceChildren(
       quadro('Dados do responsável', [[
@@ -200,10 +204,11 @@
       ])
     );
     acoes.forEach(botaoAcao => {
-      botaoAcao.hidden = pendente === (botaoAcao.dataset.acao === 'cancelar');
-      botaoAcao.disabled = cancelando;
+      botaoAcao.hidden = botaoAcao.dataset.acao === 'cancelar' ? estado.valor !== 'aceito' : !pendente;
+      botaoAcao.disabled = cancelando || (!demonstracao && botaoAcao.dataset.acao !== 'cancelar');
     });
-    aviso.hidden = true;
+    aviso.textContent = !demonstracao && pendente ? 'A aprovação e a negativa de visitas ainda não estão disponíveis no servidor.' : '';
+    aviso.hidden = !aviso.textContent;
     dialogo.showModal();
     dialogo.scrollTop = 0;
   }
@@ -223,13 +228,20 @@
     atualizar();
   }));
   filtro.addEventListener('change', atualizar);
+  grade.addEventListener('click', evento => {
+    const botao = evento.target.closest('[data-visita-id]');
+    if (botao) {
+      const visita = visitas.find(item => item.id === botao.dataset.visitaId);
+      if (visita) abrirDetalhe(visita, botao);
+    }
+  });
   document.getElementById('csa-visitas-exportar').addEventListener('click', () => window.print());
   dialogo.querySelector('.csa-visita-detalhe__fechar').addEventListener('click', () => dialogo.close());
   dialogo.addEventListener('cancel', evento => {
     if (cancelando) evento.preventDefault();
   });
   dialogo.addEventListener('close', () => {
-    const novoGatilho = [...grade.querySelectorAll('[data-visita-id]')].find(botao => botao.dataset.visitaId === String(ativa.id));
+    const novoGatilho = [...grade.querySelectorAll('[data-visita-id]')].find(botao => botao.dataset.visitaId === String(ativa.id) && botao.getClientRects().length);
     (gatilho.isConnected ? gatilho : novoGatilho || botoesVisao[visao === 'diaria' ? 0 : 1]).focus();
   });
   acoes.forEach(botao => botao.addEventListener('click', async () => {
@@ -272,20 +284,25 @@
       const dados = demonstracao ? dadosDemonstrativos() : (await csaApi.requisitar('/visitas/'))?.visitas;
       if (!Array.isArray(dados)) throw new Error('Não foi possível carregar as visitas.');
       const naturezas = { publica: 'Pública', privada: 'Privada', outra: 'Outra' };
-      visitas = dados.map(visita => demonstracao ? visita : {
+      const registros = dados.map(csaVisitasModelo.normalizarVisita).map(visita => demonstracao ? visita : {
         ...visita,
-        data_inicio: csaAgendaModelo.dataCivil(visita.data_inicio),
-        data_fim: csaAgendaModelo.dataCivil(visita.data_fim),
         natureza: naturezas[visita.natureza_instituicao],
         escolaridade: visita.grau_escolaridade,
         curso: visita.curso_semestre,
         grupo: visita.composicao_grupo,
         acessibilidade: visita.possui_pcd ? visita.tipos_deficiencia || 'Sim' : 'Não'
       }).sort((a, b) => a.data_inicio.localeCompare(b.data_inicio));
-      mensagem.hidden = true;
+      if (new Set(registros.map(visita => visita.id)).size !== registros.length) throw new Error('A resposta contém visitas duplicadas.');
+      visitas = registros;
+      mensagem.textContent = visitas.length ? '' : 'Nenhuma visita cadastrada.';
+      mensagem.hidden = !mensagem.textContent;
       atualizar();
+      const selecionada = visitas.find(visita => visita.id === parametros.get('visitaId'));
+      const botao = selecionada && [...grade.querySelectorAll('[data-visita-id]')].find(item => item.dataset.visitaId === selecionada.id);
+      if (botao) abrirDetalhe(selecionada, botao);
     } catch (erro) {
       mensagem.textContent = erro.message;
+      mensagem.hidden = false;
     }
   }
   carregar();

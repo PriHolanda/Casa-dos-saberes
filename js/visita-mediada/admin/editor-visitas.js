@@ -36,7 +36,7 @@
     const exposicao = selecao && id === selecionada ? rascunho : exposicoes.get(id);
     const cartao = elemento(selecao ? 'button' : 'article', 'csa-exposicoes-cartao');
     cartao.dataset.sala = id - 1;
-    cartao.append(elemento('span', 'csa-exposicoes-cartao__sala', nomeSala), elemento('strong', '', exposicao?.nome || 'Sem exposição'));
+    cartao.append(elemento('span', 'csa-exposicoes-cartao__sala', nomeSala), elemento('strong', '', exposicao?.nome || 'Nenhuma exposição cadastrada'));
     if (selecao) {
       cartao.type = 'button';
       cartao.setAttribute('aria-pressed', String(id === selecionada));

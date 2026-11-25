@@ -9,7 +9,7 @@ Nesta tela o administrador:
 - **aprova** ou **nega** solicitações pendentes;
 - **edita** ou **cancela** eventos aceitos.
 
-> A agenda administrativa usa o backend real e tem foco em desktop. O formulário de reserva é uma página independente, responsiva e somente frontend nesta etapa. Veja a [documentação do formulário](docs/formulario-reservas.md).
+> O dashboard administrativo e os fluxos de reserva e visita usam o FastAPI. A agenda pública permite escolher um espaço e turno para solicitar uma reserva. Veja a [documentação do formulário](docs/formulario-reservas.md).
 
 ## Sumário
 
@@ -49,19 +49,24 @@ agenda-casa-saberes/
 │   ├── cliente/
 │   │   ├── agenda-cliente.html   agenda do cliente
 │   │   ├── reservas.html         formulário de reserva
-│   │   ├── detalhes-*.html       detalhes de eventos e visitas
-│   │   └── confirmacao-*.html    confirmações de reservas e visitas
+│   │   ├── detalhes-reserva.html
+│   │   └── confirmacao-reserva.html
+│   ├── visita-mediada/
+│   │   ├── cliente/              agenda, horários, formulário e confirmação
+│   │   └── admin/                agenda e editores de visita mediada
 │   ├── login.html                autenticação compartilhada
 │   └── componentes.html          catálogo compartilhado
 ├── css/
 │   ├── admin/                    estilos da tela administrativa
 │   ├── cliente/                  estilos das telas do cliente
+│   ├── visita-mediada/           estilos específicos do fluxo de visita mediada
 │   ├── base.css                  estilos globais compartilhados
 │   ├── componentes.css           componentes compartilhados
 │   └── auth.css                  autenticação compartilhada
 ├── js/
 │   ├── admin/                    scripts da tela administrativa
 │   ├── cliente/                  scripts das telas do cliente
+│   ├── visita-mediada/           scripts e modelo do fluxo de visita mediada
 │   ├── config.js                 endereço público da API
 │   ├── api.js                    sessão e requisições HTTP ao FastAPI
 │   ├── auth.js                   autenticação compartilhada
@@ -123,7 +128,7 @@ Inicie o Keycloak e o FastAPI no repositório do backend. Em seguida, execute aq
 ./scripts/iniciar.sh
 ```
 
-Abra http://127.0.0.1:3000/ para entrar ou criar uma conta. Após o login, a agenda usa os controles do protótipo para consultar, cadastrar e decidir sobre eventos. A aprovação persistente depende do [ajuste de status no backend](docs/ajustes-backend-mvp.md).
+Abra http://127.0.0.1:3000/ para entrar ou criar uma conta. O Dashboard Administrativo reúne os agendamentos, e a tela Sugestões de Pauta permite gerenciar os eventos. As duas telas usam a API por padrão. Para abrir uma demonstração local, acrescente `?demo=1` à URL.
 
 Veja o [passo a passo dos serviços](scripts/README.md) e os [contratos e ajustes necessários no backend](docs/integracao-backend.md). Para executar os testes com Node.js, use `./scripts/testar.sh`.
 
@@ -262,9 +267,9 @@ O formulário reproduz a tela do Figma com 13 perguntas independentes, dados sep
 
 A mesma página apresenta automaticamente a versão mobile do Figma em telas de até 760 px e em dispositivos de toque sem hover, inclusive na horizontal. Perguntas e respostas são compartilhadas entre as apresentações; girar o celular ou redimensionar a janela preserva os dados preenchidos.
 
-Para adicionar, editar, remover ou reordenar perguntas, altere a definição em `js/cliente/reservas-dados.js`. Cada pergunta tem ID estável, título, descrição e corpo. O botão valida as respostas e prepara o evento `csa:reserva-preparada`; o envio real será integrado em uma próxima etapa.
+Para adicionar, editar, remover ou reordenar perguntas, altere a definição em `js/cliente/reservas-dados.js`. Cada pergunta tem ID estável, título, descrição e corpo. O botão valida as respostas e abre a revisão. Para enviar ao FastAPI, comece pela agenda pública escolhendo um espaço, uma data e um turno. A solicitação entra como pendente após a confirmação.
 
-Consulte [Formulário de reserva: componentes e integração](docs/formulario-reservas.md) para o schema, os IDs, as regras de validação, o payload e as rotas propostas para a futura edição administrativa. Execute `./scripts/testar.sh` para verificar os testes existentes e os do formulário.
+O envio integrado recebe um link para a proposta. Os anexos PDF podem ser selecionados e revisados no rascunho. Consulte [Formulário de reserva: componentes e integração](docs/formulario-reservas.md) para o schema, os IDs, as regras de validação e o payload.
 
 ---
 

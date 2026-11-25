@@ -30,7 +30,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   function cartao(espaco, evento, periodo) {
     const estado = evento ? 'occupied' : 'available';
-    const card = elemento('article', `csa-event csa-event-${estado} csa-event-${espaco.visual}`);
+    const visual = espaco.visual === 'salas' ? 'expo' : espaco.visual;
+    const card = elemento('article', `csa-event csa-event-${estado} csa-event-${visual}`);
     const hora = elemento('div', 'csa-event-hour');
     if (evento) {
       const inicio = intervalo(dia, periodo).inicio;

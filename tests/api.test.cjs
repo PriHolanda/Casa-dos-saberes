@@ -10,7 +10,7 @@ function ambiente(responder, config) {
   const ctx = vm.createContext({
     console, Date, Intl, csaConfig: config,
     sessionStorage: { getItem: chave => itens.get(chave), setItem: (chave, valor) => itens.set(chave, valor), removeItem: chave => itens.delete(chave) },
-    location: { replace: url => redirecionamentos.push(url) },
+    location: { pathname: '/pages/login.html', search: '', hash: '', replace: url => redirecionamentos.push(url) },
     fetch: async (url, opcoes) => { chamadas.push({ url, ...opcoes }); return responder(url, opcoes); }
   });
   for (const nome of ['config.js', 'api.js', 'agenda-modelo.js', 'admin/dados-api.js']) vm.runInContext(fs.readFileSync(path.join(__dirname, '../js', nome), 'utf8'), ctx);
@@ -18,6 +18,12 @@ function ambiente(responder, config) {
 }
 const resposta = (corpo, status = 200) => ({ ok: status < 400, status, json: async () => corpo });
 const registro = { id: 7, titulo: 'Oficina de música', descricao: 'Oficina para a comunidade.', data_inicio: '2026-11-08T09:00:00', data_fim: '2026-11-08T11:00:00', espaco_id: 1, publico_estimado: 0, responsavel: 'Maria', classificacao_indicativa: 'Livre' };
+test('sessão expirada preserva o destino de retorno para a agenda', async () => {
+  const a = ambiente(() => resposta({}));
+  a.ctx.location.pathname = '/pages/admin/agenda.html';
+  await assert.rejects(a.rodar("csaApi.requisitar('/eventos/')"), /expirou/);
+  assert.deepEqual(a.redirecionamentos, ['/pages/login.html?next=%2Fpages%2Fadmin%2Fagenda.html']);
+});
 function autenticar(a) { a.itens.set('csa-sessao', JSON.stringify({ token: 'token-teste', expira: Date.now() + 60000 })); }
 test('login usa o contrato real e busca o perfil com Bearer', async () => {
   const a = ambiente(url => resposta(url.endsWith('/login') ? { access_token: 'abc', expires_in: 60 } : { nome: 'Maria' }));
@@ -126,7 +132,7 @@ test('backend sem status não simula aprovação nem envia alteração incompat�
   const a = ambiente(() => resposta({ eventos: [registro] }));
   autenticar(a);
   await a.rodar('csaDadosAgenda.carregar()');
-  await assert.rejects(a.rodar("csaDadosAgenda.atualizarStatus('7', 'aceito')"), /ainda não salva o status/);
+  await assert.rejects(a.rodar("csaDadosAgenda.atualizarStatus('7', 'aceito')"), /não permite atualizar o status/);
   assert.equal(a.chamadas.length, 1);
   assert.equal(a.rodar("csaDadosAgenda.buscarEvento('7').status"), 'pendente');
 });

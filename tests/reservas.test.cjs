@@ -43,6 +43,18 @@ test('definição e perguntas são independentes e consultáveis por ID', async 
   assert.throws(() => modelo.prepararDefinicao(semProposta), /inexistente/);
 });
 
+test('termo de análise inicia o formulário e classificação e público ficam na coluna complementar', async () => {
+  const formulario = await dados.consultarFormulario();
+  const idsPorColuna = coluna => formulario.perguntas
+    .filter(pergunta => pergunta.coluna === coluna)
+    .sort((a, b) => a.ordem - b.ordem)
+    .map(pergunta => pergunta.id)
+    .join(',');
+
+  assert.equal(idsPorColuna('principal'), 'ciencia-analise,responsavel,telefone,email,instituicao,segmentos,pautas,periodicidade');
+  assert.equal(idsPorColuna('complementar'), 'classificacao,publico,proposta,link-proposta,ciencia-logos');
+});
+
 test('nenhum aceite ou opção é preenchido automaticamente', async () => {
   const formulario = await dados.consultarFormulario();
   for (const pergunta of formulario.perguntas) {
