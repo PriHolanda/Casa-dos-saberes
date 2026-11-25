@@ -1,7 +1,7 @@
 const csaPerguntaAberta = (() => {
   function renderizar(pergunta, valor = '') {
     const { escapar: e, id, referencias } = csaPerguntaBase;
-    const campos = ['text', 'tel', 'email', 'url', 'number', 'textarea'];
+    const campos = ['text', 'tel', 'email', 'url', 'number', 'date', 'textarea'];
     const tipo = campos.includes(pergunta.campo) ? pergunta.campo : 'text';
     const atributos = `id="${e(id(pergunta))}" name="${e(pergunta.id)}" class="csa-campo csa-pergunta__entrada"
       placeholder="${e(pergunta.descricao)}" aria-describedby="${e(referencias(pergunta))}"

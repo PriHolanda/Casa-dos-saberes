@@ -64,13 +64,13 @@ const csaDadosDetalhes = (() => {
     return structuredClone(espaco);
   }
 
-  async function consultarEvento(id) {
+  async function consultarEvento(id, ocorrenciaId) {
     if (typeof id !== 'string' || !/^\d+$/.test(id)) {
       throw new Error('Identificador de evento inválido.');
     }
 
     const eventos = await csaProgramacao.consultarEventos();
-    const evento = eventos.find(item => item.id === id);
+    const evento = eventos.find(item => item.id === id && (!ocorrenciaId || item.ocorrenciaId === ocorrenciaId));
     if (!evento) throw new Error('O evento não está disponível para consulta pública.');
 
     return { evento, espaco: await consultarEspaco(evento.espacoId) };

@@ -180,7 +180,7 @@ document.addEventListener('csa:reserva-preparada', evento => {
 
 O evento inclui todas as perguntas da definição. `arquivos` conserva os objetos `File` originais, indexados por ID da pergunta. O controlador envia `POST /eventos/` em JSON quando há apenas link e em multipart com `dados` e `arquivo` quando há PDF. A solicitação só aparece como enviada quando a API confirma um ID e status pendente.
 
-O FastAPI recebe os segmentos e as pautas selecionados em listas. A definição das perguntas de reserva pertence ao frontend. Consulte os [contratos usados na integração](integracao-backend.md).
+O FastAPI recebe os segmentos e as pautas selecionados em listas. Para periodicidade semanal ou mensal, o formulário exige a data final da recorrência e a envia em `data_fim_recorrencia` (AAAA-MM-DD). O dia escolhido é inclusivo e pode ser igual ou posterior à primeira ocorrência. `data_inicio` e `data_fim` continuam sendo os horários da primeira ocorrência. Consulte os [contratos usados na integração](integracao-backend.md).
 
 ## Aparência e verificação
 

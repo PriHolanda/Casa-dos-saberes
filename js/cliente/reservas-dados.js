@@ -40,6 +40,8 @@ const csaDadosReservas = (() => {
           { id: 'semanal', titulo: 'Semanal' }, { id: 'mensal', titulo: 'Mensal' },
           { id: 'unica', titulo: 'Somente na data escolhida' }
         ] },
+      { id: 'data-fim-recorrencia', tipo: 'aberta', campo: 'date', titulo: 'Data final da recorrência',
+        obrigatoria: true, coluna: 'principal', ordem: 75 },
       { id: 'classificacao', tipo: 'escolha', titulo: 'Qual a classificação indicativa da sua atividade?', descricao: '',
         mobile: { titulo: 'Qual a classificação indicativa?' },
         multipla: false, obrigatoria: true, coluna: 'complementar', ordem: 10,

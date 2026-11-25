@@ -108,10 +108,29 @@ const csaReservasModelo = (() => {
     return '';
   }
 
-  function validar(definicao, respostas) {
+  function temRecorrencia(periodicidade) {
+    return ['semanal', 'mensal'].includes(periodicidade);
+  }
+
+  function validarDataRecorrencia(data, dataInicio) {
+    if (csaAgendaModelo.lerDia(data) === null || data.startsWith('0000-')) {
+      return 'Informe uma data final válida para a recorrência.';
+    }
+    if (dataInicio && data < dataInicio) return 'A data final deve ser igual ou posterior à primeira ocorrência.';
+    return '';
+  }
+
+  function validar(definicao, respostas, dataInicio) {
     const erros = {};
     const alternativas = new Set(definicao.alternativasObrigatorias.flatMap(regra => regra.ids));
     definicao.perguntas.forEach(pergunta => {
+      if (pergunta.id === 'data-fim-recorrencia') {
+        if (temRecorrencia(respostas.periodicidade)) {
+          const erro = validarDataRecorrencia(respostas[pergunta.id], dataInicio);
+          if (erro) erros[pergunta.id] = erro;
+        }
+        return;
+      }
       const erro = validarResposta(pergunta, respostas[pergunta.id], alternativas.has(pergunta.id) ? false : pergunta.obrigatoria);
       if (erro) erros[pergunta.id] = erro;
     });
@@ -121,11 +140,12 @@ const csaReservasModelo = (() => {
     return erros;
   }
 
-  function prepararEnvio(definicao, respostas) {
-    if (Object.keys(validar(definicao, respostas)).length) throw new Error('Revise as respostas do formulário.');
+  function prepararEnvio(definicao, respostas, dataInicio) {
+    if (Object.keys(validar(definicao, respostas, dataInicio)).length) throw new Error('Revise as respostas do formulário.');
     const valores = {};
     const arquivos = {};
     definicao.perguntas.forEach(pergunta => {
+      if (pergunta.id === 'data-fim-recorrencia' && !temRecorrencia(respostas.periodicidade)) return;
       const valor = respostas[pergunta.id] ?? valorInicial(pergunta);
       if (pergunta.tipo === 'anexo') {
         valores[pergunta.id] = valor ? { nome: valor.name, tamanho: valor.size, tipo: valor.type || 'application/pdf' } : null;
@@ -137,5 +157,5 @@ const csaReservasModelo = (() => {
     return { dados: { formularioId: definicao.id, versao: definicao.versao, respostas: valores }, arquivos };
   }
 
-  return { prepararDefinicao, valorInicial, apresentacao, validarResposta, validar, prepararEnvio };
+  return { prepararDefinicao, valorInicial, apresentacao, validarResposta, validar, prepararEnvio, temRecorrencia, validarDataRecorrencia };
 })();

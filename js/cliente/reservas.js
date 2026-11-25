@@ -31,6 +31,15 @@ const csaReservas = (() => {
     mensagem.classList.toggle('csa-reservas__mensagem--erro', erro);
   }
 
+  function atualizarRecorrencia() {
+    const campo = formulario.elements['data-fim-recorrencia'];
+    const mostrar = csaReservasModelo.temRecorrencia(formulario.elements.periodicidade.value);
+    campo.closest('[data-pergunta-id]').hidden = !mostrar;
+    campo.disabled = !mostrar;
+    campo.required = mostrar;
+    campo.min = reserva?.data || '';
+  }
+
   function coletarRespostas() {
     const dados = new FormData(formulario);
     return Object.fromEntries(definicao.perguntas.map(pergunta => {
@@ -83,6 +92,7 @@ const csaReservas = (() => {
           .map(pergunta => csaPerguntasReserva.renderizar(pergunta)).join('')}
       </div>`).join('');
       atualizarApresentacao();
+      atualizarRecorrencia();
       enviar.disabled = false;
     } catch {
       avisar('Não foi possível carregar o formulário. Atualize a página para tentar novamente.', true);
@@ -93,28 +103,30 @@ const csaReservas = (() => {
     evento.preventDefault();
     if (!definicao) return;
     tentouEnviar = true;
+    atualizarRecorrencia();
     const respostas = coletarRespostas();
-    const erros = csaReservasModelo.validar(definicao, respostas);
+    const erros = csaReservasModelo.validar(definicao, respostas, reserva?.data);
     exibirErros(erros);
     if (Object.keys(erros).length) {
       avisar('Revise as perguntas indicadas para continuar.', true);
       formulario.querySelector('[aria-invalid="true"]').focus();
       return;
     }
-    const detalhe = csaReservasModelo.prepararEnvio(definicao, respostas);
+    const detalhe = csaReservasModelo.prepararEnvio(definicao, respostas, reserva?.data);
     document.dispatchEvent(new CustomEvent('csa:reserva-preparada', { detail: { ...detalhe, ...(reserva && { reserva }) } }));
   });
 
   formulario.addEventListener('input', evento => {
     if (!definicao || !evento.target.closest('[data-pergunta-id]')) return;
+    if (evento.target.name === 'periodicidade') atualizarRecorrencia();
     avisar('');
-    if (tentouEnviar) exibirErros(csaReservasModelo.validar(definicao, coletarRespostas()));
+    if (tentouEnviar) exibirErros(csaReservasModelo.validar(definicao, coletarRespostas(), reserva?.data));
   });
 
   formulario.addEventListener('change', evento => {
     if (!definicao || evento.target.type !== 'file') return;
     atualizarAnexo(evento.target.name);
-    if (tentouEnviar) exibirErros(csaReservasModelo.validar(definicao, coletarRespostas()));
+    if (tentouEnviar) exibirErros(csaReservasModelo.validar(definicao, coletarRespostas(), reserva?.data));
   });
 
   formulario.addEventListener('click', evento => {
@@ -125,10 +137,10 @@ const csaReservas = (() => {
     campo.value = '';
     atualizarAnexo(pergunta.id);
     avisar('');
-    if (tentouEnviar) exibirErros(csaReservasModelo.validar(definicao, coletarRespostas()));
+    if (tentouEnviar) exibirErros(csaReservasModelo.validar(definicao, coletarRespostas(), reserva?.data));
     campo.focus();
   });
 
   const pronto = carregar();
-  return { pronto };
+  return { pronto, atualizarRecorrencia };
 })();

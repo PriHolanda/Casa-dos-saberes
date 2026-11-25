@@ -22,6 +22,7 @@ const contexto = vm.createContext({
         eventos: [
           {
             id: 15,
+            ocorrencia_id: '15:2026-11-20',
             titulo: 'Evento aceito',
             descricao: 'Descrição confirmada de teste',
             data_inicio: '2026-11-20T09:00:00',
@@ -29,6 +30,16 @@ const contexto = vm.createContext({
             espaco_id: 1,
             status: 'aceito',
             classificacao_indicativa: 'Livre'
+          },
+          {
+            id: 15,
+            ocorrencia_id: '15:2026-11-27',
+            titulo: 'Evento aceito',
+            descricao: 'Descrição confirmada de teste',
+            data_inicio: '2026-11-27T09:00:00',
+            data_fim: '2026-11-27T12:00:00',
+            espaco_id: 1,
+            status: 'aceito'
           },
           {
             id: 16,
@@ -117,6 +128,12 @@ test('um evento público aceito é consultado sem autenticação', async () => {
     Object.hasOwn(preparado, 'urlContinuar'),
     false
   );
+});
+
+test('detalhes exibem a ocorrência da série que foi selecionada', async () => {
+  const { evento, espaco } = await dados.consultarEvento('15', '15:2026-11-27');
+  assert.equal(modelo.prepararEvento(evento, espaco).data, '2026-11-27');
+  await assert.rejects(dados.consultarEvento('15', '15:2026-12-04'), /não está disponível/);
 });
 
 test('evento pendente não é divulgado', async () => {

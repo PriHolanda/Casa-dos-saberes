@@ -38,7 +38,9 @@ const csaPainel = (() => {
     const { email, entidade, segmento, segmentos, pauta, pautas, periodicidade, link_complementar, arquivo_pdf_id } = evento.complemento || {};
     const proposta = [
       ['E-mail', email], ['Instituição, grupo ou coletivo', entidade], ['Segmento', segmentos?.join(', ') || segmento],
-      ['Pauta', pautas?.join(', ') || pauta], ['Periodicidade', periodicidade], ['Link da proposta', link_complementar]
+      ['Pauta', pautas?.join(', ') || pauta], ['Periodicidade', periodicidade],
+      ['Data final da recorrência', csaAgendaModelo.lerDia(evento.fimRecorrencia) !== null && csaAgendaModelo.formatarDia(evento.fimRecorrencia)],
+      ['Link da proposta', link_complementar]
     ].filter(([, valor]) => valor).map(([rotulo, valor]) => campo(rotulo, valor)).join('');
     const encerrado = ['negado', 'cancelado'].includes(evento.status);
     const acoes = somenteLeitura ? '' : evento.status === 'pendente' ? `<div class="csa-painel__acoes">

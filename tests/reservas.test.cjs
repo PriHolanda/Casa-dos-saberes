@@ -6,7 +6,7 @@ const vm = require('node:vm');
 const { test } = require('node:test');
 const raiz = path.resolve(__dirname, '..');
 const contexto = vm.createContext({ structuredClone, URL });
-for (const arquivo of ['cliente/reservas-dados.js', 'cliente/reservas-modelo.js', 'cliente/reservas-perguntas/base.js',
+for (const arquivo of ['agenda-modelo.js', 'cliente/reservas-dados.js', 'cliente/reservas-modelo.js', 'cliente/reservas-perguntas/base.js',
   'cliente/reservas-perguntas/aberta.js', 'cliente/reservas-perguntas/escolha.js', 'cliente/reservas-perguntas/anexo.js',
   'cliente/reservas-perguntas/termo.js', 'cliente/reservas-perguntas/registro.js']) {
   vm.runInContext(fs.readFileSync(path.join(raiz, 'js', arquivo), 'utf8'), contexto, { filename: arquivo });
@@ -17,14 +17,14 @@ const dados = executar('csaDadosReservas');
 const componentes = executar('csaPerguntasReserva');
 const respostasValidas = () => ({
   responsavel: ' Maria Silva ', telefone: '(88) 9 9999-1234', email: 'maria@example.com',
-  instituicao: 'Coletivo', segmentos: ['musica', 'teatro'], pautas: ['social'], periodicidade: 'mensal',
+  instituicao: 'Coletivo', segmentos: ['musica', 'teatro'], pautas: ['social'], periodicidade: 'mensal', 'data-fim-recorrencia': '2026-12-20',
   classificacao: 'livre', publico: '80', proposta: null, 'link-proposta': 'https://example.com/proposta',
   'ciencia-analise': true, 'ciencia-logos': true
 });
 
 test('definição e perguntas são independentes e consultáveis por ID', async () => {
   const formulario = modelo.prepararDefinicao(await dados.consultarFormulario());
-  assert.equal(formulario.perguntas.length, 13);
+  assert.equal(formulario.perguntas.length, 14);
   assert.equal((await dados.consultarPergunta('reservas', 'email')).campo, 'email');
   formulario.perguntas[0].titulo = 'Alterado';
   assert.notEqual((await dados.consultarFormulario()).perguntas[0].titulo, 'Alterado');
@@ -51,7 +51,7 @@ test('termo de análise inicia o formulário e classificação e público ficam 
     .map(pergunta => pergunta.id)
     .join(',');
 
-  assert.equal(idsPorColuna('principal'), 'ciencia-analise,responsavel,telefone,email,instituicao,segmentos,pautas,periodicidade');
+  assert.equal(idsPorColuna('principal'), 'ciencia-analise,responsavel,telefone,email,instituicao,segmentos,pautas,periodicidade,data-fim-recorrencia');
   assert.equal(idsPorColuna('complementar'), 'classificacao,publico,proposta,link-proposta,ciencia-logos');
 });
 
@@ -98,6 +98,21 @@ test('valida opções, contatos, números inteiros e aceite dos termos', async (
     ['segmentos', 'musica'], ['periodicidade', ['mensal', 'semanal']], ['ciencia-logos', false],
     ['link-proposta', 'javascript:alert(1)'], ['link-proposta', 'example.com']
   ]) assert.ok(modelo.validar(formulario, { ...respostasValidas(), [id]: valor })[id], `${id}: ${valor}`);
+});
+
+test('data final só é obrigatória e enviada para recorrências semanais ou mensais', async () => {
+  const formulario = await dados.consultarFormulario();
+  const id = 'data-fim-recorrencia';
+  const inicio = '2026-12-20';
+  for (const periodicidade of ['semanal', 'mensal']) {
+    const respostas = { ...respostasValidas(), periodicidade };
+    for (const data of ['', '2026-02-29', '2026-12-19']) {
+      assert.ok(modelo.validar(formulario, { ...respostas, [id]: data }, inicio)[id]);
+    }
+    assert.equal(modelo.prepararEnvio(formulario, respostas, inicio).dados.respostas[id], inicio);
+  }
+  const unica = { ...respostasValidas(), periodicidade: 'unica' };
+  assert.equal(Object.hasOwn(modelo.prepararEnvio(formulario, unica, inicio).dados.respostas, id), false);
 });
 
 test('aceita PDF ou link, detecta tipo, tamanho e arquivo vazio', async () => {

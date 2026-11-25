@@ -203,7 +203,7 @@ const csaDetalhes = (() => {
 
         if (eventoId) {
           const { evento, espaco } =
-            await csaDadosDetalhes.consultarEvento(eventoId);
+            await csaDadosDetalhes.consultarEvento(eventoId, parametros.get('ocorrenciaId'));
 
           return apresentar(
             csaDetalhesModelo.prepararEvento(evento, espaco)

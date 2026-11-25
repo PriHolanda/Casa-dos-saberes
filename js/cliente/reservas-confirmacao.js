@@ -25,6 +25,12 @@
       return definicao.perguntas.find(item => item.id === pergunta).opcoes.find(item => item.id === id)?.titulo;
     }
     const { inicio, fim } = csaProgramacao.horarioReserva(reserva);
+    const recorrente = csaReservasModelo.temRecorrencia(respostas.periodicidade);
+    const dataFinal = respostas['data-fim-recorrencia'];
+    if (recorrente) {
+      const erro = csaReservasModelo.validarDataRecorrencia(dataFinal, reserva.data);
+      if (erro) throw new Error(erro);
+    }
     await csaProgramacao.confirmarDisponibilidade(reserva);
     const dados = {
       titulo: respostas.titulo,
@@ -39,6 +45,7 @@
       segmentos: respostas.segmentos.map(id => id === 'gestao-cultural' ? 'Gestão Cultural' : opcao('segmentos', id)),
       pautas: respostas.pautas.map(id => opcao('pautas', id)),
       periodicidade: opcao('periodicidade', respostas.periodicidade),
+      ...(recorrente && { data_fim_recorrencia: dataFinal }),
       classificacao_indicativa: opcao('classificacao', respostas.classificacao),
       publico_estimado: respostas.publico,
       link_complementar: respostas['link-proposta'] || null,
@@ -138,6 +145,7 @@
             campo.checked = Array.isArray(valor) ? valor.includes(campo.value) : typeof valor === 'boolean' ? valor : valor === campo.value;
           } else if (valor !== undefined && valor !== null) campo.value = valor;
         }
+        csaReservas.atualizarRecorrencia();
       } catch {
         avisar('Não foi possível recuperar o rascunho completo. Volte à confirmação e tente novamente antes de preencher uma nova solicitação.');
       }
@@ -159,11 +167,15 @@
         return valores.map(valor => pergunta.opcoes.find(item => item.id === valor)?.titulo || valor).join(', ');
       }
       const arquivo = salvo.arquivos.proposta;
+      const dataFinal = respostas['data-fim-recorrencia'];
+      const mostrarData = csaReservasModelo.temRecorrencia(respostas.periodicidade)
+        && !csaReservasModelo.validarDataRecorrencia(dataFinal);
       const dados = {
         ...respostas,
         horarioReserva: salvo.reserva ? descreverReserva(salvo.reserva) : '',
         segmento: opcao('segmentos'), pauta: opcao('pautas'),
         classificacao: opcao('classificacao'), periodicidade: opcao('periodicidade'),
+        fimRecorrencia: mostrarData ? csaAgendaModelo.formatarDia(dataFinal) : '',
         arquivo: arquivo ? `${arquivo.name} · ${(arquivo.size / 1024 / 1024).toLocaleString('pt-BR', { maximumFractionDigits: 2 })} MB · ${arquivo.type || 'application/pdf'}` : '',
         link: respostas['link-proposta']
       };

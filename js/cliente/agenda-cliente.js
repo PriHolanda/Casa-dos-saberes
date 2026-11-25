@@ -48,7 +48,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     info.append(elemento('h4', 'csa-event-name', evento ? evento.nome : `${vaga.inicio} às ${vaga.fim}`));
     if (evento) {
       const detalhes = elemento('a', 'csa-event-details', 'Ver detalhes');
-      detalhes.href = `detalhes-reserva.html?${new URLSearchParams({ eventoId: evento.id, data: dia })}`;
+      const parametros = new URLSearchParams({ eventoId: evento.id, data: dia });
+      if (evento.ocorrenciaId) parametros.set('ocorrenciaId', evento.ocorrenciaId);
+      detalhes.href = `detalhes-reserva.html?${parametros}`;
       info.append(detalhes);
     } else {
       const acoes = elemento('div', 'csa-event-actions');

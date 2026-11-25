@@ -32,6 +32,7 @@ const csaDadosAgenda = (() => {
     return {
       ...evento,
       origem: item.origem,
+      fimRecorrencia: item.data_fim_recorrencia,
       complemento: { email, entidade, segmento, segmentos, pauta, pautas, periodicidade, link_complementar, arquivo_pdf_id }
     };
   }

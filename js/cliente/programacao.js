@@ -80,7 +80,7 @@ const csaProgramacao = (() => {
         espacoId: item.espaco_id, status: item.status, classificacao: item.classificacao_indicativa
       }, espacos);
       if (!evento) throw new Error('A programação contém dados inválidos.');
-      return evento;
+      return { ...evento, ocorrenciaId: item.ocorrencia_id };
     }).sort((a, b) => a.inicioMs - b.inicioMs || a.nome.localeCompare(b.nome, 'pt-BR'));
   }
 

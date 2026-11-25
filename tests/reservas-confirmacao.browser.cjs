@@ -65,7 +65,9 @@ let ws;
     const valores = {responsavel:'Maria <Silva>',telefone:'(88) 99999-1234',email:'maria@example.com',instituicao:'Coletivo',publico:'80','link-proposta':'https://example.com/proposta'};
     for (const [nome,valor] of Object.entries(valores)) document.querySelector('[name="'+nome+'"]').value=valor;
     for (const nome of ['segmentos','pautas']) document.querySelectorAll('[name="'+nome+'"]').forEach((c,i)=>c.checked=i<2);
-    for (const nome of ['periodicidade','classificacao','ciencia-analise','ciencia-logos']) document.querySelector('[name="'+nome+'"]').checked=true;
+    document.querySelector('[name=periodicidade][value=semanal]').click();
+    document.querySelector('[name=data-fim-recorrencia]').value='2099-07-13';
+    for (const nome of ['classificacao','ciencia-analise','ciencia-logos']) document.querySelector('[name="'+nome+'"]').checked=true;
     const transferencia = new DataTransfer();
     transferencia.items.add(new File(['%PDF-1.4 teste'], 'proposta.pdf', {type:'application/pdf'}));
     const campo=document.querySelector('[type=file]'); campo.files=transferencia.files;
@@ -178,15 +180,27 @@ let ws;
   const reserva = new URL('pages/cliente/reservas.html?espacoId=1&data=2099-06-01&turno=morning&inicio=08%3A00&fim=11%3A00', base);
   await cmd('Page.navigate', { url: reserva.href });
   await esperar("document.querySelector('[name=titulo]')");
+  const campoData = "document.querySelector('[name=data-fim-recorrencia]')";
+  assert.equal(await avaliar(campoData + '.disabled'), true);
+  await clicar("document.querySelector('[name=periodicidade][value=mensal]')");
+  assert.equal(await avaliar(campoData + '.required'), true);
+  assert.equal(await avaliar(campoData + '.min'), '2099-06-01');
+  await clicar("document.querySelector('[name=periodicidade][value=unica]')");
+  assert.equal(await avaliar(campoData + ".closest('[data-pergunta-id]').hidden"), true);
   await preencher();
   await avaliar(`(() => {
     const form = document.getElementById('csa-reservas-form');
     form.elements.titulo.value = 'Oficina de teatro';
     form.elements['descricao-evento'].value = 'Oficina aberta à comunidade';
+    form.querySelector('[name=periodicidade][value=mensal]').click();
+    form.elements['data-fim-recorrencia'].value = '2099-05-31';
     form.requestSubmit();
   })()`);
+  assert.match(await avaliar("document.getElementById('csa-pergunta-data-fim-recorrencia-erro').textContent"), /igual ou posterior/);
+  await avaliar(campoData + ".value='2099-07-13'; document.getElementById('csa-reservas-form').requestSubmit()");
   await esperar(confirmar + ' !== null');
   assert.match(await avaliar(resumo), /Auditório.*08:00 às 11:00/);
+  assert.match(await avaliar(resumo), /Data final da recorrência13 de julho de 2099/);
   await avaliar(`window.fetch = async (url, opcoes) => {
     if (new URL(url).pathname === '/disponibilidade') {
       return Response.json({ data: '2099-06-01', espaco_id: 1, duracao_minima_horas: 2, duracao_maxima_horas: 3,
@@ -203,6 +217,9 @@ let ws;
   assert.equal(pedido.metodo, 'POST');
   assert.equal(pedido.dados.espaco_id, 1);
   assert.equal(pedido.dados.data_inicio, '2099-06-01T08:00:00');
+  assert.equal(pedido.dados.data_fim, '2099-06-01T11:00:00');
+  assert.equal(pedido.dados.periodicidade, 'Mensal');
+  assert.equal(pedido.dados.data_fim_recorrencia, '2099-07-13');
   assert.equal(pedido.arquivo, '%PDF-1.4 teste');
   assert.deepEqual(pedido.dados.segmentos, ['Teatro', 'Música']);
   assert.deepEqual(pedido.dados.pautas, ['Racial', 'Social']);
