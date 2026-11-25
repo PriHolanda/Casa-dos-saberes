@@ -6,7 +6,7 @@
   const exportar = document.getElementById('csa-btn-pdf');
   if (exportar && document.body.dataset.somenteLeitura !== 'true') {
     exportar.addEventListener('click', async () => {
-      if (csaDadosAgenda.demonstracao || document.getElementById('csa-filtro-status').value !== 'todos') {
+      if (csaDadosAgenda.demonstracao) {
         window.print();
         return;
       }
@@ -14,7 +14,7 @@
       exportar.disabled = true;
       aviso.textContent = '';
       try {
-        await csaApi.exportarAgendamentos('eventos', dias[0], dias.at(-1));
+        await csaApi.exportarAgendamentos('eventos', dias[0], dias.at(-1), document.getElementById('csa-filtro-status').value);
       } catch (erro) {
         aviso.textContent = erro.message;
       } finally {

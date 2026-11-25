@@ -61,7 +61,7 @@ test('formulário completa os campos essenciais de uma definição sem alterar a
 test('dashboard só soma fontes completas e conta registros sem duplicar turnos', async () => {
   const a = ambiente();
   a.carregar('agenda-modelo.js');
-  a.ctx.csaApi = { requisitar: async rota => rota === '/eventos/' ? { eventos: [{ id: 1, titulo: 'Oficina', descricao: 'Oficina cultural', espaco_id: 1, data_inicio: '2026-09-21T11:00:00', data_fim: '2026-09-22T13:00:00', status: 'pendente' }] } : { visitas: [{ id: 1, instituicao: '<img src=x>', data_inicio: '2026-09-21T10:00:00', data_fim: '2026-09-21T14:00:00', status: 'aprovada' }] } };
+  a.ctx.csaApi = { requisitar: async rota => rota === '/eventos/' ? { eventos: [{ id: 1, titulo: 'Oficina', descricao: 'Oficina cultural', espaco_id: 1, data_inicio: '2026-09-21T11:00:00', data_fim: '2026-09-22T13:00:00', status: 'pendente', origem: 'solicitacao_publica' }] } : { visitas: [{ id: 1, instituicao: '<img src=x>', data_inicio: '2026-09-21T10:00:00', data_fim: '2026-09-21T14:00:00', status: 'aprovada' }] } };
   a.carregar('admin/dados-api.js');
   a.carregar('admin/dashboard.js');
   a.executar("csaDashboard.atualizar('2026-09-21')");
@@ -72,7 +72,7 @@ test('dashboard só soma fontes completas e conta registros sem duplicar turnos'
   assert.equal(a.elementos.get('csa-indicador-total').textContent, 2);
   assert.equal(a.elementos.get('csa-indicador-visitas').textContent, 1);
   assert.equal(a.elementos.get('csa-indicador-pendentes').textContent, 1);
-  assert.equal(a.elementos.get('csa-indicador-pautas').textContent, '—');
+  assert.equal(a.elementos.get('csa-indicador-pautas').textContent, 1);
   const cartao = a.executar("csaDashboard.cartao(csaDashboard.consultarPeriodo('2026-09-21', '2026-09-27')[0])");
   assert.match(cartao, /&lt;img/);
   assert.ok(!cartao.includes('data-evento-id'));

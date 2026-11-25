@@ -5,6 +5,7 @@ const csaAgenda = (() => {
   const modelo = csaAgendaModelo;
   const estado = { visao: 'semanal', data: csaDadosAgenda.dataInicial, status: 'todos' };
   const dias = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
+  const filtrosStatus = ['todos', 'aceito', 'pendente', 'negado', 'cancelado'];
   const escapar = valor => String(valor).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   const lerData = data => new Date(modelo.lerDia(data));
   const somarDias = modelo.somarDias;
@@ -36,7 +37,9 @@ const csaAgenda = (() => {
   function AgendaCell(data, turno, dados, filtro = 'todos') {
     const { inicio, fim } = modelo.intervalo(data, turno);
     const todos = dados.eventos.filter(e => e.inicioMs < fim && e.terminoMs > inicio);
-    const eventos = todos.filter(e => somenteLeitura ? filtro !== 'visitas' : filtro === 'todos' || e.status === filtro).sort((a, b) => a.inicioMs - b.inicioMs);
+    const eventos = todos.filter(e => somenteLeitura
+      ? filtro === 'todos' || (filtro === 'pautas' && e.origem === 'solicitacao_publica')
+      : filtro === 'todos' || e.status === filtro).sort((a, b) => a.inicioMs - b.inicioMs);
     const visitas = typeof csaDashboard !== 'undefined' ? csaDashboard.consultarPeriodo(data, data).filter(visita => visita.data_inicio < new Date(fim).toISOString().slice(0, 19) && visita.data_fim > new Date(inicio).toISOString().slice(0, 19)) : [];
     const registros = eventos.map(e => ({ inicio: e.inicio, html: EventCard(e, dados.espacos.find(s => s.id === e.espacoId)) }));
     visitas.filter(visita => somenteLeitura ? filtro !== 'pautas' : filtro === 'todos' || csaVisitasModelo.status(visita.status).valor === filtro).forEach(visita => registros.push({ inicio: visita.data_inicio, html: csaDashboard.cartao(visita) }));
@@ -83,7 +86,7 @@ const csaAgenda = (() => {
     desenhar();
   });
   document.addEventListener('csa:mudar-filtro', e => {
-    if (!(somenteLeitura ? ['todos', 'pautas', 'visitas'] : ['todos', 'aceito', 'pendente']).includes(e.detail?.status)) return;
+    if (!(somenteLeitura ? ['todos', 'pautas', 'visitas'] : filtrosStatus).includes(e.detail?.status)) return;
     estado.status = e.detail.status;
     desenhar();
   });

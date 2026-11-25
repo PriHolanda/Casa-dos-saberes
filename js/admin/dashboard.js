@@ -21,16 +21,17 @@ const csaDashboard = (() => {
     const completo = eventosCarregados && visitas !== null;
     const valores = {
       total: completo ? eventos.length + registros.length : '—',
-      pautas: csaDadosAgenda.demonstracao && eventosCarregados ? eventos.length : '—',
+      pautas: eventosCarregados ? eventos.filter(evento => evento.origem === 'solicitacao_publica').length : '—',
       visitas: visitas !== null ? registros.length : '—',
       pendentes: completo ? eventos.filter(evento => evento.status === 'pendente').length + registros.filter(visita => csaVisitasModelo.status(visita.status).valor === 'pendente').length : '—'
     };
     for (const [id, valor] of Object.entries(valores)) {
       const no = document.getElementById(`csa-indicador-${id}`);
       no.textContent = valor;
-      no.title = id === 'pautas' && !csaDadosAgenda.demonstracao ? 'Não há uma fonte identificada para a contagem de sugestões de pauta.' : `Semana de ${csaAgendaModelo.formatarDia(inicio)} a ${csaAgendaModelo.formatarDia(fim)}. Contagem de registros, sem duplicar eventos que atravessam turnos.`;
+      const periodo = `Semana de ${csaAgendaModelo.formatarDia(inicio)} a ${csaAgendaModelo.formatarDia(fim)}.`;
+      no.title = id === 'pautas' ? `${periodo} Solicitações de origem pública identificada.` : periodo;
     }
-    aviso.textContent = csaDadosAgenda.demonstracao ? '' : [falha, 'Sugestões de pauta: contagem ainda indisponível. Os indicadores acompanham a semana da agenda.'].filter(Boolean).join(' ');
+    aviso.textContent = falha;
   }
 
   async function carregar() {

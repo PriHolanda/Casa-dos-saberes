@@ -21,9 +21,6 @@
   }
 
   async function enviarReserva({ dados: { respostas }, arquivos, reserva }, definicao) {
-    if (respostas.segmentos.length !== 1 || respostas.pautas.length !== 1) {
-      throw new Error('Para enviar pela agenda, selecione um segmento e uma pauta na proposta.');
-    }
     function opcao(pergunta, id) {
       return definicao.perguntas.find(item => item.id === pergunta).opcoes.find(item => item.id === id)?.titulo;
     }
@@ -39,8 +36,8 @@
       celular: respostas.telefone,
       email: respostas.email,
       entidade: respostas.instituicao,
-      segmento: respostas.segmentos[0] === 'gestao-cultural' ? 'Gestão Cultural' : opcao('segmentos', respostas.segmentos[0]),
-      pauta: opcao('pautas', respostas.pautas[0]),
+      segmentos: respostas.segmentos.map(id => id === 'gestao-cultural' ? 'Gestão Cultural' : opcao('segmentos', id)),
+      pautas: respostas.pautas.map(id => opcao('pautas', id)),
       periodicidade: opcao('periodicidade', respostas.periodicidade),
       classificacao_indicativa: opcao('classificacao', respostas.classificacao),
       publico_estimado: respostas.publico,

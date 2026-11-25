@@ -44,15 +44,19 @@ const csaApi = (() => {
     sessionStorage.setItem(chave, JSON.stringify({ token: tokens.access_token, expira: Date.now() + tokens.expires_in * 1000 }));
     return requisitar('/usuarios/me');
   }
-  async function exportarAgendamentos(tipo, data_inicio, data_fim) {
-    const parametros = new URLSearchParams({ tipo, data_inicio, data_fim });
-    const arquivo = await requisitar(`/relatorios/agendamentos?${parametros}`, { formato: 'pdf' });
+  async function baixarPdf(rota, nome) {
+    const arquivo = await requisitar(rota, { formato: 'pdf' });
     const url = URL.createObjectURL(arquivo);
     const link = document.createElement('a');
     link.href = url;
-    link.download = `relatorio-${tipo}-${data_inicio}-a-${data_fim}.pdf`;
+    link.download = nome;
     link.click();
     setTimeout(() => URL.revokeObjectURL(url), 1000);
   }
-  return { requisitar, entrar, sair, sessao, exportarAgendamentos };
+  function exportarAgendamentos(tipo, data_inicio, data_fim, status = 'todos') {
+    const parametros = new URLSearchParams({ tipo, data_inicio, data_fim, status });
+    const sufixo = status === 'todos' ? '' : `-${status}`;
+    return baixarPdf(`/relatorios/agendamentos?${parametros}`, `relatorio-${tipo}-${data_inicio}-a-${data_fim}${sufixo}.pdf`);
+  }
+  return { requisitar, entrar, sair, sessao, baixarPdf, exportarAgendamentos };
 })();

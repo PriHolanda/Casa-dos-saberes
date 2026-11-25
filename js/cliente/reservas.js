@@ -95,10 +95,6 @@ const csaReservas = (() => {
     tentouEnviar = true;
     const respostas = coletarRespostas();
     const erros = csaReservasModelo.validar(definicao, respostas);
-    if (reserva) {
-      if (respostas.segmentos.length > 1) erros.segmentos = 'Selecione um segmento para enviar pela agenda.';
-      if (respostas.pautas.length > 1) erros.pautas = 'Selecione uma pauta para enviar pela agenda.';
-    }
     exibirErros(erros);
     if (Object.keys(erros).length) {
       avisar('Revise as perguntas indicadas para continuar.', true);

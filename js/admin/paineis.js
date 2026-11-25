@@ -35,11 +35,10 @@ const csaPainel = (() => {
     painel.dataset.eventoId = evento.id;
     const status = csaAgendaModelo.definirStatus(evento.status);
     const data = evento.inicio.slice(0, 10);
-    const { email, entidade, segmento, pauta, periodicidade, link_complementar, arquivo_pdf_id } = evento.complemento || {};
+    const { email, entidade, segmento, segmentos, pauta, pautas, periodicidade, link_complementar, arquivo_pdf_id } = evento.complemento || {};
     const proposta = [
-      ['E-mail', email], ['Instituição, grupo ou coletivo', entidade], ['Segmento', segmento],
-      ['Pauta', pauta], ['Periodicidade', periodicidade], ['Link da proposta', link_complementar],
-      ['PDF da proposta', arquivo_pdf_id && 'Recebido']
+      ['E-mail', email], ['Instituição, grupo ou coletivo', entidade], ['Segmento', segmentos?.join(', ') || segmento],
+      ['Pauta', pautas?.join(', ') || pauta], ['Periodicidade', periodicidade], ['Link da proposta', link_complementar]
     ].filter(([, valor]) => valor).map(([rotulo, valor]) => campo(rotulo, valor)).join('');
     const encerrado = ['negado', 'cancelado'].includes(evento.status);
     const acoes = somenteLeitura ? '' : evento.status === 'pendente' ? `<div class="csa-painel__acoes">
@@ -67,6 +66,7 @@ const csaPainel = (() => {
       ${campo('Classificação indicativa', evento.classificacao)}
       ${campo('Descrição', evento.descricao)}
       ${proposta}
+      ${arquivo_pdf_id ? '<button type="button" class="csa-painel__botao csa-painel__botao--editar" data-baixar-proposta>Baixar proposta em PDF</button>' : ''}
     </div><p class="csa-painel__erro" role="alert" hidden></p>${acoes}`, 'Detalhes do evento');
   }
 
@@ -130,9 +130,21 @@ const csaPainel = (() => {
   painel.addEventListener('click', async e => {
     if (ocupado) return;
     if (e.target.closest('[data-fechar-painel]')) { fechar(); return; }
+    const eventoId = painel.dataset.eventoId;
+    if (e.target.closest('[data-baixar-proposta]')) {
+      bloquear(true);
+      painel.querySelector('[role="alert"]').hidden = true;
+      try {
+        await csaApi.baixarPdf(`/eventos/${encodeURIComponent(eventoId)}/proposta`, `proposta-evento-${eventoId}.pdf`);
+      } catch (erro) {
+        mostrarErro(erro.message);
+      } finally {
+        bloquear(false);
+      }
+      return;
+    }
     if (somenteLeitura) return;
     const acao = e.target.closest('[data-acao]')?.dataset.acao;
-    const eventoId = painel.dataset.eventoId;
     if (acao === 'editar') {
       const evento = csaDadosAgenda.buscarEvento(eventoId);
       if (evento) mostrarCadastro(evento.inicio.slice(0, 10), 'manha', evento);

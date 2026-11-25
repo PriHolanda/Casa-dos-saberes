@@ -30,9 +30,9 @@ let ws;
   let horariosInvalidos = false;
   let recusarEnvio = true;
   let eventos = [
-    { id: 1, titulo: 'Campeonato de Farmar Aura', descricao: 'Apresentação cultural para a comunidade.', responsavel: 'João Ferreira da Silva', celular: '(85) 12345-6789', espaco_id: 1, publico_estimado: 100, classificacao_indicativa: 'Livre', status: 'aceito', data_inicio: '2026-09-21T09:00:00', data_fim: '2026-09-21T12:00:00' },
-    { id: 2, titulo: 'Apresentação da banda', descricao: 'Apresentação musical para a comunidade.', espaco_id: 2, status: 'aceito', data_inicio: '2026-09-21T10:00:00', data_fim: '2026-09-21T12:00:00' },
-    { id: 3, titulo: 'Apresentação legal', descricao: 'Atividade cultural para a comunidade.', responsavel: 'Maria da Silva', espaco_id: 3, status: 'pendente', data_inicio: '2026-09-21T14:00:00', data_fim: '2026-09-21T16:00:00' }
+    { id: 1, origem: 'administrativo', titulo: 'Campeonato de Farmar Aura', descricao: 'Apresentação cultural para a comunidade.', responsavel: 'João Ferreira da Silva', celular: '(85) 12345-6789', espaco_id: 1, publico_estimado: 100, classificacao_indicativa: 'Livre', status: 'aceito', data_inicio: '2026-09-21T09:00:00', data_fim: '2026-09-21T12:00:00' },
+    { id: 2, origem: 'solicitacao_publica', arquivo_pdf_id: 5, titulo: 'Apresentação da banda', descricao: 'Apresentação musical para a comunidade.', espaco_id: 2, status: 'aceito', data_inicio: '2026-09-21T10:00:00', data_fim: '2026-09-21T12:00:00' },
+    { id: 3, origem: 'solicitacao_publica', titulo: 'Apresentação legal', descricao: 'Atividade cultural para a comunidade.', responsavel: 'Maria da Silva', espaco_id: 3, status: 'pendente', data_inicio: '2026-09-21T14:00:00', data_fim: '2026-09-21T16:00:00' }
   ];
   const visitas = [
     { id: 1, instituicao: 'Universidade Federal do Ceará', nome_responsavel: 'Responsável pela visita', status: 'aprovada', data_inicio: '2026-09-21T17:00:00Z', data_fim: '2026-09-21T18:00:00Z' },
@@ -49,14 +49,15 @@ let ws;
       const { requestId, request } = mensagem.params;
       const url = new URL(request.url);
       const rota = url.pathname;
-      requisicoes.push({ rota, metodo: request.method });
+      requisicoes.push({ rota, metodo: request.method, busca: url.searchParams });
       let body, code = 200, formato = 'application/json';
       if (request.method === 'OPTIONS') { body = null; code = 204; }
       else if (rota === '/usuarios/me') body = { id: 1, nome: 'Admin' };
       else if (rota === '/eventos/' && request.method === 'GET') body = { eventos };
       else if (rota.endsWith('/status') && request.method === 'PATCH') {
         const id = Number(rota.split('/')[2]);
-        const registro = eventos.find(item => item.id === id);
+        const registros = rota.startsWith('/visitas/') ? visitas : eventos;
+        const registro = registros.find(item => item.id === id);
         Object.assign(registro, JSON.parse(request.postData));
         body = registro;
       } else if (rota.startsWith('/eventos/') && ['POST', 'PUT'].includes(request.method)) {
@@ -82,7 +83,7 @@ let ws;
       } else if (rota === '/visitas/formulario') body = { campos: camposVisita };
       else if (rota === '/exposicoes/') body = { exposicoes: [] };
       else if (rota === '/exposicoes/administracao') body = { salas: [{ id: 1, nome: 'Sala expositiva 1' }], exposicoes: [] };
-      else if (rota === '/relatorios/agendamentos') {
+      else if (rota === '/relatorios/agendamentos' || rota === '/eventos/2/proposta') {
         formato = 'application/pdf';
         body = '%PDF-1.4';
       }
@@ -147,10 +148,10 @@ let ws;
       assert.equal(botao.cor,botao.acao==='aprovar'?'rgb(7, 145, 53)':'rgb(162, 45, 46)');
     }
   };
-  const testarFiltroDashboard = async (eventos, visitas) => {
+  const testarFiltroDashboard = async (eventos, visitas, pautas = eventos) => {
     const indicadores = await avaliar("[...document.querySelectorAll('.csa-dashboard-card__valor')].map(no=>no.textContent)");
     assert.deepEqual(await avaliar("[...document.getElementById('csa-filtro-status').options].map(no=>no.textContent)"), ['Todos','Sugestões de pauta','Visitas mediadas']);
-    for (const [tipo, totalEventos, totalVisitas] of [['pautas',eventos,0],['visitas',0,visitas],['todos',eventos,visitas]]) {
+    for (const [tipo, totalEventos, totalVisitas] of [['pautas',pautas,0],['visitas',0,visitas],['todos',eventos,visitas]]) {
       await avaliar(`document.getElementById('csa-filtro-status').value='${tipo}'; document.getElementById('csa-filtro-status').dispatchEvent(new Event('change'))`);
       assert.equal(await avaliar("document.querySelectorAll('.csa-grid [data-evento-id]').length"), totalEventos);
       assert.equal(await avaliar("document.querySelectorAll('.csa-grid [data-visita-id]').length"), totalVisitas);
@@ -238,7 +239,7 @@ let ws;
     await esperar("document.getElementById('csa-indicador-total').textContent === '7'");
     assert.equal(await avaliar("document.getElementById('csa-indicador-visitas').textContent"), '4');
     assert.equal(await avaliar("document.getElementById('csa-indicador-pendentes').textContent"), '2');
-    assert.equal(await avaliar("document.getElementById('csa-indicador-pautas').textContent"), '—');
+    assert.equal(await avaliar("document.getElementById('csa-indicador-pautas').textContent"), '2');
     assert.ok(await avaliar('document.documentElement.scrollWidth <= innerWidth'), `Overflow dashboard ${width}`);
     if (width === 1512) {
       await avaliar("document.querySelector('[data-evento-id=\"1\"]').click()");
@@ -247,13 +248,13 @@ let ws;
     }
     await capturar(`dashboard-${width}`);
     await conferirConsulta();
-    await testarFiltroDashboard(3, 4);
+    await testarFiltroDashboard(3, 4, 2);
     await avaliar("document.getElementById('csa-filtro-status').value = 'pautas'; document.getElementById('csa-filtro-status').dispatchEvent(new Event('change'))");
-    assert.equal(await avaliar("document.querySelectorAll('.csa-grid [data-evento-id]').length"), 3);
+    assert.equal(await avaliar("document.querySelectorAll('.csa-grid [data-evento-id]').length"), 2);
     assert.equal(await avaliar("document.querySelectorAll('.csa-grid .csa-event-card--visita').length"), 0);
     await avaliar("document.querySelector('[data-visao=diaria]').click()");
     assert.equal(await avaliar("document.querySelectorAll('.csa-grid__celula').length"), 3);
-    await testarFiltroDashboard(3, 1);
+    await testarFiltroDashboard(3, 1, 2);
     await avaliar("document.querySelector('[data-direcao=\"1\"]').click()");
     assert.ok(await avaliar("document.getElementById('csa-data').textContent.includes('22 de setembro')"));
     if (width === 402) {
@@ -343,6 +344,20 @@ let ws;
   await avaliar("document.querySelector('.csa-confirmacao-botao--principal').click()");
   await esperar("document.getElementById('csa-vp-sucesso')?.hidden === false");
   assert.equal(await avaliar("sessionStorage.getItem('csa-visita-rascunho')"), null);
+  await abrir('pages/visita-mediada/admin/visitas.html?dia=2026-09-24&visitaId=4');
+  await esperar("document.getElementById('csa-visita-detalhe').open");
+  await avaliar("document.querySelector('[data-acao=negar]').click()");
+  await esperar("document.querySelector('[data-visita-id=\"4\"]').textContent.includes('Negada')");
+  await avaliar("document.getElementById('csa-visitas-filtro').value='negada'; document.getElementById('csa-visitas-filtro').dispatchEvent(new Event('change')); document.getElementById('csa-visitas-exportar').click()");
+  await esperar("!document.getElementById('csa-visitas-exportar').disabled");
+  assert.ok(requisicoes.some(pedido => pedido.rota === '/relatorios/agendamentos' && pedido.busca.get('status') === 'negado'));
+
+  await abrir('pages/admin/agenda.html');
+  await esperar("document.querySelector('[data-evento-id=\"2\"]')");
+  await avaliar("document.querySelector('[data-evento-id=\"2\"]').click(); document.querySelector('[data-baixar-proposta]').click()");
+  await esperar("!document.querySelector('[data-baixar-proposta]').disabled");
+  assert.ok(requisicoes.some(pedido => pedido.rota === '/eventos/2/proposta'));
+
   const eventosOriginais = structuredClone(eventos);
   for (const width of [1512,402]) {
     eventos = structuredClone(eventosOriginais);

@@ -15,6 +15,12 @@
   const quadros = document.getElementById('csa-visita-detalhe-dados');
   const aviso = document.getElementById('csa-visita-detalhe-aviso');
   const acoes = dialogo.querySelectorAll('[data-acao]');
+  const fechar = dialogo.querySelector('.csa-visita-detalhe__fechar');
+  const mudancas = {
+    aprovar: { status: 'aprovada', confirmacao: 'Aprovar esta visita?' },
+    negar: { status: 'negada', confirmacao: 'Negar esta solicitação de visita?' },
+    cancelar: { status: 'cancelada', confirmacao: 'Cancelar esta visita e liberar o horário?' }
+  };
   const turnos = ['Manhã', 'Tarde'];
   const hoje = new Intl.DateTimeFormat('sv-SE', { timeZone: 'America/Fortaleza', dateStyle: 'short' }).format(new Date());
   const solicitada = parametros.get('dia');
@@ -25,7 +31,7 @@
   let visitas;
   let ativa;
   let gatilho;
-  let cancelando = false;
+  let atualizando = false;
 
   function elemento(tag, classe, texto) {
     const el = document.createElement(tag);
@@ -205,10 +211,8 @@
     );
     acoes.forEach(botaoAcao => {
       botaoAcao.hidden = botaoAcao.dataset.acao === 'cancelar' ? estado.valor !== 'aceito' : !pendente;
-      botaoAcao.disabled = cancelando || (!demonstracao && botaoAcao.dataset.acao !== 'cancelar');
     });
-    aviso.textContent = !demonstracao && pendente ? 'A aprovação e a negativa de visitas ainda não estão disponíveis no servidor.' : '';
-    aviso.hidden = !aviso.textContent;
+    aviso.hidden = true;
     dialogo.showModal();
     dialogo.scrollTop = 0;
   }
@@ -237,7 +241,7 @@
   });
   const exportar = document.getElementById('csa-visitas-exportar');
   exportar.addEventListener('click', async () => {
-    if (demonstracao || filtro.value !== 'todos') {
+    if (demonstracao) {
       window.print();
       return;
     }
@@ -247,7 +251,8 @@
     avisoExportacao.textContent = '';
     avisoExportacao.hidden = true;
     try {
-      await csaApi.exportarAgendamentos('visitas', dataISO(dias[0]), dataISO(dias.at(-1)));
+      const status = { aprovada: 'aceito', negada: 'negado', cancelada: 'cancelado' }[filtro.value] || filtro.value;
+      await csaApi.exportarAgendamentos('visitas', dataISO(dias[0]), dataISO(dias.at(-1)), status);
     } catch (erro) {
       avisoExportacao.textContent = erro.message;
       avisoExportacao.hidden = false;
@@ -255,45 +260,40 @@
       exportar.disabled = false;
     }
   });
-  dialogo.querySelector('.csa-visita-detalhe__fechar').addEventListener('click', () => dialogo.close());
+  fechar.addEventListener('click', () => dialogo.close());
   dialogo.addEventListener('cancel', evento => {
-    if (cancelando) evento.preventDefault();
+    if (atualizando) evento.preventDefault();
   });
   dialogo.addEventListener('close', () => {
     const novoGatilho = [...grade.querySelectorAll('[data-visita-id]')].find(botao => botao.dataset.visitaId === String(ativa.id) && botao.getClientRects().length);
     (gatilho.isConnected ? gatilho : novoGatilho || botoesVisao[visao === 'diaria' ? 0 : 1]).focus();
   });
   acoes.forEach(botao => botao.addEventListener('click', async () => {
-    if (cancelando) return;
-    const acao = botao.dataset.acao;
-    if (demonstracao) {
-      if (acao === 'aprovar') ativa.status = 'aprovada';
-      else visitas = visitas.filter(visita => visita !== ativa);
-      atualizar();
-      dialogo.close();
-      return;
-    }
-    if (acao !== 'cancelar') {
-      aviso.textContent = 'A aprovação e a negativa de visitas ainda não estão disponíveis no servidor.';
-      aviso.hidden = false;
-      return;
-    }
-    if (!window.confirm('Cancelar esta visita? O registro será excluído.')) return;
-    cancelando = true;
-    const fechar = dialogo.querySelector('.csa-visita-detalhe__fechar');
-    fechar.disabled = botao.disabled = true;
-    aviso.textContent = 'Cancelando visita…';
+    if (atualizando || botao.hidden) return;
+    const { status, confirmacao } = mudancas[botao.dataset.acao];
+    if (!demonstracao && !window.confirm(confirmacao)) return;
+    atualizando = true;
+    const controles = [fechar, ...acoes];
+    controles.forEach(controle => { controle.disabled = true; });
+    aviso.textContent = 'Atualizando status da visita…';
     aviso.hidden = false;
     try {
-      await csaApi.requisitar(`/visitas/${encodeURIComponent(ativa.id)}`, { metodo: 'DELETE' });
-      visitas = visitas.filter(visita => visita.id !== ativa.id);
+      if (!demonstracao) {
+        const registro = await csaApi.requisitar(`/visitas/${encodeURIComponent(ativa.id)}/status`, {
+          metodo: 'PATCH', dados: { status }
+        });
+        if (String(registro?.id) !== ativa.id || registro.status !== status) {
+          throw new Error('O servidor não confirmou o novo status da visita.');
+        }
+      }
+      ativa.status = status;
       atualizar();
       dialogo.close();
     } catch (erro) {
       aviso.textContent = erro.message;
     } finally {
-      fechar.disabled = botao.disabled = false;
-      cancelando = false;
+      controles.forEach(controle => { controle.disabled = false; });
+      atualizando = false;
     }
   }));
 

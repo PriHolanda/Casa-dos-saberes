@@ -180,7 +180,7 @@ document.addEventListener('csa:reserva-preparada', evento => {
 
 O evento inclui todas as perguntas da definição. `arquivos` conserva os objetos `File` originais, indexados por ID da pergunta. O controlador envia `POST /eventos/` em JSON quando há apenas link e em multipart com `dados` e `arquivo` quando há PDF. A solicitação só aparece como enviada quando a API confirma um ID e status pendente.
 
-O FastAPI aceita um segmento e uma pauta por solicitação. A definição das perguntas de reserva ainda pertence ao frontend. Consulte os [contratos usados na integração](integracao-backend.md).
+O FastAPI recebe os segmentos e as pautas selecionados em listas. A definição das perguntas de reserva pertence ao frontend. Consulte os [contratos usados na integração](integracao-backend.md).
 
 ## Aparência e verificação
 

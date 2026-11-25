@@ -24,6 +24,7 @@ ROTAS_INTEGRACAO = (
     ('post', '/eventos/'),
     ('put', '/eventos/{evento_id}'),
     ('patch', '/eventos/{evento_id}/status'),
+    ('get', '/eventos/{evento_id}/proposta'),
     ('delete', '/eventos/{evento_id}'),
     ('get', '/disponibilidade'),
     ('get', '/relatorios/agendamentos'),
@@ -35,7 +36,7 @@ ROTAS_INTEGRACAO = (
     ('get', '/visitas/disponibilidade'),
     ('get', '/visitas/'),
     ('post', '/visitas/'),
-    ('delete', '/visitas/{visita_id}'),
+    ('patch', '/visitas/{visita_id}/status'),
 )
 
 

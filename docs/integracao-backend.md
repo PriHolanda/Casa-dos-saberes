@@ -14,6 +14,7 @@ O frontend usa os controllers e schemas existentes em `~/programing/AgendamentoC
 | Disponibilidade de espaço | `GET /disponibilidade?data=AAAA-MM-DD&espaco_id=ID` | Janelas reserváveis e limites de duração |
 | Cadastrar evento | `POST /eventos/` | JSON ou multipart com `dados` (JSON) e `arquivo` (PDF) |
 | Decidir sobre evento | `PATCH /eventos/{id}/status` | Cabeçalho Bearer e `{ "status": "aceito" }` ou `{ "status": "negado" }` |
+| Baixar PDF da proposta | `GET /eventos/{id}/proposta` | PDF privado para o papel `administrador` |
 | Alterar evento | `PUT /eventos/{id}` | Cabeçalho Bearer e `EventoUpdate` completo |
 | Excluir evento | `DELETE /eventos/{id}` | Cabeçalho Bearer; resposta 204, sem corpo |
 
@@ -33,8 +34,9 @@ O token de acesso fica no `sessionStorage` da aba, sem persistir a senha ou o re
 | Ler e salvar as perguntas | `GET /visitas/formulario` e `PUT /visitas/formulario` |
 | Verificar horários de visita | `GET /visitas/disponibilidade?data=AAAA-MM-DD` |
 | Enviar a solicitação revisada | `POST /visitas/` |
-| Listar e cancelar visitas | `GET /visitas/` e `DELETE /visitas/{id}` com Bearer |
-| Exportar relatório | `GET /relatorios/agendamentos` com `tipo`, `data_inicio`, `data_fim` e papel `administrador` |
+| Listar visitas administrativas | `GET /visitas/` com Bearer |
+| Aprovar, negar ou cancelar visitas | `PATCH /visitas/{id}/status` com `aprovada`, `negada` ou `cancelada` e papel `administrador` |
+| Exportar relatório | `GET /relatorios/agendamentos` com `tipo`, `data_inicio`, `data_fim`, `status` e papel `administrador` |
 
 A listagem administrativa de exposições e as gravações dos editores exigem um token do Keycloak com o papel de realm `administrador`. As alterações de conteúdo e status da exposição são salvas juntas. Os editores oferecem importação explícita quando encontram dados antigos em `localStorage`.
 
@@ -46,11 +48,11 @@ Alterar, decidir ou excluir eventos exige `get_current_user_claims`, assim como 
 
 A agenda pública, a consulta de disponibilidade e o envio de solicitações ficam acessíveis sem login. Dashboard e Sugestões de Pauta usam sessão autenticada. O backend exige Bearer para a manutenção de eventos e visitas e o papel `administrador` para exportar relatórios e gravar os editores.
 
-## Limites do contrato atual
+## Regras de reserva e acompanhamento
 
-Visitas pendentes aguardam uma rota de aprovação ou recusa. A operação disponível de cancelamento exclui a visita. Eventos armazenam um segmento e uma pauta por registro, e o PDF recebido fica associado ao evento pelo ID do arquivo. O backend ainda não expõe uma rota autenticada para baixar a proposta anexada, nem um campo que diferencie a origem dos eventos para contar sugestões de pauta. Os relatórios de período usam o PDF do FastAPI. Com filtro de status ativo, a tela imprime a agenda filtrada porque o relatório ainda recebe somente período e tipo.
+O cancelamento e a negativa de visitas liberam o horário e preservam o registro. As reservas aceitam listas em `segmentos` e `pautas`. Os campos singulares continuam disponíveis para registros e clientes antigos. O dashboard conta sugestões com origem pública identificada. Eventos antigos sem origem ou evidência de envio pelo formulário permanecem no total de agendamentos.
 
-O frontend verifica se o horário é futuro e cabe em uma janela publicada. O FastAPI verifica sobreposições ao gravar. Os endpoints de criação ainda não aplicam todas as regras de horário e duração usadas para calcular a disponibilidade.
+O FastAPI verifica se o horário é futuro, cabe no funcionamento, respeita a duração e está livre. Eventos duram de duas a três horas. A Área Externa tem seu próprio turno noturno. Visitas duram uma hora e ficam nos turnos diurnos. Os relatórios reais recebem o status selecionado na tela.
 
 ## Execução e implantação
 

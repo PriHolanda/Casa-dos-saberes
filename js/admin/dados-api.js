@@ -28,8 +28,12 @@ const csaDadosAgenda = (() => {
       status: item.status || 'pendente'
     }, espacos);
     if (!evento) throw new Error(`Não foi possível carregar o evento ${item.id}: as informações recebidas são inválidas.`);
-    const { email, entidade, segmento, pauta, periodicidade, link_complementar, arquivo_pdf_id } = item;
-    return { ...evento, complemento: { email, entidade, segmento, pauta, periodicidade, link_complementar, arquivo_pdf_id } };
+    const { email, entidade, segmento, segmentos, pauta, pautas, periodicidade, link_complementar, arquivo_pdf_id } = item;
+    return {
+      ...evento,
+      origem: item.origem,
+      complemento: { email, entidade, segmento, segmentos, pauta, pautas, periodicidade, link_complementar, arquivo_pdf_id }
+    };
   }
   function payload(evento, id) {
     const complemento = eventos.find(registro => registro.id === String(id))?.complemento;
@@ -55,6 +59,7 @@ const csaDadosAgenda = (() => {
       ];
       eventos = exemplos.map(([dia, inicio, fim, espaco, titulo], indice) => adaptar({
         id: `demo-evento-${indice + 1}`, titulo, espaco_id: espaco,
+        origem: 'solicitacao_publica',
         data_inicio: `2026-09-${dia}T${inicio}:00:00`, data_fim: `2026-09-${dia}T${fim}:00:00`,
         status: [2, 3, 6, 10, 11].includes(indice) ? 'pendente' : 'aceito',
         responsavel: 'João Ferreira da Silva', celular: '(85) 12345-6789', publico_estimado: 100,
@@ -69,8 +74,10 @@ const csaDadosAgenda = (() => {
   async function salvar(evento, id) {
     if (demonstracao) {
       if (id && !eventos.some(item => item.id === String(id))) throw new Error('Evento não encontrado.');
-      const novo = csaAgendaModelo.normalizarEvento({ ...evento, id: id || `demo-evento-${proximoId++}` }, espacos);
-      if (!novo) throw new Error('Confira os dados do evento.');
+      const normalizado = csaAgendaModelo.normalizarEvento({ ...evento, id: id || `demo-evento-${proximoId++}` }, espacos);
+      if (!normalizado) throw new Error('Confira os dados do evento.');
+      const anterior = eventos.find(item => item.id === normalizado.id);
+      const novo = { ...anterior, ...normalizado, origem: anterior?.origem || 'administrativo' };
       eventos = eventos.filter(item => item.id !== novo.id).concat(novo);
       return novo;
     }
