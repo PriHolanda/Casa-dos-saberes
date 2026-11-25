@@ -481,8 +481,8 @@ input[type="checkbox"] {
 }
 
 :is(.csa-event-sala1, .csa-event-sala2, .csa-event-corredor) {
-  --csa-salas-fundo: #D0B499;
-  --csa-salas-texto: #4D382B;
+  --csa-salas-fundo: #B28C6B;
+  --csa-salas-texto: #38251A;
   border-color: var(--csa-salas-fundo);
 }
 
