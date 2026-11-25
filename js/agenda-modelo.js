@@ -4,8 +4,11 @@ const csaAgendaModelo = (() => {
   const espacos = [
     { id: '1', nome: 'Auditório', visual: 'auditorio' },
     { id: '2', nome: 'Quintal', visual: 'quintal' },
-    { id: '3', nome: 'Salas Expositivas', visual: 'salas' },
+    { id: '3', nome: 'Salas Expositivas', visual: 'salas', legado: true },
     { id: '4', nome: 'Varanda', visual: 'varanda' },
+    { id: '6', nome: 'Sala 1', visual: 'sala1' },
+    { id: '7', nome: 'Sala 2', visual: 'sala2' },
+    { id: '8', nome: 'Corredor', visual: 'corredor' },
     { id: '5', nome: 'Área Externa', visual: 'externa' }
   ];
   const formatoCivil = new Intl.DateTimeFormat('sv-SE', {

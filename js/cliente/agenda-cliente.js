@@ -1,5 +1,6 @@
 document.addEventListener('DOMContentLoaded', async () => {
   const { espacos, lerDia, somarDias, intervalo } = csaAgendaModelo;
+  const espacosReservaveis = espacos.filter(espaco => !espaco.legado);
   const { consultarEventos, consultarDisponibilidade, opcoesReserva, parametrosReserva } = csaProgramacao;
   const parametros = new URLSearchParams(location.search);
   const dataAtual = document.querySelector('.csa-date-current');
@@ -102,10 +103,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     erroVagas = '';
     atualizar();
     if (vagas) return;
-    const resultados = await Promise.allSettled(espacos.map(espaco => consultarDisponibilidade(data, espaco.id)));
+    const resultados = await Promise.allSettled(espacosReservaveis.map(espaco => consultarDisponibilidade(data, espaco.id)));
     if (id !== consulta) return;
     vagas = resultados.flatMap((resultado, indice) => resultado.status === 'fulfilled'
-      ? opcoesReserva(resultado.value).map(vaga => ({ espaco: espacos[indice], vaga })) : []);
+      ? opcoesReserva(resultado.value).map(vaga => ({ espaco: espacosReservaveis[indice], vaga })) : []);
     if (resultados.some(resultado => resultado.status === 'rejected')) {
       erroVagas = 'A disponibilidade de alguns espaços não pôde ser consultada.';
     }

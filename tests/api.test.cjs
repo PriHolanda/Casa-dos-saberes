@@ -170,3 +170,17 @@ test('aprovação sem confirmação do status na resposta mantém cache anterior
   await assert.rejects(a.rodar("csaDadosAgenda.atualizarStatus('7', 'aceito')"), /não confirmou/);
   assert.equal(a.rodar("csaDadosAgenda.buscarEvento('7').status"), 'pendente');
 });
+
+test('Sala 1, Sala 2 e Corredor usam seus próprios IDs na reserva e na disponibilidade', async () => {
+  const data = '2099-06-01';
+  const a = ambiente(url => resposta({ data, espaco_id: Number(new URL(url).searchParams.get('espaco_id')),
+    duracao_minima_horas: 2, duracao_maxima_horas: 3, horarios_reservaveis: [] }));
+  vm.runInContext(fs.readFileSync(path.join(__dirname, '../js/cliente/programacao.js'), 'utf8'), a.ctx);
+  for (const [id, nome] of [['6', 'Sala 1'], ['7', 'Sala 2'], ['8', 'Corredor']]) {
+    const reserva = a.rodar(`csaProgramacao.lerReserva(new URLSearchParams('espacoId=${id}&data=${data}&turno=morning'))`);
+    assert.equal(reserva.espacoId, id);
+    assert.equal(a.rodar(`csaAgendaModelo.espacos.find(espaco => espaco.id === '${id}').nome`), nome);
+    await a.rodar(`csaProgramacao.consultarDisponibilidade('${data}', '${id}')`);
+    assert.equal(new URL(a.chamadas.at(-1).url).searchParams.get('espaco_id'), id);
+  }
+});

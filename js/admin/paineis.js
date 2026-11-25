@@ -84,6 +84,7 @@ const csaPainel = (() => {
     const horaFim = evento?.horarioTermino || turno.fim;
     const turnoAnterior = Object.entries(turnos).find(([, opcoes]) => horaInicio >= opcoes.minimo && horaInicio < opcoes.maximo)?.[0] || turnoId;
     const limite = turnos[turnoAnterior];
+    const opcoesEspacos = espacos.filter(espaco => !espaco.legado || espaco.id === evento?.espacoId);
     abrir(`<div class="csa-painel__cabecalho">
       <h2 id="csa-painel-titulo">${evento ? 'Alterar Evento' : 'Cadastrar Evento'}</h2>
       <button type="button" data-fechar-painel aria-label="Fechar painel">×</button>
@@ -94,7 +95,7 @@ const csaPainel = (() => {
         ? `<label>Data<input name="data" type="date" value="${escapar(dataEvento)}" required></label>`
         : `<input type="hidden" name="data" value="${escapar(dataEvento)}">`}
       ${evento ? `<input type="hidden" name="status" value="${valor('status', 'pendente')}"><input type="hidden" name="celular" value="${valor('celular')}">` : ''}
-      <label>Espaço Disponível<select name="espacoId" required><option value="" ${evento ? '' : 'selected'} disabled>Selecione um espaço</option>${espacos.map(espaco => `<option value="${escapar(espaco.id)}" ${evento?.espacoId === espaco.id ? 'selected' : ''}>${escapar(espaco.nome)}</option>`).join('')}</select></label>
+      <label>Espaço Disponível<select name="espacoId" required><option value="" ${evento ? '' : 'selected'} disabled>Selecione um espaço</option>${opcoesEspacos.map(espaco => `<option value="${escapar(espaco.id)}" ${evento?.espacoId === espaco.id ? 'selected' : ''}>${escapar(espaco.nome)}</option>`).join('')}</select></label>
       <label>Nome do Evento<input name="nome" placeholder="Ex.: Apresentação Musical" value="${valor('nome')}" required minlength="3" maxlength="120"></label>
       <label>Responsável<input name="solicitante" placeholder="Nome completo" value="${valor('solicitante')}" required maxlength="120"></label>
       <div class="csa-painel__linha">

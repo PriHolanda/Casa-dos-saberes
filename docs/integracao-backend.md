@@ -18,7 +18,9 @@ O frontend usa os controllers e schemas existentes em `~/programing/AgendamentoC
 | Alterar evento | `PUT /eventos/{id}` | Cabeçalho Bearer e `EventoUpdate` completo |
 | Excluir evento | `DELETE /eventos/{id}` | Cabeçalho Bearer; resposta 204, sem corpo |
 
-`EventoCreate`: `titulo` (3–150 caracteres), `descricao` (10–2000), `data_inicio`, `data_fim`, `classificacao_indicativa`, `espaco_id` inteiro de 1 a 5, `responsavel` e `publico_estimado` inteiro ou nulo. As datas enviadas são civis, sem offset, seguindo o banco atual. Datas recebidas com offset são exibidas em America/Fortaleza. O formulário usa o espaço e o período escolhidos na agenda pública. Antes de enviar, consulta de novo a disponibilidade. O FastAPI confirma uma reserva pública como pendente e cadastra como aceito um evento criado com sessão autenticada.
+`EventoCreate`: `titulo` (3–150 caracteres), `descricao` (10–2000), `data_inicio`, `data_fim`, `classificacao_indicativa`, `espaco_id` inteiro de 1 a 8, `responsavel` e `publico_estimado` inteiro ou nulo. As datas enviadas são civis, sem offset, seguindo o banco atual. Datas recebidas com offset são exibidas em America/Fortaleza. O formulário usa o espaço e o período escolhidos na agenda pública. Antes de enviar, consulta de novo a disponibilidade. O FastAPI confirma uma reserva pública como pendente e cadastra como aceito um evento criado com sessão autenticada.
+
+Sala 1, Sala 2 e Corredor usam os IDs 6, 7 e 8. Cada um tem disponibilidade própria. O ID 3 mantém as reservas anteriores de Salas Expositivas e, enquanto uma dessas reservas estiver ativa, o período fica ocupado nas duas salas.
 
 A agenda real usa os sete dias da semana e não carrega `js/admin/dados-exemplo.js`. Os mocks permanecem apenas como fixture dos testes antigos. O cache é atualizado após a API confirmar a gravação. Recarregar a página consulta o banco novamente.
 

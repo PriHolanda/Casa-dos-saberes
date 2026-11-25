@@ -480,6 +480,39 @@ input[type="checkbox"] {
   color: #584E4E;
 }
 
+.csa-event-sala1 {
+  --csa-espaco-destaque: #6B3A12;
+}
+
+.csa-event-sala2 {
+  --csa-espaco-destaque: #5B5757;
+}
+
+.csa-event-corredor {
+  --csa-espaco-destaque: #6B5E2A;
+  --csa-espaco-borda: #E8E2C9;
+}
+
+:is(.csa-event-sala1, .csa-event-sala2, .csa-event-corredor) {
+  border-color: var(--csa-espaco-borda, var(--csa-espaco-destaque));
+}
+
+:is(.csa-event-sala1, .csa-event-sala2, .csa-event-corredor) .csa-event-hour {
+  background-color: var(--csa-espaco-borda, var(--csa-espaco-destaque));
+}
+
+:is(.csa-event-sala1, .csa-event-sala2, .csa-event-corredor) .csa-event-reserve {
+  background-color: var(--csa-espaco-destaque);
+}
+
+:is(.csa-event-sala1, .csa-event-sala2, .csa-event-corredor)
+:is(.csa-event-space, .csa-event-details, .csa-event-message) {
+  color: var(--csa-espaco-destaque);
+}
+
+.csa-event-corredor .csa-event-hour span {
+  color: #000;
+}
 
 /* Área externa */
 .csa-event-externa {

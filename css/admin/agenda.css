@@ -286,11 +286,11 @@
 
 .csa-event-card--auditorio { background: var(--csa-cor-auditorio); }
 .csa-event-card--quintal { background: var(--csa-cor-quintal); }
-.csa-event-card--salas { background: var(--csa-cor-salas); }
+:is(.csa-event-card--salas, .csa-event-card--sala1, .csa-event-card--sala2, .csa-event-card--corredor) { background: var(--csa-cor-salas); }
 .csa-event-card--varanda { background: var(--csa-cor-varanda); }
 .csa-event-card--auditorio .csa-event-card__espaco { color: var(--csa-texto-auditorio); }
 .csa-event-card--quintal .csa-event-card__espaco { color: var(--csa-texto-quintal); }
-.csa-event-card--salas .csa-event-card__espaco { color: var(--csa-texto-salas); }
+:is(.csa-event-card--salas, .csa-event-card--sala1, .csa-event-card--sala2, .csa-event-card--corredor) .csa-event-card__espaco { color: var(--csa-texto-salas); }
 .csa-event-card--varanda .csa-event-card__espaco { color: #856000; }
 
 .csa-event-card__espaco { font-size: 12px; line-height: 1.2; font-weight: 600; letter-spacing: .5px; margin: 2px 0; }
