@@ -31,10 +31,12 @@ csa-navbar [hidden], .csa-navbar-menu[hidden] { display: none !important; }
 csa-navbar :focus-visible, .csa-navbar-menu :focus-visible { outline: 3px solid #2d69a2; outline-offset: 3px; }
 body .csa-navbar-lateral.csa-sidebar, body .csa-navbar-lateral { display: flex; flex-direction: column; justify-content: space-between; width: 188px; flex-shrink: 0; padding: 0; background: #e8e2c9; }
 .csa-navbar-lateral > .csa-navbar-menu { position: static; min-width: 0; max-width: none; width: 100%; gap: 9px; padding: 26px 13px 39px 7px; box-shadow: none; }
+.csa-navbar-lateral > img { display: block; width: 185px; max-width: 100%; height: auto; }
 .csa-auth > csa-navbar { grid-column: 1 / -1; }
 .csa-auth:has(> csa-navbar) { grid-template-rows: auto 1fr; }
 
-@media (min-width: 769px) {
+@media screen and (min-width: 769px) {
+  :is(.csa-layout, .csa-visitas-admin):has(> .csa-navbar-lateral) { min-height: calc(100vh - 115px); }
   .csa-visitas-admin:has(> .csa-navbar-lateral) { display: grid; grid-template-columns: 188px minmax(0, 1fr); }
 }
 
@@ -45,7 +47,7 @@ body .csa-navbar-lateral.csa-sidebar, body .csa-navbar-lateral { display: flex; 
   .csa-navbar-com-lateral .csa-navbar-header .csa-navbar-botao, .csa-navbar-botao:has(.csa-navbar-perfil) > .csa-navbar-hamburger { display: flex; }
   .csa-navbar-faixa { height: 31px; }
   .csa-navbar-menu { left: auto; right: 16px; }
-  body .csa-navbar-lateral.csa-sidebar, body .csa-navbar-lateral { display: none; position: absolute; top: var(--csa-navbar-topo, 106px); left: auto; right: 16px; width: 188px; max-width: calc(100vw - 32px); padding: 0; z-index: 35; box-shadow: 0 4px 10px #0002; }
+  body .csa-navbar-lateral.csa-sidebar, body .csa-navbar-lateral { display: none; position: absolute; top: var(--csa-navbar-topo, 106px); left: auto; right: 16px; width: 188px; max-width: calc(100vw - 32px); padding: 0; gap: 0; border: 0; z-index: 35; box-shadow: 0 4px 10px #0002; }
   body .csa-navbar-lateral.csa-navbar-lateral--aberta { display: flex; }
   .csa-navbar-lateral > img { display: none !important; }
   .csa-visitas-admin:has(> .csa-navbar-lateral) { display: block; }

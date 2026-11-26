@@ -104,3 +104,20 @@
 @media (min-width: 761px) {
   .csa-detalhes__seta { width: 42px; height: 42px; }
 }
+
+@media (min-width: 1020px) {
+  body[data-csa-interface].csa-detalhes { font-size: 20px; line-height: 1.4; }
+    body[data-csa-interface].csa-detalhes .csa-detalhes__conteudo {
+      width: min(calc(100% - 48px), 1292px);
+      max-width: 1292px;
+      padding-block: 32px 89px;
+    }
+    body[data-csa-interface].csa-detalhes .csa-detalhes__grade { grid-template-columns: minmax(0, 2.35fr) minmax(0, 1fr); gap: 20px; }
+    body[data-csa-interface].csa-detalhes .csa-detalhes-card__titulo { font-size: 46px; line-height: 1.15; }
+    body[data-csa-interface].csa-detalhes .csa-detalhes-card__secao h2,
+    body[data-csa-interface].csa-detalhes .csa-detalhes-card--lateral h2 { font-size: 28px; line-height: 1.2; }
+    body[data-csa-interface].csa-detalhes .csa-detalhes-card__secao p,
+    body[data-csa-interface].csa-detalhes .csa-detalhes-card__regras { font-size: 24px; line-height: 1.4; }
+    body[data-csa-interface].csa-detalhes .csa-detalhes-card__campo dt,
+    body[data-csa-interface].csa-detalhes .csa-detalhes-card__campo dd { font-size: 18px; line-height: 1.4; }
+}

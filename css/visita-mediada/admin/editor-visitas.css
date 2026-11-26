@@ -117,3 +117,14 @@
   .csa-exposicoes-sucesso .csa-visitas-botao { order: 2; margin-top: 106px; }
   .csa-exposicoes-sucesso__icone { width: min(80%, 240px); }
 }
+
+@media (min-width: 1020px) {
+  body[data-csa-interface] .csa-exposicoes h1 { font-size: 40px; font-weight: 700; line-height: 1.2; }
+    body[data-csa-interface] .csa-exposicoes__secoes { width: min(100%, 1028px); max-width: 1028px; margin: 32px auto 0; gap: 24px; }
+    body[data-csa-interface] .csa-exposicoes__cabecalho h2,
+    body[data-csa-interface] .csa-exposicoes__formulario h2 { font-size: 24px; font-weight: 700; line-height: 1.25; }
+    body[data-csa-interface] .csa-exposicoes__lista { gap: 16px; padding: 16px; }
+    body[data-csa-interface] .csa-exposicoes-edicao__painel { width: min(100%, 1028px); gap: 32px; }
+    body[data-csa-interface] .csa-exposicoes-edicao__entradas label { font-size: 18px; line-height: 1.4; }
+    body[data-csa-interface] .csa-exposicoes-edicao__acoes { gap: 16px; margin-top: 32px; }
+}

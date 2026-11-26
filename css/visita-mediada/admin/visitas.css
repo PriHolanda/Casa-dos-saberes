@@ -68,6 +68,18 @@
 .csa-visitas-formulario h1 { margin: 0 -4% 14px 0; text-align: center; font-size: 32px; line-height: 1.15; font-weight: 800; }
 .csa-visitas-formulario h1 span { text-transform: capitalize; }
 .csa-visitas-formulario__voltar { display: none; }
+body[data-csa-interface].csa-visitas--formulario .csa-visitas-formulario { margin-inline: auto; }
+body[data-csa-interface].csa-visitas--formulario .csa-visitas-formulario h1 {
+  margin-inline: 0;
+  text-align: center;
+}
+body[data-csa-interface].csa-visitas--formulario .csa-visitas-formulario__voltar {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--csa-cinza-texto);
+  text-decoration: none;
+}
 .csa-visita-formulario__aviso { max-width: 332px; margin-bottom: 34px; line-height: 1; font-weight: 550; }
 .csa-visita-formulario__aviso strong { color: var(--csa-vermelho); font-weight: 800; }
 .csa-visita-formulario__colunas { display: grid; min-width: 0; }
@@ -318,12 +330,6 @@
   .csa-visita-editor--novo :has([name="multipla"][value="nao"]:checked) > .csa-visita-editor__adicionar::before { border-radius: 0; }
   .csa-visita-editor--novo :has([name="multipla"][value="nao"]:checked) > .csa-visita-editor__opcoes { grid-area: 4 / 1 / 5 / -1; margin-top: 20px; }
 
-  .csa-visitas-admin { display: grid; grid-template-columns: 185px minmax(0, 1fr); min-height: calc(100vh - 116px); }
-  .csa-visitas-lateral { display: flex; flex-direction: column; justify-content: space-between; background: var(--csa-fundo-nav); }
-  .csa-visitas-lateral nav { display: grid; gap: 7px; padding: 42px 14px 0; }
-  .csa-visitas-lateral nav a { display: flex; gap: 8px; align-items: center; padding: 12px 7px; color: #000; text-decoration: none; font-size: 14px; font-weight: 750; }
-  .csa-visitas-lateral nav [aria-current] { background: var(--csa-vermelho); color: #fff; border-radius: 4px; }
-  .csa-visitas-lateral img { display: block; width: 185px; height: auto; }
   .csa-visitas-lista { padding: 43px 4% 100px; }
   .csa-visitas-lista h1 { text-align: left; font-size: 38px; margin-bottom: 18px; }
   .csa-visitas-controles { display: flex; align-items: stretch; gap: 10px; flex-wrap: wrap; }
@@ -364,4 +370,144 @@
   .csa-visitas .csa-grid tr { display: table-row; }
   .csa-visitas .csa-grid th, .csa-visitas .csa-grid td { display: table-cell; }
   .csa-visitas .csa-grid__celula { height: auto; }
+}
+
+@media screen and (min-width: 1020px) {
+  body[data-csa-interface].csa-visitas .csa-visitas-lista {
+    padding: 42px clamp(32px, 3.26vw, 47px) 128px;
+  }
+  body[data-csa-interface].csa-visitas .csa-visitas-lista h1 {
+    margin: 0 0 22px;
+    font-size: 40px;
+    font-weight: 800;
+    line-height: 1.2;
+  }
+  body[data-csa-interface].csa-visitas .csa-visitas-controles {
+    --csa-ui-controle: 49px;
+    --csa-ui-rotulo: 14px;
+    --csa-ui-peso-controle: 500;
+    width: 773px;
+    max-width: calc(100% - 3px);
+    margin-inline-start: 3px;
+    flex-wrap: nowrap;
+    gap: clamp(6px, .83vw, 12px);
+    align-items: stretch;
+    white-space: nowrap;
+  }
+  body[data-csa-interface].csa-visitas .csa-visitas-controles__tipos button {
+    padding-inline: clamp(10px, 1.6vw, 23px);
+  }
+  body[data-csa-interface].csa-visitas .csa-visitas-controles__periodo {
+    flex: 1;
+    min-width: 0;
+    grid-template-columns: 32px minmax(0, 1fr) 32px;
+    gap: 3px;
+  }
+  body[data-csa-interface].csa-visitas .csa-visitas-controles__periodo > button { width: 32px; }
+  body[data-csa-interface].csa-visitas .csa-visitas-data { padding-inline: 6px; }
+  body[data-csa-interface].csa-visitas #csa-visitas-periodo {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  body[data-csa-interface].csa-visitas .csa-visitas-controles__acoes {
+    flex: none;
+    gap: clamp(6px, .83vw, 12px);
+  }
+  body[data-csa-interface].csa-visitas .csa-visitas-filtro { min-width: 123px; }
+  body[data-csa-interface].csa-visitas #csa-visitas-exportar {
+    width: 123px;
+    padding-inline: 5px;
+    gap: 6px;
+  }
+  body[data-csa-interface].csa-visitas .csa-visitas-legenda {
+    gap: 24px;
+    margin: 21px 0 40px 19px;
+    font-size: 18px;
+    line-height: 25px;
+  }
+  body[data-csa-interface].csa-visitas .csa-visitas-legenda .csa-visitas-indicador {
+    width: 20px;
+    height: 20px;
+  }
+  body[data-csa-interface].csa-visitas .csa-visitas-lista > #csa-visitas-grade {
+    width: clamp(1040px, 68.75vw, 1320px);
+    max-width: calc(100% - 5px);
+    margin-inline-start: 5px;
+  }
+  body[data-csa-interface].csa-visitas.csa-dashboard #csa-agenda {
+    --csa-grade-turno: clamp(94px, 8.27vw, 119px);
+    --csa-grade-altura-turno: 343px;
+    border: 0;
+    border-inline: 1px solid #bdcde0;
+  }
+  body[data-csa-interface].csa-visitas.csa-dashboard .csa-grid thead th {
+    height: 92px;
+    font-size: 20px;
+    line-height: 1.2;
+    border-color: #bdcde0;
+    border-bottom: 0;
+  }
+  body[data-csa-interface].csa-visitas.csa-dashboard .csa-grid thead span:not(.csa-grid__caption) {
+    font-size: 18px;
+  }
+  body[data-csa-interface].csa-visitas.csa-dashboard .csa-grid tbody th {
+    color: var(--csa-texto);
+    font-size: 18px;
+  }
+  .csa-visitas .csa-grid tbody [data-turno="manha"] > :is(th, td) { border-color: #bdcde0; }
+  .csa-visitas .csa-grid tbody [data-turno="tarde"] > :is(th, td) { border-color: #f2b8b8; }
+  .csa-visitas .csa-grid__celula { padding: 10px clamp(5px, .7vw, 10px); }
+  .csa-visitas .csa-grid [data-turno="manha"] .csa-grid__celula { height: 346px; }
+  .csa-visitas .csa-grid [data-turno="tarde"] .csa-grid__celula { padding-top: 28px; }
+  .csa-visitas .csa-grid .csa-visitas-dia-sem-registros { display: none; }
+  body[data-csa-interface].csa-visitas.csa-dashboard .csa-visitas-card {
+    --csa-ui-card-altura: 94px;
+    --csa-ui-card-padding: 6px 10px;
+    --csa-ui-card-raio: 5px;
+  }
+  body[data-csa-interface].csa-visitas.csa-dashboard .csa-visitas-card__categoria {
+    margin: 0 0 2px;
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 1.25;
+    letter-spacing: normal;
+  }
+  body[data-csa-interface].csa-visitas.csa-dashboard .csa-visitas-card strong {
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 1.25;
+  }
+  body[data-csa-interface].csa-visitas.csa-dashboard .csa-visitas-card time {
+    margin-top: 2px;
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 1.25;
+  }
+  body[data-csa-interface].csa-visitas.csa-dashboard .csa-visitas-card__status {
+    margin-top: 3px;
+    justify-content: flex-end;
+    gap: 4px;
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 1.25;
+  }
+  body[data-csa-interface].csa-visitas.csa-dashboard .csa-visita-detalhe h2 { font-size: 32px; line-height: 1.2; }
+  body[data-csa-interface].csa-visitas.csa-dashboard .csa-visita-detalhe__quadro h3 { font-size: 24px; line-height: 1.25; }
+  body[data-csa-interface].csa-visitas.csa-dashboard .csa-visita-detalhe dl { font-size: 16px; line-height: 1.4; }
+
+  body[data-csa-interface].csa-visitas--formulario .csa-visitas-formulario { width: min(calc(100% - 48px), 1292px); padding: 24px 0 80px; font-size: 18px; line-height: 1.4; }
+  body[data-csa-interface].csa-visitas--formulario .csa-visitas-formulario h1 { margin: 24px 0 28px; font-size: 40px; line-height: 1.2; }
+  body[data-csa-interface].csa-visitas--formulario .csa-visita-formulario__aviso { margin-bottom: 36px; font-size: 18px; line-height: 1.4; }
+  body[data-csa-interface].csa-visitas--formulario .csa-visita-formulario__colunas {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 46px;
+  }
+  body[data-csa-interface].csa-visitas--formulario .csa-visita-formulario__termo { margin-bottom: 28px; }
+  body[data-csa-interface].csa-visitas--formulario .csa-visita-formulario__campos { gap: 20px; margin-bottom: 24px; }
+  body[data-csa-interface].csa-visitas--formulario .csa-visita-formulario__adicionar { min-height: 52px; font-size: 20px; }
+  body[data-csa-interface].csa-visitas--formulario .csa-visita-editor { font-size: 18px; line-height: 1.4; }
+  body[data-csa-interface].csa-visitas--formulario .csa-visita-editor__titulo { font-size: 22px; }
+  body[data-csa-interface].csa-visitas--formulario .csa-visita-editor__entrada { min-height: 48px; font-size: 18px; }
+  body[data-csa-interface].csa-visitas--formulario .csa-visita-editor__salvar { min-height: 48px; font-size: 18px; }
 }

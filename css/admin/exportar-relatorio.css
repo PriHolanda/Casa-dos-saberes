@@ -1,0 +1,67 @@
+.csa-relatorio-dialogo {
+  width: min(480px, calc(100% - 32px));
+  max-height: calc(100dvh - 32px);
+  margin: auto;
+  padding: clamp(20px, 4vw, 28px);
+  border: 1px solid var(--csa-cinza-borda);
+  border-top: 5px solid var(--csa-vermelho);
+  border-radius: 6px;
+  background: var(--csa-fundo-pagina);
+  color: var(--csa-texto);
+  box-shadow: 0 12px 40px #0003;
+}
+
+.csa-relatorio-dialogo::backdrop { background: #0007; }
+.csa-relatorio-dialogo form { display: grid; gap: 16px; }
+.csa-relatorio-dialogo p { line-height: 1.4; }
+.csa-relatorio-datas { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.csa-relatorio-datas label { display: grid; min-width: 0; gap: 6px; font-weight: 700; }
+.csa-relatorio-datas input { width: 100%; min-width: 0; }
+.csa-relatorio-datas input[aria-invalid="true"] { outline: 1px solid var(--csa-vermelho); }
+.csa-relatorio-erro { color: var(--csa-vermelho); font-weight: 650; }
+.csa-relatorio-erro:empty { display: none; }
+.csa-relatorio-acoes { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 8px; }
+
+.csa-relatorio-acoes button {
+  min-height: var(--csa-ui-controle);
+  padding: 8px 16px;
+  border: 1px solid var(--csa-vermelho);
+  border-radius: 4px;
+  background: var(--csa-fundo-pagina);
+  color: var(--csa-vermelho);
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.csa-relatorio-acoes button[type="submit"] { background: var(--csa-vermelho); color: #fff; }
+.csa-relatorio-acoes button:hover:not(:disabled) { filter: brightness(.94); }
+.csa-relatorio-acoes button:disabled { opacity: .65; cursor: default; }
+.csa-relatorio-impressao { display: none; }
+
+@media (max-width: 440px) {
+  .csa-relatorio-datas { grid-template-columns: minmax(0, 1fr); }
+}
+
+@media print {
+  .csa-relatorio-dialogo, .csa-relatorio-dialogo::backdrop { display: none !important; }
+  body:has(> .csa-relatorio-impressao) > :not(.csa-relatorio-impressao) { display: none !important; }
+  body > .csa-relatorio-impressao {
+    display: block;
+    padding: 16px;
+    font-size: 12pt;
+    print-color-adjust: exact;
+  }
+  .csa-relatorio-marca {
+    margin-bottom: 18px;
+    padding: 14px 16px 26px;
+    background: url('../../assets/reservas/faixa.png') repeat-x left bottom / auto 12px, var(--csa-fundo-nav);
+  }
+  .csa-relatorio-marca img { display: block; width: 220px; max-width: 100%; height: auto; }
+  .csa-relatorio-impressao h1 { margin-bottom: 6px; color: var(--csa-texto); font-size: 20pt; }
+  .csa-relatorio-impressao table { width: 100%; margin-top: 16px; border-collapse: collapse; text-align: left; }
+  .csa-relatorio-impressao tr { break-inside: avoid; }
+  .csa-relatorio-impressao :is(th, td) { padding: 6px 8px; border-bottom: 1px solid #ded8c5; }
+  .csa-relatorio-impressao th { background: var(--csa-vermelho); color: #fff; }
+  .csa-relatorio-impressao tbody tr:nth-child(odd) { background: var(--csa-fundo-creme); }
+}

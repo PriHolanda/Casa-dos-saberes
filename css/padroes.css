@@ -259,3 +259,32 @@ body[data-csa-interface] .csa-visita-detalhe__quadro:last-child { grid-column: 1
   body[data-csa-interface] .csa-visita-detalhe__painel { width: calc(100% - 48px); margin: 128px 24px 40px; }
   body[data-csa-interface] :is(.csa-visita-detalhe__dados, .csa-visita-detalhe__quadro:last-child .csa-visita-detalhe__colunas) { grid-template-columns: minmax(0, 1fr); }
 }
+
+/* Desktop: type scale, centering, and rhythm aligned with the Figma screens. */
+@media (min-width: 1020px) {
+  :root {
+    --csa-ui-titulo: 2.75rem;
+    --csa-ui-subtitulo: 1.5rem;
+    --csa-ui-secao: 1.125rem;
+    --csa-ui-texto: 1rem;
+    --csa-ui-rotulo: 1rem;
+    --csa-ui-secundario: .875rem;
+    --csa-ui-linha: 1.4;
+    --csa-ui-peso-titulo: 700;
+    --csa-ui-peso-controle: 600;
+    --csa-ui-controle: 3rem;
+    --csa-ui-espaco-1: .25rem;
+    --csa-ui-espaco-2: .5rem;
+    --csa-ui-espaco-3: .75rem;
+    --csa-ui-espaco-4: 1rem;
+    --csa-ui-espaco-6: 1.5rem;
+    --csa-ui-espaco-8: 2rem;
+    --csa-ui-card-padding: 8px 12px;
+  }
+
+  body[data-csa-interface] {
+    font-family: var(--csa-ui-fonte);
+    font-size: var(--csa-ui-texto);
+    line-height: var(--csa-ui-linha);
+  }
+}

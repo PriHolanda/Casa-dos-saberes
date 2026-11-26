@@ -5,20 +5,31 @@
   const aviso = document.getElementById('csa-dashboard-aviso') || document.getElementById('csa-agenda-aviso');
   const exportar = document.getElementById('csa-btn-pdf');
   if (exportar && document.body.dataset.somenteLeitura !== 'true') {
-    exportar.addEventListener('click', async () => {
-      if (csaDadosAgenda.demonstracao) {
-        window.print();
-        return;
-      }
-      const dias = csaAgenda.periodo();
-      exportar.disabled = true;
-      aviso.textContent = '';
-      try {
-        await csaApi.exportarAgendamentos('eventos', dias[0], dias.at(-1), document.getElementById('csa-filtro-status').value);
-      } catch (erro) {
-        aviso.textContent = erro.message;
-      } finally {
-        exportar.disabled = false;
+    csaExportarRelatorio.conectar(exportar, {
+      periodo() {
+        const dias = csaAgenda.periodo();
+        return [dias[0], dias.at(-1)];
+      },
+      exportar(inicio, fim) {
+        const status = document.getElementById('csa-filtro-status').value;
+        if (!csaDadosAgenda.demonstracao) {
+          return csaApi.exportarAgendamentos('eventos', inicio, fim, status);
+        }
+        const { eventos, espacos } = csaDadosAgenda.consultarPeriodo(inicio, fim);
+        const linhas = eventos
+          .filter(evento => evento.inicio.slice(0, 10) >= inicio && (status === 'todos' || evento.status === status))
+          .sort((a, b) => a.inicioMs - b.inicioMs)
+          .map(evento => [
+            csaExportarRelatorio.formatarData(evento.inicio.slice(0, 10)),
+            `${evento.horarioInicio} às ${evento.horarioTermino}`,
+            evento.nome,
+            espacos.find(espaco => espaco.id === evento.espacoId)?.nome || 'Não informado',
+            csaAgendaModelo.definirStatus(evento.status).rotulo
+          ]);
+        return csaExportarRelatorio.imprimirDemonstracao({
+          titulo: 'Relatório de eventos e reservas de espaços', inicio, fim,
+          colunas: ['Data', 'Horário', 'Evento', 'Espaço', 'Status'], linhas
+        });
       }
     });
   }
@@ -44,7 +55,7 @@
       await resumo.carregar();
       csaAgenda.recarregar();
     }
-    if (csaDadosAgenda.demonstracao && matchMedia('(min-width: 769px)').matches) {
+    if (resumo && csaDadosAgenda.demonstracao && matchMedia('(min-width: 769px)').matches) {
       const primeiro = csaDadosAgenda.consultarPeriodo(csaDadosAgenda.dataInicial, csaDadosAgenda.dataInicial).eventos[0];
       if (primeiro) csaPainel.mostrarDetalhes(primeiro);
     }

@@ -14,11 +14,13 @@
   <script src="../../../js/config.js" defer></script>
   <script src="../../../js/api.js" defer></script>
   <script src="../../../js/visita-mediada/modelo.js" defer></script>
+  <script src="../../../js/admin/exportar-relatorio.js" defer></script>
   <script src="../../../js/visita-mediada/admin/visitas.js" defer></script>
   <script src="../../../js/admin/diaria-mobile.js" defer></script>
   <script src="../../../js/admin/semanal-mobile.js" defer></script>
   <link rel="stylesheet" href="../../../css/padroes.css">
   <link rel="stylesheet" href="../../../css/navbar.css">
+  <link rel="stylesheet" href="../../../css/admin/exportar-relatorio.css">
 </head>
 <body data-csa-interface class="csa-visitas csa-dashboard">
   <csa-navbar area="admin" lateral=".csa-visitas-lateral"></csa-navbar>
@@ -64,7 +66,6 @@
         <li><span class="csa-visitas-indicador csa-visitas-indicador--pendente" aria-hidden="true"></span>Pendente</li>
       </ul>
       <p class="csa-visitas-vazio" id="csa-visitas-mensagem" role="status">Carregando visitas…</p>
-      <p class="csa-visitas-aviso" id="csa-visitas-exportacao-aviso" role="status" hidden></p>
       <div class="csa-dashboard-grade" id="csa-visitas-grade" hidden><div id="csa-agenda" role="region" aria-label="Agenda de visitas por dia e turno" tabindex="0"></div></div>
     </main>
   </div>

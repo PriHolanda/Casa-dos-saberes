@@ -28,7 +28,6 @@
 .csa-dashboard .csa-button-sidebar { min-height: 46px; margin-inline: 14px; padding: 12px 7px; justify-content: flex-start; border-radius: 0; font-size: 12px; font-weight: 650; white-space: nowrap; }
 .csa-dashboard .csa-sidebar-nav a:not([aria-current]) { margin-inline: 14px; padding-inline: 7px; }
 .csa-dashboard .csa-button-sidebar i { width: 25px; font-size: 18px; font-weight: 400; }
-.csa-dashboard .csa-sidebar > img { width: 185px; max-width: 100%; }
 .csa-dashboard .csa-titulo { font-size: 32px; font-weight: 800; line-height: 1.2; margin-bottom: 20px; }
 .csa-dashboard .csa-agenda { padding: 28px 32px; }
 .csa-dashboard-indicadores { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; max-width: 1195px; }
@@ -145,4 +144,154 @@
   .csa-pautas .csa-grid th, .csa-pautas .csa-grid td { display: table-cell; }
   .csa-pautas .csa-grid__celula { height: auto; }
   .csa-pautas .csa-event-card { break-inside: avoid; }
+}
+
+@media (min-width: 1020px) {
+  body[data-csa-interface].csa-pautas .csa-agenda {
+    padding: 42px clamp(32px, 3.26vw, 47px) 80px;
+  }
+  body[data-csa-interface].csa-pautas .csa-agenda > :is(
+    .csa-titulo,
+    .csa-dashboard-aviso,
+    .csa-barra-controle,
+    .csa-legenda
+  ) {
+    width: min(100%, 1195px);
+    margin-inline: 0;
+  }
+  body[data-csa-interface].csa-pautas .csa-titulo {
+    margin-bottom: 22px;
+    font-size: 40px;
+    font-weight: 800;
+    line-height: 1.2;
+  }
+  body[data-csa-interface].csa-pautas .csa-dashboard-subtitulo {
+    font-size: 24px;
+    line-height: 1.25;
+  }
+  body[data-csa-interface].csa-pautas .csa-barra-controle {
+    --csa-ui-controle: 49px;
+    flex-wrap: nowrap;
+    align-items: stretch;
+  }
+  body[data-csa-interface].csa-pautas .csa-alternador button { min-width: 94px; }
+  body[data-csa-interface].csa-pautas .csa-navegacao { min-width: 0; }
+  body[data-csa-interface].csa-pautas .csa-data {
+    display: grid;
+    grid-auto-flow: column;
+    place-content: center;
+    align-items: center;
+    gap: 6px;
+    width: 236px;
+    min-width: 0;
+    font-size: 14px;
+  }
+  body[data-csa-interface].csa-pautas .csa-data-seta {
+    flex: 0 0 32px;
+    width: 32px;
+    padding-inline: 0;
+  }
+  body[data-csa-interface].csa-pautas :is(.csa-filtro-status, .csa-exportar-pdf) {
+    flex: 0 0 123px;
+    width: 123px;
+    padding-inline: 6px;
+    font-size: 14px;
+  }
+  body[data-csa-interface].csa-pautas .csa-filtro-status { background-color: #fff; }
+  body[data-csa-interface].csa-pautas .csa-dashboard-grade { gap: 20px; }
+  body[data-csa-interface].csa-pautas #csa-agenda { --csa-grade-turno: clamp(70px, 6vw, 88px); }
+  body[data-csa-interface].csa-pautas .csa-legenda li { font-size: 18px; }
+  body[data-csa-interface].csa-pautas .csa-legenda .csa-item { width: 20px; height: 20px; }
+  body[data-csa-interface].csa-pautas .csa-grid thead th { font-size: 20px; line-height: 1.2; }
+  body[data-csa-interface].csa-pautas .csa-grid tbody th { font-size: 18px; line-height: 1.25; }
+  body[data-csa-interface].csa-pautas .csa-grid__celula { padding-inline: 4px; }
+  body[data-csa-interface].csa-pautas .csa-event-card {
+    --csa-ui-card-altura: 96px;
+    --csa-ui-card-padding: 8px 6px;
+  }
+  body[data-csa-interface].csa-pautas .csa-event-card__espaco {
+    font-size: 16px;
+    line-height: 1.2;
+    letter-spacing: normal;
+  }
+  body[data-csa-interface].csa-pautas .csa-event-card__nome { font-size: 16px; line-height: 1.25; }
+  body[data-csa-interface].csa-pautas :is(.csa-event-card__horario, .csa-event-card__status) {
+    font-size: 14px;
+    line-height: 1.3;
+  }
+  body[data-csa-interface].csa-pautas .csa-disponibilidade__adicionar p { font-size: 14px; }
+}
+
+@media screen and (min-width: 769px) {
+  body[data-csa-interface].csa-pautas .csa-dashboard-grade {
+    --csa-largura-calendario: clamp(783px, 54.375vw, 1044px);
+    --csa-largura-detalhes: clamp(220px, 22.22vw, 426px);
+    display: grid;
+    gap: 20px;
+    width: min(100%, calc(var(--csa-largura-calendario) + var(--csa-largura-detalhes) + 20px));
+    max-width: none;
+    grid-template-columns: minmax(0, var(--csa-largura-calendario)) var(--csa-largura-detalhes);
+  }
+  body[data-csa-interface].csa-pautas .csa-dashboard-calendario {
+    grid-area: 1 / 1;
+  }
+  body[data-csa-interface].csa-pautas .csa-dashboard-grade:has(.csa-grid--diaria) {
+    --csa-largura-calendario: clamp(804px, 55.833vw, 1072px);
+  }
+  body[data-csa-interface].csa-pautas .csa-grid:not(.csa-grid--diaria) {
+    min-width: 760px;
+  }
+  body[data-csa-interface].csa-pautas #csa-painel {
+    grid-area: 1 / 2;
+    position: sticky;
+    top: 16px;
+    width: 100%;
+  }
+}
+
+@media screen and (min-width: 1440px) {
+  body.csa-dashboard[data-somente-leitura="true"] .csa-agenda {
+    --csa-dashboard-largura: clamp(1195px, 83vw, 1594px);
+    --csa-dashboard-largura-painel: clamp(372px, 25.833vw, 496px);
+  }
+  body.csa-dashboard[data-somente-leitura="true"] :is(.csa-dashboard-indicadores, .csa-dashboard-grade) {
+    max-width: var(--csa-dashboard-largura);
+  }
+  body.csa-dashboard[data-somente-leitura="true"] .csa-dashboard-card {
+    min-height: 91px;
+  }
+  body.csa-dashboard[data-somente-leitura="true"] .csa-dashboard-grade {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) var(--csa-dashboard-largura-painel);
+    gap: 20px;
+  }
+  body.csa-dashboard[data-somente-leitura="true"] .csa-dashboard-calendario {
+    grid-area: 1 / 1;
+  }
+  body.csa-dashboard[data-somente-leitura="true"] #csa-painel {
+    grid-area: 1 / 2;
+    position: sticky;
+    top: 16px;
+    width: 100%;
+    max-height: calc(100dvh - 32px);
+    padding: 24px 20px 20px;
+    gap: 14px;
+  }
+  body.csa-dashboard[data-somente-leitura="true"] .csa-painel__cabecalho h2 {
+    font-size: 24px;
+    line-height: 1.2;
+  }
+  body.csa-dashboard[data-somente-leitura="true"] :is(
+    .csa-painel__evento,
+    .csa-painel__dados > .csa-painel__campo:first-child p
+  ) {
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--csa-vermelho);
+  }
+  body.csa-dashboard[data-somente-leitura="true"] .csa-painel__campo p {
+    min-height: 40px;
+    padding-block: 8px;
+    color: #4a4a4a;
+  }
 }

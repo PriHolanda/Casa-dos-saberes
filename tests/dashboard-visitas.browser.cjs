@@ -203,9 +203,10 @@ let ws;
     await avaliar("document.querySelector('[data-acao=excluir]').click()");
     await esperar(`!csaDadosAgenda.buscarEvento('${novo}')`);
     await avaliar("window.csaImpressoes=0; window.print=()=>window.csaImpressoes++; document.getElementById('csa-btn-pdf').click()");
+    await avaliar("document.querySelector('.csa-relatorio-dialogo form').requestSubmit()");
+    await esperar("!document.querySelector('.csa-relatorio-dialogo').open");
     if (demo) assert.equal(await avaliar('window.csaImpressoes'), 1);
     else {
-      await esperar("!document.getElementById('csa-btn-pdf').disabled");
       assert.equal(await avaliar('window.csaImpressoes'), 0);
       assert.ok(requisicoes.slice(inicioChamadas).some(chamada => chamada.rota === '/relatorios/agendamentos'));
     }
@@ -349,7 +350,8 @@ let ws;
   await avaliar("document.querySelector('[data-acao=negar]').click()");
   await esperar("document.querySelector('[data-visita-id=\"4\"]').textContent.includes('Negada')");
   await avaliar("document.getElementById('csa-visitas-filtro').value='negada'; document.getElementById('csa-visitas-filtro').dispatchEvent(new Event('change')); document.getElementById('csa-visitas-exportar').click()");
-  await esperar("!document.getElementById('csa-visitas-exportar').disabled");
+  await avaliar("document.querySelector('.csa-relatorio-dialogo form').requestSubmit()");
+  await esperar("!document.querySelector('.csa-relatorio-dialogo').open");
   assert.ok(requisicoes.some(pedido => pedido.rota === '/relatorios/agendamentos' && pedido.busca.get('status') === 'negado'));
 
   await abrir('pages/admin/agenda.html');
@@ -377,6 +379,8 @@ let ws;
       assert.deepEqual(await avaliar("['manha','tarde'].map(turno=>getComputedStyle(document.querySelector('[data-turno='+turno+'] .csa-visitas-card')).borderTopColor)"), ['rgb(66, 103, 137)','rgb(162, 45, 46)']);
       await capturar(`visitas-demo-${visao}-${width}`);
       await avaliar("window.csaImprimiu=false; window.print=()=>{window.csaImprimiu=true}; document.getElementById('csa-visitas-exportar').click()");
+      await avaliar("document.querySelector('.csa-relatorio-dialogo form').requestSubmit()");
+      await esperar("!document.querySelector('.csa-relatorio-dialogo').open");
       assert.equal(await avaliar('window.csaImprimiu'), true);
       const pdf=await cmd('Page.printToPDF', {landscape:true, printBackground:true, paperWidth:8.27,paperHeight:11.69});
       assert.equal(Buffer.from(pdf.data,'base64').subarray(0,5).toString(),'%PDF-');

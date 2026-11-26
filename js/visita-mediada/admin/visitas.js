@@ -87,14 +87,14 @@
     return itens;
   }
 
-  function visitasDoTurno(dia, turno) {
+  function visitasDoTurno(dia, turno, aplicarFiltro = true) {
     const chave = dataISO(dia);
     return visitas.filter(visita => {
       const inicio = visita.data_inicio;
       const comeco = `${chave}T${turno === 0 ? '00' : '12'}:00:00`;
       const fim = `${chave}T${turno === 0 ? '12' : '23'}:${turno === 0 ? '00:00' : '59:59'}`;
       const estado = csaVisitasModelo.status(visita.status).valor;
-      return inicio < fim && visita.data_fim > comeco && (filtro.value === 'todos' || estado === (filtro.value === 'aprovada' ? 'aceito' : filtro.value));
+      return inicio < fim && visita.data_fim > comeco && (!aplicarFiltro || filtro.value === 'todos' || estado === (filtro.value === 'aprovada' ? 'aceito' : filtro.value));
     });
   }
 
@@ -116,6 +116,8 @@
 
   function renderizarAgenda(dias) {
     const tabela = elemento('table', `csa-grid${visao === 'diaria' ? ' csa-grid--diaria' : ''}`);
+    const domingo = visao === 'semanal' ? dias.find(dia => dia.getDay() === 0) : undefined;
+    const domingoSemVisitas = domingo && turnos.every((_, indice) => !visitasDoTurno(domingo, indice, false).length);
     tabela.append(elemento('caption', 'csa-grid__caption', `Agenda ${visao === 'diaria' ? 'diária' : 'semanal'} de visitas por dia e turno`));
     const cabecalho = tabela.createTHead().insertRow();
     const turno = elemento('th');
@@ -125,6 +127,7 @@
     dias.forEach(dia => {
       const coluna = elemento('th');
       coluna.scope = 'col';
+      if (domingoSemVisitas && dia === domingo) coluna.classList.add('csa-visitas-dia-sem-registros');
       const nomeDia = diaSemana.format(dia).replace('.', '');
       coluna.append(elemento('strong', '', nomeDia[0].toUpperCase() + nomeDia.slice(1)), elemento('span', '', diaMes.format(dia)));
       cabecalho.append(coluna);
@@ -139,6 +142,7 @@
       dias.forEach(dia => {
         const celula = linha.insertCell();
         celula.className = 'csa-grid__celula';
+        if (domingoSemVisitas && dia === domingo) celula.classList.add('csa-visitas-dia-sem-registros');
         const conteudo = elemento('div', 'csa-grid__conteudo');
         conteudo.dataset.turno = linha.dataset.turno;
         const referencia = elemento('span');
@@ -240,24 +244,37 @@
     }
   });
   const exportar = document.getElementById('csa-visitas-exportar');
-  exportar.addEventListener('click', async () => {
-    if (demonstracao) {
-      window.print();
-      return;
-    }
-    const dias = diasDoPeriodo();
-    const avisoExportacao = document.getElementById('csa-visitas-exportacao-aviso');
-    exportar.disabled = true;
-    avisoExportacao.textContent = '';
-    avisoExportacao.hidden = true;
-    try {
-      const status = { aprovada: 'aceito', negada: 'negado', cancelada: 'cancelado' }[filtro.value] || filtro.value;
-      await csaApi.exportarAgendamentos('visitas', dataISO(dias[0]), dataISO(dias.at(-1)), status);
-    } catch (erro) {
-      avisoExportacao.textContent = erro.message;
-      avisoExportacao.hidden = false;
-    } finally {
-      exportar.disabled = false;
+  csaExportarRelatorio.conectar(exportar, {
+    periodo() {
+      const dias = diasDoPeriodo();
+      return [dataISO(dias[0]), dataISO(dias.at(-1))];
+    },
+    exportar(inicio, fim) {
+      const selecionado = filtro.value;
+      if (!demonstracao) {
+        if (selecionado === 'desconhecido') {
+          throw new Error('O relatório não aceita o filtro “Desconhecido”. Feche a janela e escolha outro status.');
+        }
+        const status = { aprovada: 'aceito', negada: 'negado', cancelada: 'cancelado' }[selecionado] || selecionado;
+        return csaApi.exportarAgendamentos('visitas', inicio, fim, status);
+      }
+      const linhas = (visitas || []).flatMap(visita => {
+        const dia = visita.data_inicio.slice(0, 10);
+        const status = csaVisitasModelo.status(visita.status);
+        if (dia < inicio || dia > fim || (selecionado !== 'todos' && status.valor !== (selecionado === 'aprovada' ? 'aceito' : selecionado))) {
+          return [];
+        }
+        return [[
+          csaExportarRelatorio.formatarData(dia),
+          `${hora(visita.data_inicio)} às ${hora(visita.data_fim)}`,
+          visita.instituicao || visita.nome_responsavel || 'Não informado',
+          status.rotulo
+        ]];
+      });
+      return csaExportarRelatorio.imprimirDemonstracao({
+        titulo: 'Relatório de visitas mediadas', inicio, fim,
+        colunas: ['Data', 'Horário', 'Instituição', 'Status'], linhas
+      });
     }
   });
   fechar.addEventListener('click', () => dialogo.close());
